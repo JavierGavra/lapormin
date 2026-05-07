@@ -1,0 +1,3 @@
+# lapormin
+
+Aplikasi pelaporan masyarakat
