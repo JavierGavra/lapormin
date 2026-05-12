@@ -1,3 +1,9 @@
+# Before Coding
+```sh
+git fetch
+git pull <remote> <branch>
+```
+
 # Github Workflow
 ## Branch
 - `main` : Production ready
