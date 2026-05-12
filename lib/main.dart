@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lapormin/core/theme/theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,29 +12,41 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'LaporMin!',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        fontFamily: "DM Sans",
+        colorScheme: MaterialTheme.lightScheme(),
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('LaporMin'),
-        ),
-      )
+      home: TempPage(),
+    );
+  }
+}
+
+class TempPage extends StatelessWidget {
+  const TempPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: Text("Appbar")),
+      body: Column(
+        children: [
+          Text(
+            "Hello World",
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              color: color.primary,
+              fontSize: 16,
+            ),
+          ),
+          SizedBox(height: 20),
+          Text(
+            textAlign: TextAlign.center,
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congue ligula ac quam viverra nec consectetur ante hendrerit. Donec et mollis dolor. Praesent et diam eget libero egestas mattis sit amet vitae augue. Nam tincidunt congue enim, ut porta lorem lacinia consectetur.",
+          ),
+        ],
+      ),
     );
   }
 }
