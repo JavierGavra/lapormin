@@ -1,9 +1,3 @@
-# Before Coding
-```sh
-git fetch
-git pull <remote> <branch>
-```
-
 # Github Workflow
 ## Branch
 - `main` : Production ready
@@ -19,6 +13,12 @@ untuk branch yang dibuat yaitu `type/feature-name`, contoh :
 Setelah Branch siap untuk di adapatasi ke sistem utama, lakukan pull request (PR) dari branch tersebut ke `development` tetapi jangan di merge terlebih dahulu. Biarkan 'Project Manager' melakukan review pada PR tersebut.
 
 Branch yang dibuat akan dihapus ketika code yang di merge sudah cukup baik.
+
+Before Coding
+```sh
+git fetch
+git pull <remote> <branch>
+```
 
 ## Commit
 Setiap ingin melakukan commit ada aturan format commit yang harus dipatuhi (Commit Convention), yaitu `type: [Initial Name] Commit message`. contoh :
@@ -44,8 +44,7 @@ lib/
 ├── core/                       # Utilitas yang dipakai di seluruh aplikasi
 │   ├── constants/              # URL API, Asset Paths
 │   ├── database/               # Konfigrusi utama database
-│   ├── errors/                 # Definisi Failure dan Exception (misal: ServerException)
-│   ├── network/                # Konfigurasi HTTP/Dio interceptors
+│   ├── error/                  # Definisi Failure dan Exception (misal: ServerException)
 │   ├── theme/                  # Konfigurasi Design, Warna, Tipografi
 │   ├── usecase/                # Konfigruasi UseCase
 │   ├── utils/                  # Format tanggal (untuk notifikasi), dll.
