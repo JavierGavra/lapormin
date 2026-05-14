@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lapormin/core/theme/theme.dart';
+import 'package:lapormin/features/auth/presentasion/pages/login_page.dart';
 
-void main() {
+Future<void> main() async {
+  await Supabase.initialize(
+    url: 'https://rhmpnzgwnlywwayhsdcp.supabase.co',
+    anonKey: 'sb_publishable_9jIV3Vn9baV_elqXXwrhFQ_zDseYMFk',
+  );
   runApp(const MyApp());
 }
 
@@ -17,7 +23,7 @@ class MyApp extends StatelessWidget {
         fontFamily: "DM Sans",
         colorScheme: MaterialTheme.lightScheme(),
       ),
-      home: TempPage(),
+      home: const LoginPage(),
     );
   }
 }
