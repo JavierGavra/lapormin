@@ -62,7 +62,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<bool> verifyRegistrationOTP(String phone, otpCode) async {
+  Future<bool> verifyRegistrationOTP(String phone, String otpCode) async {
     try {
       final AuthResponse response = await supabase.auth.verifyOTP(
         type: OtpType.sms,
@@ -70,7 +70,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         token: otpCode,
       );
 
-      // Jika berhasil, user otomatis berstatus login dan akunnya terverifikasi.
       print('Verifikasi sukses! Token: ${response.session?.accessToken}');
       return true;
     } on AuthException catch (e) {
