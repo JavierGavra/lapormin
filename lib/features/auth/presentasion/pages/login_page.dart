@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lapormin/core/utils/app_text_style/app_text_style.dart';
+import 'package:lapormin/core/widgets/app_filled_button/app_filled_button.dart';
+import 'package:page_transition/page_transition.dart';
+
+import 'register_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -39,17 +44,15 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   "Selamat Datang",
-                  style: TextStyle(
-                    fontSize: 22,
-                    height: 1.272,
+                  style: AppTextStyle.s22(
                     fontWeight: FontWeight.w700,
                     fontFamily: "Plus Jakarta Sans",
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   "Laportkan hal di sekitar anda pada mimin!",
-                  style: TextStyle(fontSize: 14, height: 1.428),
+                  style: AppTextStyle.s14(),
                 ),
                 const SizedBox(height: 40),
 
@@ -60,9 +63,7 @@ class LoginPage extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 4),
                       child: Text(
                         "Nomor Telepon",
-                        style: TextStyle(
-                          fontSize: 12,
-                          height: 1.333,
+                        style: AppTextStyle.s12(
                           fontWeight: FontWeight.w600,
                           color: color.onSurfaceVariant,
                         ),
@@ -79,15 +80,15 @@ class LoginPage extends StatelessWidget {
                           color: color.secondary,
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: color.outline),
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: color.outline),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: color.error),
                         ),
                       ),
@@ -103,9 +104,7 @@ class LoginPage extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 4),
                       child: Text(
                         "Password",
-                        style: TextStyle(
-                          fontSize: 12,
-                          height: 1.333,
+                        style: AppTextStyle.s12(
                           fontWeight: FontWeight.w600,
                           color: color.onSurfaceVariant,
                         ),
@@ -128,15 +127,15 @@ class LoginPage extends StatelessWidget {
                           color: color.outline,
                         ),
                         enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: color.outline),
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: color.outline),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: color.error),
                         ),
                       ),
@@ -147,32 +146,24 @@ class LoginPage extends StatelessWidget {
                   alignment: Alignment.bottomRight,
                   child: TextButton(
                     onPressed: () {},
-                    child: Text("Lupa kata sandi?"),
+                    child: Text("Lupa kata sandi?", style: AppTextStyle.s12()),
                   ),
                 ),
                 const SizedBox(height: 24),
-                SizedBox(
-                  height: 56,
-                  child: FilledButton(
-                    onPressed: () {},
-                    style: FilledButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text("Masuk"),
-                        SizedBox(width: 8),
-                        Icon(Icons.arrow_forward_rounded, size: 16),
-                      ],
-                    ),
-                  ),
+                AppFilledButton(
+                  text: "Masuk",
+                  onPressed: () {},
+                  suffixIcon: Icons.arrow_forward_rounded,
+                  iconSize: 16,
                 ),
                 const SizedBox(height: 12),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    context.pushTransition(
+                      type: PageTransitionType.rightToLeftWithFade,
+                      child: const RegisterPage(),
+                    );
+                  },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 2),
                     child: Text.rich(
@@ -187,7 +178,7 @@ class LoginPage extends StatelessWidget {
                             ),
                           ),
                         ],
-                        style: const TextStyle(fontSize: 14, height: 1.428),
+                        style: AppTextStyle.s12(),
                       ),
                     ),
                   ),
