@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/utils/app_text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/app_filled_button/app_filled_button.dart';
-import 'package:page_transition/page_transition.dart';
-
-import 'register_page.dart';
+import 'package:lapormin/features/auth/presentation/widgets/auth_switch_button.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -157,32 +155,7 @@ class LoginPage extends StatelessWidget {
                   iconSize: 16,
                 ),
                 const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: () {
-                    context.pushTransition(
-                      type: PageTransitionType.rightToLeftWithFade,
-                      child: const RegisterPage(),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Text.rich(
-                      TextSpan(
-                        text: "Belum punya akun? ",
-                        children: [
-                          TextSpan(
-                            text: "Daftar",
-                            style: TextStyle(
-                              color: color.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                        style: AppTextStyle.s12(),
-                      ),
-                    ),
-                  ),
-                ),
+                AuthSwitchButton.toRegister(),
               ],
             ),
           ),

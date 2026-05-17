@@ -25,4 +25,10 @@ class AuthRepositoryImpl implements AuthRepository {
     // TODO: implement logout
     throw UnimplementedError();
   }
+
+  @override
+  Future<Either<Failure, bool>> isPhoneExist(String phoneNumber) {
+    // TODO: implement isPhoneExist
+    throw UnimplementedError();
+  }
 }

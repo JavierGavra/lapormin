@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lapormin/core/theme/theme.dart';
-import 'package:lapormin/features/auth/presentasion/pages/login_page.dart';
+import 'package:lapormin/features/auth/presentation/pages/login_page.dart';
 
 Future<void> main() async {
   await Supabase.initialize(
