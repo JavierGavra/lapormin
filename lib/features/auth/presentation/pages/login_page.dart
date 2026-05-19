@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/utils/app_text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/app_filled_button/app_filled_button.dart';
+import 'package:lapormin/core/widgets/success/success_screen.dart';
+import 'package:lapormin/features/auth/presentation/widgets/auth_switch_button.dart';
 import 'package:page_transition/page_transition.dart';
-
-import 'register_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -12,6 +12,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Center(
         child: Form(
           child: Padding(
@@ -152,37 +153,27 @@ class LoginPage extends StatelessWidget {
                 const SizedBox(height: 24),
                 AppFilledButton(
                   text: "Masuk",
-                  onPressed: () {},
+                  onPressed: () {
+                    context.pushTransition(
+                      type: PageTransitionType.bottomToTop,
+                      duration: const Duration(milliseconds: 500),
+                      curve: Curves.easeOutCubic,
+                      child: SuccessScreen(
+                        title: 'Akun Sudah Dibuat',
+                        description: 'Silahkan login dengan akun baru!',
+                        onBack: () {
+                          Navigator.of(
+                            context,
+                          ).popUntil((route) => route.isFirst);
+                        },
+                      ),
+                    );
+                  },
                   suffixIcon: Icons.arrow_forward_rounded,
                   iconSize: 16,
                 ),
                 const SizedBox(height: 12),
-                GestureDetector(
-                  onTap: () {
-                    context.pushTransition(
-                      type: PageTransitionType.rightToLeftWithFade,
-                      child: const RegisterPage(),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Text.rich(
-                      TextSpan(
-                        text: "Belum punya akun? ",
-                        children: [
-                          TextSpan(
-                            text: "Daftar",
-                            style: TextStyle(
-                              color: color.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                        style: AppTextStyle.s12(),
-                      ),
-                    ),
-                  ),
-                ),
+                AuthSwitchButton.toRegister(),
               ],
             ),
           ),

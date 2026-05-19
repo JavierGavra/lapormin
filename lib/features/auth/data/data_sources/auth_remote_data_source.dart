@@ -1,14 +1,12 @@
+import 'package:lapormin/core/error/exceptions.dart';
 import 'package:lapormin/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract interface class AuthRemoteDataSource {
+  Future<bool> isPhoneExist(String phoneNumber);
+  Future<void> sendOtp(String username, String phoneNumber, String password);
+  Future<bool> verifyOtp(String phoneNumber, String otp);
   Future<UserModel> postLogin(String phoneNumber, String password);
-  Future<bool> postRegister(
-    String username,
-    String phoneNumber,
-    String password,
-  );
-  Future<bool> verifyRegistrationOTP(String phoneNumber, String otpCode);
   Future<bool> postLogout();
 }
 
@@ -37,44 +35,55 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<bool> postLogout() {
-    // TODO: implement postLogout
     throw UnimplementedError();
   }
 
   @override
-  Future<bool> postRegister(
+  Future<void> sendOtp(
     String username,
     String phoneNumber,
     String password,
   ) async {
+    print(phoneNumber);
     try {
       await supabase.auth.signUp(
         phone: phoneNumber,
         password: password,
-        data: {'username': username, 'no_telp': phoneNumber},
+        data: {
+          'username': username,
+          'full_name': username,
+          'no_telp': phoneNumber,
+        },
       );
-      print('Cek SMS Anda untuk melihat kode OTP!');
-      return true;
     } on AuthException catch (e) {
-      print('Error Registrasi: ${e.message}');
-      return false;
+      throw InvalidCredentialsException(e.message);
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw const ServerException();
     }
   }
 
   @override
-  Future<bool> verifyRegistrationOTP(String phone, String otpCode) async {
+  Future<bool> verifyOtp(String phoneNumber, String otp) async {
     try {
-      final AuthResponse response = await supabase.auth.verifyOTP(
+      await supabase.auth.verifyOTP(
         type: OtpType.sms,
-        phone: phone,
-        token: otpCode,
+        phone: phoneNumber,
+        token: otp,
       );
 
-      print('Verifikasi sukses! Token: ${response.session?.accessToken}');
+      // print('Verifikasi sukses! Token: ${response.session?.accessToken}');
       return true;
     } on AuthException catch (e) {
-      print('OTP Salah atau Expired: ${e.message}');
-      return false;
+      throw e.message;
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw const ServerException();
     }
+  }
+
+  @override
+  Future<bool> isPhoneExist(String phoneNumber) {
+    throw UnimplementedError();
   }
 }
