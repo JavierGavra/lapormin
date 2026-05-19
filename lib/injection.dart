@@ -6,6 +6,7 @@ import 'package:lapormin/features/auth/domain/repositories/auth_repository.dart'
 import 'package:lapormin/features/auth/domain/use_cases/login.dart';
 import 'package:lapormin/features/auth/domain/use_cases/send_otp.dart';
 import 'package:lapormin/features/auth/domain/use_cases/verify_otp.dart';
+import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lapormin/features/auth/presentation/bloc/login/login_bloc.dart';
 import 'package:lapormin/features/auth/presentation/bloc/register/register_bloc.dart';
 
@@ -29,6 +30,7 @@ Future<void> initializeServiceLocator() async {
 }
 
 void _initAuthFeature() {
+  sl.registerFactory(() => AuthBloc(supabase: sl()));
   sl.registerFactory(() => LoginBloc(login: sl()));
   sl.registerFactory(() => RegisterBloc(sendOtp: sl(), verifyOtp: sl()));
 

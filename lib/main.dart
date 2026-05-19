@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/bloc/provider.dart';
+import 'package:lapormin/features/auth/presentation/pages/splash_screen.dart';
 import 'package:lapormin/injection.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lapormin/core/theme/theme.dart';
-import 'package:lapormin/features/auth/presentation/pages/login_page.dart';
 
 Future<void> main() async {
   await Supabase.initialize(
@@ -18,14 +20,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'LaporMin!',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: "DM Sans",
-        colorScheme: MaterialTheme.lightScheme(),
+    return MultiBlocProvider(
+      providers: Provider.providers(),
+      child: MaterialApp(
+        title: 'LaporMin!',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          fontFamily: "DM Sans",
+          colorScheme: MaterialTheme.lightScheme(),
+        ),
+        home: const SplashScreen(),
       ),
-      home: const LoginPage(),
     );
   }
 }
