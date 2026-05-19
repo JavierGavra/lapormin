@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:lapormin/core/layouts/main_layout.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/features/auth/presentasion/pages/login_page.dart';
+import 'package:lapormin/features/home/presentation/pages/informant/home_page.dart';
 
 Future<void> main() async {
   await Supabase.initialize(
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
         fontFamily: "DM Sans",
         colorScheme: MaterialTheme.lightScheme(),
       ),
-      home: const LoginPage(),
+      home: const MainLayout(),
     );
   }
 }

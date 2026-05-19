@@ -1,5 +1,5 @@
 name: lapormin
-description: "Aplikasi pelaporan masyarakat"
+description: 'Aplikasi pelaporan masyarakat'
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
@@ -13,7 +13,7 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   connectivity_plus: ^7.1.1
-  bloc: ^9.2.1 
+  bloc: ^9.2.1
   dartz: ^0.10.1
   equatable: ^2.0.8
   flutter_bloc: ^9.1.1
@@ -30,15 +30,16 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^6.0.0 
+  flutter_lints: ^6.0.0
 
 flutter:
-
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
+    - assets/images/profiles/
+    - assets/images/cards/
 
   # example:
   fonts:
