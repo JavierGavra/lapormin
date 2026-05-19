@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/theme/theme.dart';
-import 'package:lapormin/core/utils/app_text_style/app_text_style.dart';
+import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
 import 'package:lapormin/features/home/presentation/widgets/home_greeting/home_greeting.dart';
 import 'package:lapormin/features/home/presentation/widgets/category_card/category_card.dart';

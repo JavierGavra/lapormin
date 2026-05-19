@@ -3,8 +3,10 @@ import 'package:get_it/get_it.dart';
 import 'package:lapormin/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:lapormin/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:lapormin/features/auth/domain/repositories/auth_repository.dart';
+import 'package:lapormin/features/auth/domain/use_cases/login.dart';
 import 'package:lapormin/features/auth/domain/use_cases/send_otp.dart';
 import 'package:lapormin/features/auth/domain/use_cases/verify_otp.dart';
+import 'package:lapormin/features/auth/presentation/bloc/login/login_bloc.dart';
 import 'package:lapormin/features/auth/presentation/bloc/register/register_bloc.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,9 +29,11 @@ Future<void> initializeServiceLocator() async {
 }
 
 void _initAuthFeature() {
+  sl.registerFactory(() => LoginBloc(login: sl()));
   sl.registerFactory(() => RegisterBloc(sendOtp: sl(), verifyOtp: sl()));
 
   // Use Cases
+  sl.registerLazySingleton(() => Login(sl()));
   sl.registerLazySingleton(() => SendOtp(sl()));
   sl.registerLazySingleton(() => VerifyOtp(sl()));
 

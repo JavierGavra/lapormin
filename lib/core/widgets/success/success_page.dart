@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 // import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../utils/app_text_style/app_text_style.dart';
-import '../../widgets/app_filled_button/app_filled_button.dart';
+import '../../utils/text_style/app_text_style.dart';
+import '../button/app_filled_button.dart';
 
-class SuccessScreen extends StatefulWidget {
+class SuccessPage extends StatefulWidget {
   final String title;
   final String description;
   final void Function()? onBack;
 
-  const SuccessScreen({
+  const SuccessPage({
     super.key,
     this.onBack,
     required this.title,
@@ -20,10 +20,10 @@ class SuccessScreen extends StatefulWidget {
   });
 
   @override
-  State<SuccessScreen> createState() => _SuccessScreenState();
+  State<SuccessPage> createState() => _SuccessScreenState();
 }
 
-class _SuccessScreenState extends State<SuccessScreen> {
+class _SuccessScreenState extends State<SuccessPage> {
   final ValueNotifier<int> _countdown = ValueNotifier<int>(4);
   Timer? _timer;
 

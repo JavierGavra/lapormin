@@ -1,9 +1,11 @@
+import 'package:lapormin/core/constants/user_role_enum.dart';
+
 class User {
   final String id;
   final String username;
   final String phoneNumber;
   final String? photoProfile;
-  final String role;
+  final UserRole role;
 
   User({
     required this.id,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
-import 'package:lapormin/core/utils/app_text_style/app_text_style.dart';
-import '../pages/register_page.dart';
+import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import '../../pages/register_page.dart';
 
 class AuthSwitchButton extends StatelessWidget {
   final bool _isToLogin;

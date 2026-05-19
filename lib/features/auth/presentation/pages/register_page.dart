@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/core/utils/app_text_style/app_text_style.dart';
-import 'package:lapormin/core/widgets/app_back_button/app_back_button.dart';
-import 'package:lapormin/core/widgets/app_filled_button/app_filled_button.dart';
+import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/core/widgets/button/app_back_button.dart';
+import 'package:lapormin/core/widgets/button/app_filled_button.dart';
 import 'package:lapormin/core/widgets/progress_bar/progress_bar.dart';
-import 'package:lapormin/core/widgets/success/success_screen.dart';
+import 'package:lapormin/core/widgets/success/success_page.dart';
 import 'package:lapormin/injection.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../bloc/register/register_bloc.dart';
-import '../widgets/register_step.dart';
-import '../widgets/auth_switch_button.dart';
+import '../widgets/register/register_step.dart';
+import '../widgets/button/auth_switch_button.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -31,7 +31,6 @@ class _RegisterPageState extends State<RegisterPage> {
   late final List<Widget> _steps;
 
   void _listener(BuildContext context, RegisterState state) {
-    print("${state.username != null} ${state.phone} ${state.password}");
     if (state.status == RegisterStatus.next) {
       _pageController.nextPage(
         duration: Duration(milliseconds: 300),
@@ -59,7 +58,7 @@ class _RegisterPageState extends State<RegisterPage> {
         type: PageTransitionType.bottomToTop,
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeOutCubic,
-        child: SuccessScreen(
+        child: SuccessPage(
           title: 'Akun Sudah Dibuat',
           description: 'Silahkan login dengan akun baru!',
           onBack: () {

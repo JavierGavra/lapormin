@@ -18,18 +18,27 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel> postLogin(String phoneNumber, String password) async {
     try {
-      final response = await supabase.auth.signInWithPassword(
+      final AuthResponse response = await supabase.auth.signInWithPassword(
         phone: phoneNumber,
         password: password,
       );
 
-      if (response.session == null) {
-        throw Exception('Login failed: No session returned');
+      if (response.user == null) {
+        throw ServerException('Pengguna tidak ditemukan.');
       }
 
-      return UserModel.fromAuthResponse(response);
+      final userData = await supabase
+          .from('users')
+          .select()
+          .eq('id', response.user!.id)
+          .single();
+
+      return UserModel.fromMap(userData);
+    } on AuthException catch (e) {
+      throw InvalidCredentialsException(e.message);
     } catch (e) {
-      throw Exception('Login failed');
+      if (e is NetworkException) rethrow;
+      throw ServerException();
     }
   }
 
@@ -44,7 +53,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     String phoneNumber,
     String password,
   ) async {
-    print(phoneNumber);
     try {
       await supabase.auth.signUp(
         phone: phoneNumber,
@@ -71,8 +79,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         phone: phoneNumber,
         token: otp,
       );
-
-      // print('Verifikasi sukses! Token: ${response.session?.accessToken}');
       return true;
     } on AuthException catch (e) {
       throw e.message;

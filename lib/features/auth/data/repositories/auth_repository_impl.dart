@@ -17,8 +17,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> login(String phoneNumber, String password) {
-    throw UnimplementedError();
+  Future<Either<Failure, User>> login(
+    String phoneNumber,
+    String password,
+  ) async {
+    try {
+      final response = await remoteDataSource.postLogin(phoneNumber, password);
+      return Right(response);
+    } catch (e) {
+      if (kDebugMode) print(e);
+      if (e is InvalidCredentialsException) {
+        return Left(ValidationFailure("Nomor telepon atau password salah."));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message!));
+      } else if (e is NetworkException) {
+        return Left(NetworkFailure());
+      } else {
+        return const Left(ServerFailure('Gagal login. Coba lagi nanti.'));
+      }
+    }
   }
 
   @override
@@ -40,7 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (e is NetworkException) {
         return Left(NetworkFailure());
       } else if (e is InvalidCredentialsException) {
-        return Left(ValidationFailure('Data harus terisi semua'));
+        return Left(ValidationFailure('Data tidak valid.'));
       } else {
         return Left(ServerFailure('Gagal mengirim OTP. Coba lagi nanti.'));
       }
