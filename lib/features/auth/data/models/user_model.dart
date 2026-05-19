@@ -1,5 +1,4 @@
-import 'package:supabase_flutter/supabase_flutter.dart' hide User;
-
+import 'package:lapormin/core/constants/user_role_enum.dart';
 import '../../domain/entities/user.dart';
 
 class UserModel extends User {
@@ -11,18 +10,18 @@ class UserModel extends User {
     required super.role,
   });
 
-  factory UserModel.fromAuthResponse(AuthResponse response) {
-    final user = response.user;
-    if (user == null) {
-      throw Exception('User data is missing in the authentication response');
-    }
-
+  factory UserModel.fromMap(Map<String, dynamic> data) {
     return UserModel(
-      id: user.id,
-      username: user.userMetadata?['username'] ?? '',
-      phoneNumber: user.phone ?? '',
-      photoProfile: user.userMetadata?['photoProfile'],
-      role: user.userMetadata?['role'] ?? 'user',
+      id: data['id'],
+      username: data['username'],
+      phoneNumber: data['no_telp'],
+      photoProfile: data['photo_profile'],
+      role: switch (data['role']) {
+        'admin' => UserRole.admin,
+        'informant' => UserRole.informant,
+        'field_officer' => UserRole.fieldOfficer,
+        _ => UserRole.informant,
+      },
     );
   }
 }

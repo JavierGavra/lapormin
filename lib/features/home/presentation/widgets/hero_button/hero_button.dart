@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/core/utils/app_text_style/app_text_style.dart';
+import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 
 class HeroButton extends StatelessWidget {
   final String label;

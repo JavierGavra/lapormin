@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/core/utils/app_text_style/app_text_style.dart';
+import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/utils/validator/input_validator.dart';
-import 'package:lapormin/core/widgets/app_text_field/app_text_field.dart';
-import 'package:lapormin/features/auth/presentation/widgets/custom_otp_text_field.dart';
+import 'package:lapormin/core/widgets/text_field/app_text_field.dart';
+import 'package:lapormin/features/auth/presentation/widgets/register/custom_otp_text_field.dart';
 
 class RegisterStep extends StatelessWidget {
   final IconData icon;

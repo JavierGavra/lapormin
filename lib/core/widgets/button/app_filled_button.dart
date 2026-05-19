@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../utils/app_text_style/app_text_style.dart';
+import '../../utils/text_style/app_text_style.dart';
 
 class AppFilledButton extends StatelessWidget {
   final String text;

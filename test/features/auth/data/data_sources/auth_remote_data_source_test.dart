@@ -1,5 +1,5 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:lapormin/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -12,13 +12,23 @@ Future<void> main() async {
   );
 
   final supabase = Supabase.instance.client;
-  final authRemoteDataSource = AuthRemoteDataSourceImpl(supabase: supabase);
+  // final authRemoteDataSource = AuthRemoteDataSourceImpl(supabase: supabase);
 
-  await authRemoteDataSource.sendOtp(
-    "Javier Gavra",
-    "+6285866478673",
-    "masyarakat123",
+  final response = await supabase.auth.signInAnonymously(
+    data: {
+      'username': "Ali Mah Dana",
+      'full_name': "Ali Mah Dana",
+      'no_telp': "+6289525613828",
+    },
   );
+
+  if (kDebugMode) print(response.session?.accessToken);
+
+  // await authRemoteDataSource.sendOtp(
+  //   "Javier Gavra",
+  //   "+6285866478673",
+  //   "masyarakat123",
+  // );
 
   // final responseVerifyOTP = await authRemoteDataSource.verifyRegistrationOTP(
   //   "+6285866478673",

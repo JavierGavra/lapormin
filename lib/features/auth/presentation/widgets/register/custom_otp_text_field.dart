@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
-import 'package:lapormin/core/utils/app_text_style/app_text_style.dart';
+import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 
 class CustomOtpTextField extends StatelessWidget {
   final TextEditingController controller;
