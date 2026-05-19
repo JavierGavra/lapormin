@@ -29,10 +29,10 @@ class AuthSwitchButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 2),
         child: Text.rich(
           TextSpan(
-            text: _isToLogin ? "Belum punya akun? " : "Sudah punya akun? ",
+            text: _isToLogin ? "Sudah punya akun? " : "Belum punya akun? ",
             children: [
               TextSpan(
-                text: _isToLogin ? "Daftar" : "Masuk",
+                text: _isToLogin ? "Masuk" : "Daftar",
                 style: TextStyle(
                   color: color.primary,
                   fontWeight: FontWeight.w600,

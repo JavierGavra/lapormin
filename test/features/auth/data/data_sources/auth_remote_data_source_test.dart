@@ -14,14 +14,11 @@ Future<void> main() async {
   final supabase = Supabase.instance.client;
   final authRemoteDataSource = AuthRemoteDataSourceImpl(supabase: supabase);
 
-  print("Testing Register...");
-
-  final responseRegister = await authRemoteDataSource.postRegister(
+  await authRemoteDataSource.sendOtp(
     "Javier Gavra",
     "+6285866478673",
     "masyarakat123",
   );
-  print("Response Register: $responseRegister");
 
   // final responseVerifyOTP = await authRemoteDataSource.verifyRegistrationOTP(
   //   "+6285866478673",

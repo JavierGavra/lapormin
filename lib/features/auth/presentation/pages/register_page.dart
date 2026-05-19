@@ -4,10 +4,13 @@ import 'package:lapormin/core/utils/app_text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/app_back_button/app_back_button.dart';
 import 'package:lapormin/core/widgets/app_filled_button/app_filled_button.dart';
 import 'package:lapormin/core/widgets/progress_bar/progress_bar.dart';
-import 'package:lapormin/features/auth/presentation/bloc/register/register_bloc.dart';
-import 'package:lapormin/features/auth/presentation/widgets/auth_switch_button.dart';
-import 'package:lapormin/features/auth/presentation/widgets/register_step.dart';
-// import 'package:page_transition/page_transition.dart';
+import 'package:lapormin/core/widgets/success/success_screen.dart';
+import 'package:lapormin/injection.dart';
+import 'package:page_transition/page_transition.dart';
+
+import '../bloc/register/register_bloc.dart';
+import '../widgets/register_step.dart';
+import '../widgets/auth_switch_button.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -28,8 +31,8 @@ class _RegisterPageState extends State<RegisterPage> {
   late final List<Widget> _steps;
 
   void _listener(BuildContext context, RegisterState state) {
+    print("${state.username != null} ${state.phone} ${state.password}");
     if (state.status == RegisterStatus.next) {
-      // Navigate to the next page or show success message
       _pageController.nextPage(
         duration: Duration(milliseconds: 300),
         curve: Curves.ease,
@@ -52,9 +55,18 @@ class _RegisterPageState extends State<RegisterPage> {
         curve: Curves.ease,
       );
     } else if (state.status == RegisterStatus.success) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Registration successful!")));
+      context.pushTransition(
+        type: PageTransitionType.bottomToTop,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOutCubic,
+        child: SuccessScreen(
+          title: 'Akun Sudah Dibuat',
+          description: 'Silahkan login dengan akun baru!',
+          onBack: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          },
+        ),
+      );
     } else if (state.status == RegisterStatus.failure) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(state.errorMessage ?? "Registration failed")),
@@ -74,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
         if (event != null) context.read<RegisterBloc>().add(event);
       }
     } else {
-      // Handle completion logic
+      context.read<RegisterBloc>().add(RegisterOtpSubmit(_otpController.text));
     }
   }
 
@@ -112,12 +124,11 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: BlocProvider(
-        create: (context) => RegisterBloc(),
+        create: (context) => sl<RegisterBloc>(),
         child: BlocListener<RegisterBloc, RegisterState>(
           listener: _listener,
           child: Builder(
             builder: (context) {
-              print("object");
               return PopScope(
                 canPop: false,
                 onPopInvokedWithResult: (didPop, result) {
@@ -193,7 +204,7 @@ class _RegisterPageState extends State<RegisterPage> {
               state.status == RegisterStatus.loading
                   ? const AppFilledButton.loading()
                   : AppFilledButton(
-                      text: "Lanjutkan",
+                      text: state.currentStep == 4 ? "Buat Akun" : "Lanjutkan",
                       onPressed: () => _nextStep(context, state.currentStep),
                       suffixIcon: Icons.arrow_forward_rounded,
                       iconSize: 16,

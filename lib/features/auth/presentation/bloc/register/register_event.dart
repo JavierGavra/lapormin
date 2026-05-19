@@ -31,6 +31,15 @@ final class RegisterPasswordSubmit extends RegisterEvent {
   List<Object?> get props => [password];
 }
 
+final class RegisterOtpSubmit extends RegisterEvent {
+  final String otp;
+
+  const RegisterOtpSubmit(this.otp);
+
+  @override
+  List<Object?> get props => [otp];
+}
+
 final class RegisterPreviousStep extends RegisterEvent {
   const RegisterPreviousStep();
 
