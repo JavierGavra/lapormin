@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lapormin/core/error/failures.dart';
-import 'package:lapormin/core/usecase/usecase.dart';
+import 'package:lapormin/core/use_case/usecase.dart';
 import 'package:lapormin/core/utils/phone_number/phone_number_format.dart';
 import 'package:lapormin/features/auth/domain/entities/user.dart';
 import 'package:lapormin/features/auth/domain/repositories/auth_repository.dart';
