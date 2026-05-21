@@ -8,14 +8,23 @@ class AppBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
-    return BackButton(
-      onPressed: onPressed,
-      style: ButtonStyle(
-        backgroundColor: WidgetStatePropertyAll<Color>(color.surfaceContainer),
-        shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    return SizedBox.fromSize(
+      size: Size.square(40),
+      child: BackButton(
+        onPressed: onPressed,
+        style: ButtonStyle(
+          padding: const WidgetStatePropertyAll<EdgeInsetsGeometry>(
+            EdgeInsets.zero,
+          ),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          backgroundColor: WidgetStatePropertyAll<Color>(
+            color.surfaceContainer,
+          ),
+          shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          iconSize: WidgetStatePropertyAll<double>(20),
         ),
-        iconSize: WidgetStatePropertyAll<double>(20),
       ),
     );
   }

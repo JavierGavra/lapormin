@@ -7,6 +7,8 @@ import 'package:lapormin/features/home/presentation/widgets/home_greeting/home_g
 import 'package:lapormin/features/home/presentation/widgets/category_card/category_card.dart';
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/hero_button/hero_button.dart';
+import 'package:lapormin/features/report/presentation/pages/create_report_page.dart';
+import 'package:page_transition/page_transition.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -46,6 +48,10 @@ class HomePage extends StatelessWidget {
                     HeroButton(
                       label: "Buat Laporan",
                       onTap: () {
+                        context.pushTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: const CreateReportPage(),
+                        );
                         debugPrint("Tombol Buat Laporan Diklik!");
                       },
                     ),
