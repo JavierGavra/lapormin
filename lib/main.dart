@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:lapormin/core/api/api.dart';
 import 'package:lapormin/core/bloc/provider.dart';
 import 'package:lapormin/features/auth/presentation/pages/splash_screen.dart';
 import 'package:lapormin/injection.dart';
@@ -7,10 +9,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lapormin/core/theme/theme.dart';
 
 Future<void> main() async {
-  await Supabase.initialize(
-    url: 'https://rhmpnzgwnlywwayhsdcp.supabase.co',
-    anonKey: 'sb_publishable_9jIV3Vn9baV_elqXXwrhFQ_zDseYMFk',
-  );
+  await dotenv.load();
+  await Supabase.initialize(url: Api.baseUrl, anonKey: Api.anonKey);
   await initializeServiceLocator();
   runApp(const MyApp());
 }
