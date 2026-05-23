@@ -22,9 +22,11 @@ class CreateReportPage extends StatefulWidget {
 
 class _CreateReportPageState extends State<CreateReportPage> {
   final _pageController = PageController();
-  final _formKey = GlobalKey<FormState>();
+  final _step1formKey = GlobalKey<FormState>();
+  final _step4formKey = GlobalKey<FormState>();
 
   final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
   ReportCategory _reportCategory = ReportCategory.infrastructure;
   LatLng? _position;
   String? _address;
@@ -71,7 +73,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
   }
 
   CreateReportEvent? _onStep1() {
-    if (!_formKey.currentState!.validate()) return null;
+    if (!_step1formKey.currentState!.validate()) return null;
     return CreateReportStep1Submitted(
       title: _titleController.text,
       category: _reportCategory,
@@ -91,7 +93,8 @@ class _CreateReportPageState extends State<CreateReportPage> {
   }
 
   CreateReportEvent? _onStep4() {
-    return CreateReportStep4Submitted(description: "");
+    if (!_step4formKey.currentState!.validate()) return null;
+    return CreateReportStep4Submitted(description: _descriptionController.text);
   }
 
   void _nextStep(BuildContext context, int currentStep) {
@@ -115,7 +118,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
     super.initState();
     _steps = [
       TitleCategoryStep(
-        formKey: _formKey,
+        formKey: _step1formKey,
         titleController: _titleController,
         initialCategory: _reportCategory,
         onCategoryChanged: (category) => _reportCategory = category,
@@ -127,7 +130,10 @@ class _CreateReportPageState extends State<CreateReportPage> {
         },
       ),
       EvidencesStep(),
-      SummaryDescriptionStep(),
+      SummaryDescriptionStep(
+        formKey: _step4formKey,
+        descriptionController: _descriptionController,
+      ),
     ];
   }
 
@@ -135,6 +141,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
   void dispose() {
     _pageController.dispose();
     _titleController.dispose();
+    _descriptionController.dispose();
     super.dispose();
   }
 
