@@ -103,8 +103,6 @@ class EvidencesStep extends StatelessWidget {
             ),
             LayoutBuilder(
               builder: (context, constraints) {
-                // Hitung lebar tiap gambar secara dinamis
-                // Total gap antar item = (crossAxisCount - 1) * gap
                 final itemWidth =
                     (constraints.maxWidth - (gap * (crossAxisCount - 1))) /
                     crossAxisCount;
@@ -116,11 +114,10 @@ class EvidencesStep extends StatelessWidget {
                     4,
                     (index) => SizedBox(
                       width: itemWidth,
-                      height: itemWidth, // biar tetap square
+                      height: itemWidth,
                       child: Stack(
                         clipBehavior: Clip.none,
                         children: [
-                          // Gambar
                           Positioned.fill(
                             child: Container(
                               decoration: BoxDecoration(

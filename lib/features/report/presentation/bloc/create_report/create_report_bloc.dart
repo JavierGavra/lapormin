@@ -1,13 +1,18 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
+import 'package:lapormin/features/report/domain/use_cases/submit_report.dart';
 import 'package:latlong2/latlong.dart';
 
 part 'create_report_event.dart';
 part 'create_report_state.dart';
 
 class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
-  CreateReportBloc() : super(const CreateReportState()) {
+  final SubmitReport _submitReport;
+
+  CreateReportBloc({required SubmitReport submitReport})
+    : _submitReport = submitReport,
+      super(const CreateReportState()) {
     on<CreateReportStep1Submitted>(_onStep1Submitted);
     on<CreateReportStep2Submitted>(_onStep2Submitted);
     on<CreateReportStep3Submitted>(_onStep3Submitted);
@@ -66,9 +71,26 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
       ),
     );
 
-    await Future.delayed(const Duration(seconds: 2));
+    final isSubmitted = await _submitReport(
+      SubmitReportParams(
+        title: state.title!,
+        description: state.description!,
+        latitude: state.position!.latitude,
+        longitude: state.position!.longitude,
+        category: state.category!,
+        evidences: [],
+      ),
+    );
 
-    emit(state.copyWith(status: CreateReportStatus.success));
+    isSubmitted.fold(
+      (failure) => emit(
+        state.copyWith(
+          status: CreateReportStatus.failure,
+          errorMessage: failure.message,
+        ),
+      ),
+      (success) => emit(state.copyWith(status: CreateReportStatus.success)),
+    );
   }
 
   Future<void> _onPreviousStep(
