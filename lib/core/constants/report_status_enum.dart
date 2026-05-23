@@ -45,7 +45,6 @@ enum ReportStatus {
     }
   }
 
-  // 3. Helper Parsing
   static ReportStatus fromString(String status) {
     return ReportStatus.values.firstWhere(
       (e) => e.dbValue == status,

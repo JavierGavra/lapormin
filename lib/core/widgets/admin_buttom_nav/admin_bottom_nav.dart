@@ -1,25 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 
-class BottomNav extends StatelessWidget {
+class AdminBottomNav extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
 
-  const BottomNav({super.key, required this.currentIndex, required this.onTap});
+  const AdminBottomNav({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.only(top: 10, left: 24, right: 24, bottom: 27),
-      decoration: const ShapeDecoration(
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
+      decoration: ShapeDecoration(
+        color: color.surfaceContainerLowest,
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(32),
             topRight: Radius.circular(32),
           ),
         ),
-        shadows: [
+        shadows: const [
           BoxShadow(
             color: Color(0x3F000000),
             blurRadius: 5,
@@ -49,10 +55,18 @@ class BottomNav extends StatelessWidget {
           _buildNavItem(
             context: context,
             index: 2,
+            iconFilled: Icons.engineering,
+            iconOutlined: Icons.engineering_outlined,
+            label: "PETUGAS",
+            isSelected: currentIndex == 2,
+          ),
+          _buildNavItem(
+            context: context,
+            index: 3,
             iconFilled: Icons.map,
             iconOutlined: Icons.map_outlined,
             label: "PETA",
-            isSelected: currentIndex == 2,
+            isSelected: currentIndex == 3,
           ),
         ],
       ),
@@ -75,7 +89,7 @@ class BottomNav extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: ShapeDecoration(
             color: isSelected ? color.secondaryContainer : Colors.transparent,
             shape: RoundedRectangleBorder(
@@ -95,15 +109,13 @@ class BottomNav extends StatelessWidget {
               const SizedBox(height: 4),
               Text(
                 label,
+                textAlign: TextAlign.center,
                 style: AppTextStyle.s11(
-                  fontFamily: 'DM Sans',
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   color: isSelected
                       ? color.onSecondaryContainer
                       : color.onSurfaceVariant,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 
@@ -12,6 +13,7 @@ class ReportCard extends StatelessWidget {
   final Color categoryColor;
   final VoidCallback onTap;
   final bool isVideo;
+  final DateTime? deadlineDate;
 
   const ReportCard({
     super.key,
@@ -24,6 +26,7 @@ class ReportCard extends StatelessWidget {
     required this.categoryColor,
     required this.onTap,
     this.isVideo = false,
+    this.deadlineDate,
   });
 
   @override
@@ -31,13 +34,11 @@ class ReportCard extends StatelessWidget {
     final color = Theme.of(context).colorScheme;
 
     return Container(
-      // 1. INI KUNCI RAHASIANYA! Memotong semua isi dari luar dengan presisi.
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.outlineVariant),
       ),
-      // 2. Material transparan agar efek 'cipratan air' (ripple) InkWell tetap jalan
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -47,7 +48,6 @@ class ReportCard extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  // 3. ClipRRect Dihapus! Kode jadi lebih pendek dan bersih.
                   SizedBox(
                     height: 160,
                     width: double.infinity,
@@ -164,6 +164,40 @@ class ReportCard extends StatelessWidget {
                               ),
                             ],
                           ),
+                          if (status == ReportStatus.action &&
+                              deadlineDate != null) ...[
+                            const SizedBox(height: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: ShapeDecoration(
+                                color: color.error,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(100),
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.calendar_month_outlined,
+                                    color: color.onError,
+                                    size: 14,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Tenggat : ${DateFormat('d MMMM yyyy', 'id_ID').format(deadlineDate!)}',
+                                    style: AppTextStyle.s12(
+                                      color: color.onError,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
