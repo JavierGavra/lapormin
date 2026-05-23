@@ -4,12 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lapormin/core/api/api.dart';
 import 'package:lapormin/core/bloc/provider.dart';
-import 'package:lapormin/core/layouts/admin_main_layout.dart';
-import 'package:lapormin/core/layouts/main_layout.dart';
 import 'package:lapormin/features/auth/presentation/pages/splash_screen.dart';
-import 'package:lapormin/features/home/presentation/pages/field_officer/home_field_officer_page.dart';
-import 'package:lapormin/core/layouts/field_officer_main_layout.dart';
-import 'package:lapormin/core/layouts/admin_main_layout.dart';
 import 'package:lapormin/injection.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lapormin/core/theme/theme.dart';
@@ -34,7 +29,7 @@ class MyApp extends StatelessWidget {
         title: 'LaporMin!',
         debugShowCheckedModeBanner: false,
         theme: MaterialTheme(const TextTheme()).light(),
-        home: const FieldOfficerMainLayout(),
+        home: const SplashScreen(),
       ),
     );
   }

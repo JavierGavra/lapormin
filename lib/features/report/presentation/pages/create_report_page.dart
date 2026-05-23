@@ -10,6 +10,7 @@ import 'package:lapormin/features/report/presentation/widgets/create_report/evid
 import 'package:lapormin/features/report/presentation/widgets/create_report/location_step.dart';
 import 'package:lapormin/features/report/presentation/widgets/create_report/summary_description_step.dart';
 import 'package:lapormin/features/report/presentation/widgets/create_report/title_category_step.dart';
+import 'package:lapormin/injection.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -148,7 +149,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CreateReportBloc(),
+      create: (context) => sl<CreateReportBloc>(),
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         body: BlocListener<CreateReportBloc, CreateReportState>(

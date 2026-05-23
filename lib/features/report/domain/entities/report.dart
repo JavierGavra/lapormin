@@ -4,7 +4,7 @@ class Report {
   final String description;
   final String location;
   final String category;
-  final List<String> imageUrls;
+  final List<String> evidenceUrls;
 
   Report({
     required this.id,
@@ -12,6 +12,6 @@ class Report {
     required this.description,
     required this.location,
     required this.category,
-    required this.imageUrls,
+    required this.evidenceUrls,
   });
 }
