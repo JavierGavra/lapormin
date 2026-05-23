@@ -42,4 +42,13 @@ final class CreateReportStep3Submitted extends CreateReportEvent {
   List<Object?> get props => [evidences];
 }
 
+final class CreateReportStep4Submitted extends CreateReportEvent {
+  final String description;
+
+  const CreateReportStep4Submitted({required this.description});
+
+  @override
+  List<Object?> get props => [description];
+}
+
 final class CreateReportPreviousStep extends CreateReportEvent {}

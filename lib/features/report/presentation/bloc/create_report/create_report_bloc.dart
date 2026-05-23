@@ -11,6 +11,7 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
     on<CreateReportStep1Submitted>(_onStep1Submitted);
     on<CreateReportStep2Submitted>(_onStep2Submitted);
     on<CreateReportStep3Submitted>(_onStep3Submitted);
+    on<CreateReportStep4Submitted>(_onStep4Submitted);
     on<CreateReportPreviousStep>(_onPreviousStep);
   }
 
@@ -24,18 +25,6 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
         currentStep: state.currentStep + 1,
         title: event.title,
         category: event.category,
-      ),
-    );
-  }
-
-  Future<void> _onPreviousStep(
-    CreateReportPreviousStep event,
-    Emitter<CreateReportState> emit,
-  ) async {
-    emit(
-      state.copyWith(
-        status: CreateReportStatus.previous,
-        currentStep: state.currentStep - 1,
       ),
     );
   }
@@ -58,12 +47,39 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
     CreateReportStep3Submitted event,
     Emitter<CreateReportState> emit,
   ) async {
-    // emit(
-    //   state.copyWith(
-    //     status: CreateReportStatus.next,
-    //     currentStep: state.currentStep + 1,
-    //     evidences: event.evidences,
-    //   ),
-    // );
+    emit(
+      state.copyWith(
+        status: CreateReportStatus.next,
+        currentStep: state.currentStep + 1,
+      ),
+    );
+  }
+
+  Future<void> _onStep4Submitted(
+    CreateReportStep4Submitted event,
+    Emitter<CreateReportState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: CreateReportStatus.loading,
+        description: event.description,
+      ),
+    );
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    emit(state.copyWith(status: CreateReportStatus.success));
+  }
+
+  Future<void> _onPreviousStep(
+    CreateReportPreviousStep event,
+    Emitter<CreateReportState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: CreateReportStatus.previous,
+        currentStep: state.currentStep - 1,
+      ),
+    );
   }
 }

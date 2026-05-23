@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/core/widgets/button/app_filled_button.dart';
 import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
+import 'package:lapormin/core/widgets/success/success_page.dart';
 import 'package:lapormin/features/report/presentation/bloc/create_report/create_report_bloc.dart';
 import 'package:lapormin/features/report/presentation/widgets/create_report/create_report_header.dart';
 import 'package:lapormin/features/report/presentation/widgets/create_report/evidences_step.dart';
@@ -10,6 +11,7 @@ import 'package:lapormin/features/report/presentation/widgets/create_report/loca
 import 'package:lapormin/features/report/presentation/widgets/create_report/summary_description_step.dart';
 import 'package:lapormin/features/report/presentation/widgets/create_report/title_category_step.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:page_transition/page_transition.dart';
 
 class CreateReportPage extends StatefulWidget {
   const CreateReportPage({super.key});
@@ -30,6 +32,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
   late final List<Widget> _steps;
 
   void _listener(BuildContext context, CreateReportState state) {
+    debugPrint("Current Step: ${state.currentStep}, Status: ${state.status}");
     if (state.status == CreateReportStatus.next) {
       _pageController.nextPage(
         duration: Duration(milliseconds: 300),
@@ -46,7 +49,18 @@ class _CreateReportPageState extends State<CreateReportPage> {
         curve: Curves.ease,
       );
     } else if (state.status == CreateReportStatus.success) {
-      showSnackBar(context, "Laporan berhasil dibuat!");
+      context.pushTransition(
+        type: PageTransitionType.bottomToTop,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeOutCubic,
+        child: SuccessPage(
+          title: 'Laporan Telah Dibuat',
+          description: 'Terimakasih sudah berkontribusi',
+          onBack: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          },
+        ),
+      );
     } else if (state.status == CreateReportStatus.failure) {
       showSnackBar(
         context,
@@ -72,20 +86,24 @@ class _CreateReportPageState extends State<CreateReportPage> {
     return CreateReportStep2Submitted(position: _position!, address: _address!);
   }
 
-  void _nextStep(BuildContext context, int currentStep) {
-    if (currentStep < _steps.length) {
-      final CreateReportEvent? event = switch (currentStep) {
-        1 => _onStep1(),
-        2 => _onStep2(),
-        3 => null, // TODO: implement step 3 event
-        4 => null, // TODO: implement step 4 event
-        _ => null,
-      };
+  CreateReportEvent? _onStep3() {
+    return CreateReportStep3Submitted(evidences: []);
+  }
 
-      if (event != null) context.read<CreateReportBloc>().add(event);
-    } else {
-      //
-    }
+  CreateReportEvent? _onStep4() {
+    return CreateReportStep4Submitted(description: "");
+  }
+
+  void _nextStep(BuildContext context, int currentStep) {
+    final CreateReportEvent? event = switch (currentStep) {
+      1 => _onStep1(),
+      2 => _onStep2(),
+      3 => _onStep3(),
+      4 => _onStep4(),
+      _ => null,
+    };
+
+    if (event != null) context.read<CreateReportBloc>().add(event);
   }
 
   void _prevStep(BuildContext context) {

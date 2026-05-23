@@ -9,6 +9,7 @@ final class CreateReportState extends Equatable {
   final ReportCategory? category;
   final LatLng? position;
   final String? address;
+  final String? description;
   final String? errorMessage;
 
   const CreateReportState({
@@ -18,6 +19,7 @@ final class CreateReportState extends Equatable {
     this.category,
     this.position,
     this.address,
+    this.description,
     this.errorMessage,
   });
 
@@ -30,6 +32,7 @@ final class CreateReportState extends Equatable {
     ReportCategory? category,
     LatLng? position,
     String? address,
+    String? description,
     String? errorMessage,
   }) {
     return CreateReportState(
@@ -39,6 +42,7 @@ final class CreateReportState extends Equatable {
       category: category ?? this.category,
       position: position ?? this.position,
       address: address ?? this.address,
+      description: description ?? this.description,
       errorMessage: errorMessage,
     );
   }
@@ -51,6 +55,7 @@ final class CreateReportState extends Equatable {
     category,
     position,
     address,
+    description,
     errorMessage,
   ];
 }
