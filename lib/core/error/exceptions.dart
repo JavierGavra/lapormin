@@ -27,3 +27,9 @@ class CacheException implements Exception {
 
   const CacheException([this.message]);
 }
+
+class LocationException implements Exception {
+  final String? message;
+
+  const LocationException([this.message]);
+}

@@ -30,3 +30,7 @@ class UnauthorizedFailure extends Failure {
 class ValidationFailure extends Failure {
   const ValidationFailure([super.message = 'Data yang dimasukkan tidak valid']);
 }
+
+class LocationFailure extends Failure {
+  const LocationFailure([super.message = 'Gagal mendapatkan lokasi']);
+}

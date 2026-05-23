@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/core/utils/validator/input_validator.dart';
 import 'package:lapormin/core/widgets/text_field/app_text_field.dart';
-import 'package:lapormin/features/report/presentation/widgets/create_report/category_picker_button.dart';
+import 'package:lapormin/features/report/presentation/widgets/create_report/category_picker_widget.dart';
 
 class TitleCategoryStep extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
   final TextEditingController titleController;
+  final ReportCategory initialCategory;
   final ValueChanged<ReportCategory> onCategoryChanged;
 
   const TitleCategoryStep({
     super.key,
+    required this.formKey,
     required this.titleController,
     required this.onCategoryChanged,
+    required this.initialCategory,
   });
 
   @override
@@ -37,7 +42,8 @@ class TitleCategoryStep extends StatelessWidget {
               style: AppTextStyle.s14(color: color.onSurfaceVariant),
             ),
             const SizedBox(height: 24),
-            CategoryPickerButton(
+            CategoryPickerWidget(
+              initialCategory: initialCategory,
               onChanged: (value) => onCategoryChanged(value),
             ),
             const SizedBox(height: 40),
@@ -49,9 +55,13 @@ class TitleCategoryStep extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            AppTextField(
-              controller: titleController,
-              hintText: "Mau laporin apa...",
+            Form(
+              key: formKey,
+              child: AppTextField(
+                controller: titleController,
+                hintText: "Mau laporin apa...",
+                validator: (value) => InputValidator.empty(value),
+              ),
             ),
           ],
         ),

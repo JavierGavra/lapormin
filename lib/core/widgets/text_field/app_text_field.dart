@@ -11,6 +11,8 @@ class AppTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final TextEditingController? controller;
   final String? Function(String?)? validator;
+  final int? minLines;
+  final int? maxLines;
 
   const AppTextField({
     super.key,
@@ -23,6 +25,8 @@ class AppTextField extends StatefulWidget {
     this.keyboardType,
     this.controller,
     this.validator,
+    this.minLines,
+    this.maxLines = 1,
   });
 
   @override
@@ -48,6 +52,8 @@ class _AppTextFieldState extends State<AppTextField> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       autofocus: widget.autofocus,
       keyboardType: widget.keyboardType,
+      minLines: widget.minLines,
+      maxLines: widget.maxLines,
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle:
