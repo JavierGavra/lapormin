@@ -9,6 +9,13 @@ import 'package:lapormin/features/auth/domain/use_cases/verify_otp.dart';
 import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lapormin/features/auth/presentation/bloc/login/login_bloc.dart';
 import 'package:lapormin/features/auth/presentation/bloc/register/register_bloc.dart';
+import 'package:lapormin/features/location/data/data_sources/location_local_data_source.dart';
+import 'package:lapormin/features/location/data/data_sources/location_remote_data_source.dart';
+import 'package:lapormin/features/location/data/repositories/location_repository_impl.dart';
+import 'package:lapormin/features/location/domain/repositories/location_repository.dart';
+import 'package:lapormin/features/location/domain/use_cases/get_address_from_coordinate.dart';
+import 'package:lapormin/features/location/domain/use_cases/get_current_location.dart';
+import 'package:lapormin/features/location/presentation/bloc/location_picker/location_picker_bloc.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -18,6 +25,7 @@ final sl = GetIt.instance;
 Future<void> initializeServiceLocator() async {
   // Feature
   _initAuthFeature();
+  _initLocationFeature();
 
   // External
   // final database = await DatabaseHelper.instance.database;
@@ -47,5 +55,31 @@ void _initAuthFeature() {
   // Data Sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(supabase: sl()),
+  );
+}
+
+void _initLocationFeature() {
+  sl.registerFactory(
+    () => LocationPickerBloc(
+      getCurrentLocation: sl(),
+      getAddressFromCoordinate: sl(),
+    ),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetCurrentLocation(sl()));
+  sl.registerLazySingleton(() => GetAddressFromCoordinate(sl()));
+
+  // Repository
+  sl.registerLazySingleton<LocationRepository>(
+    () => LocationRepositoryImpl(localDataSource: sl(), remoteDataSource: sl()),
+  );
+
+  // Data Sources
+  sl.registerLazySingleton<LocationLocalDataSource>(
+    () => LocationLocalDataSourceImpl(),
+  );
+  sl.registerLazySingleton<LocationRemoteDataSource>(
+    () => LocationRemoteDataSourceImpl(),
   );
 }

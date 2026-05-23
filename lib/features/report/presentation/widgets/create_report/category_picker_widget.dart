@@ -2,17 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 
-class CategoryPickerButton extends StatefulWidget {
+class CategoryPickerWidget extends StatefulWidget {
+  final ReportCategory initialCategory;
   final ValueChanged<ReportCategory> onChanged;
 
-  const CategoryPickerButton({super.key, required this.onChanged});
+  const CategoryPickerWidget({
+    super.key,
+    required this.onChanged,
+    required this.initialCategory,
+  });
 
   @override
-  State<CategoryPickerButton> createState() => _CategoryPickerButtonState();
+  State<CategoryPickerWidget> createState() => _CategoryPickerWidgetState();
 }
 
-class _CategoryPickerButtonState extends State<CategoryPickerButton> {
-  int selectedIndex = 0;
+class _CategoryPickerWidgetState extends State<CategoryPickerWidget> {
+  late ReportCategory selectedCategory;
 
   static const _categories = [
     ReportCategory.infrastructure,
@@ -21,10 +26,16 @@ class _CategoryPickerButtonState extends State<CategoryPickerButton> {
     ReportCategory.publicService,
   ];
 
-  void _onTap(int index) {
-    if (selectedIndex == index) return;
-    setState(() => selectedIndex = index);
-    widget.onChanged(_categories[index]);
+  void _onTap(ReportCategory category) {
+    if (selectedCategory == category) return;
+    setState(() => selectedCategory = category);
+    widget.onChanged(category);
+  }
+
+  @override
+  initState() {
+    super.initState();
+    selectedCategory = widget.initialCategory;
   }
 
   @override
@@ -58,7 +69,7 @@ class _CategoryPickerButtonState extends State<CategoryPickerButton> {
   }) {
     final color = Theme.of(context).colorScheme;
     final categoryColors = category.getColor(context);
-    final isSelected = selectedIndex == index;
+    final isSelected = selectedCategory == category;
 
     return Expanded(
       child: AspectRatio(
@@ -76,7 +87,7 @@ class _CategoryPickerButtonState extends State<CategoryPickerButton> {
           child: Material(
             color: Colors.transparent,
             child: InkWell(
-              onTap: () => _onTap(index),
+              onTap: () => _onTap(category),
               borderRadius: BorderRadius.circular(12),
               child: Center(
                 child: Column(
