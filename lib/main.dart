@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lapormin/core/api/api.dart';
 import 'package:lapormin/core/bloc/provider.dart';
+import 'package:lapormin/core/layouts/admin_main_layout.dart';
+import 'package:lapormin/core/layouts/main_layout.dart';
 import 'package:lapormin/features/auth/presentation/pages/splash_screen.dart';
+import 'package:lapormin/features/home/presentation/pages/field_officer/home_field_officer_page.dart';
+import 'package:lapormin/core/layouts/field_officer_main_layout.dart';
+import 'package:lapormin/core/layouts/admin_main_layout.dart';
 import 'package:lapormin/injection.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lapormin/core/theme/theme.dart';
@@ -12,6 +18,8 @@ Future<void> main() async {
   await dotenv.load();
   await Supabase.initialize(url: Api.baseUrl, anonKey: Api.anonKey);
   await initializeServiceLocator();
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('id_ID', null);
   runApp(const MyApp());
 }
 
@@ -25,11 +33,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'LaporMin!',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          fontFamily: "DM Sans",
-          colorScheme: MaterialTheme.lightScheme(),
-        ),
-        home: const SplashScreen(),
+        theme: MaterialTheme(const TextTheme()).light(),
+        home: const FieldOfficerMainLayout(),
       ),
     );
   }

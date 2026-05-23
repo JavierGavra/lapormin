@@ -33,8 +33,7 @@ class HeroButton extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 26),
             child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.center, // Teks & Ikon di tengah
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   width: 24,

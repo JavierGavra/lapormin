@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 
-class BottomNav extends StatelessWidget {
+class FieldOfficerBottomNav extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
 
-  const BottomNav({super.key, required this.currentIndex, required this.onTap});
+  const FieldOfficerBottomNav({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.only(top: 10, left: 24, right: 24, bottom: 27),
-      decoration: const ShapeDecoration(
-        color: Colors.white,
-        shape: RoundedRectangleBorder(
+      decoration: ShapeDecoration(
+        color: color.surfaceContainerLowest,
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(32),
             topRight: Radius.circular(32),
           ),
         ),
-        shadows: [
+        shadows: const [
           BoxShadow(
             color: Color(0x3F000000),
             blurRadius: 5,
@@ -49,9 +54,9 @@ class BottomNav extends StatelessWidget {
           _buildNavItem(
             context: context,
             index: 2,
-            iconFilled: Icons.map,
-            iconOutlined: Icons.map_outlined,
-            label: "PETA",
+            iconFilled: Icons.account_circle,
+            iconOutlined: Icons.account_circle_outlined,
+            label: "PROFIL",
             isSelected: currentIndex == 2,
           ),
         ],
@@ -96,7 +101,6 @@ class BottomNav extends StatelessWidget {
               Text(
                 label,
                 style: AppTextStyle.s11(
-                  fontFamily: 'DM Sans',
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                   color: isSelected
                       ? color.onSecondaryContainer
