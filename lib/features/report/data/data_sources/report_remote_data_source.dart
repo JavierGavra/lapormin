@@ -21,6 +21,7 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
         'title': params.title,
         'user_id': supabase.auth.currentUser!.id,
         'description': params.description,
+        'address': params.address,
         'latitude': params.latitude,
         'longitude': params.longitude,
         'category': params.category.value,

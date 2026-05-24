@@ -78,6 +78,7 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
         latitude: state.position!.latitude,
         longitude: state.position!.longitude,
         category: state.category!,
+        address: state.address!,
         evidences: [],
       ),
     );
