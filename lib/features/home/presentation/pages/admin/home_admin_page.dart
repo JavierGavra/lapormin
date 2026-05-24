@@ -40,12 +40,7 @@ class HomeAdminPage extends StatelessWidget {
                     const AdminHomeGreeting(),
                     const SizedBox(height: 24),
 
-                    LocationBanner(
-                      location: 'Semarang',
-                      onTap: () {
-                        debugPrint("Ganti Lokasi Admin");
-                      },
-                    ),
+                    LocationBanner(location: 'Semarang'),
                     const SizedBox(height: 24),
 
                     Row(

@@ -1,3 +1,4 @@
+import 'package:lapormin/features/report/data/models/report_model.dart';
 import 'package:lapormin/features/report/data/models/report_summary_model.dart';
 import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -17,6 +18,8 @@ abstract interface class ReportRemoteDataSource {
   Future<List<ReportSummaryModel>> fetchFieldOfficerReports(
     ReportFilterParams filter,
   );
+  Future<ReportModel> fetchReport(String id);
+  Future<bool> deleteReport(String id);
 }
 
 class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
@@ -143,6 +146,30 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
             onTimeout: () => throw const TimeoutException(),
           );
       return response.map((e) => ReportSummaryModel.fromMap(e)).toList();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> deleteReport(String id) async {
+    // TODO: implement deleteReport
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ReportModel> fetchReport(String id) async {
+    try {
+      final response = await supabase
+          .from('report')
+          .select()
+          .eq('id', id)
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => throw const TimeoutException(),
+          );
+
+      return ReportModel.fromMap(response.first);
     } catch (e) {
       rethrow;
     }

@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lapormin/core/api/api.dart';
 import 'package:lapormin/core/bloc/provider.dart';
 import 'package:lapormin/features/auth/presentation/pages/splash_screen.dart';
+import 'package:lapormin/features/report/presentation/pages/public_detail_report_page.dart';
 import 'package:lapormin/injection.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lapormin/core/theme/theme.dart';
@@ -29,7 +30,9 @@ class MyApp extends StatelessWidget {
         title: 'LaporMin!',
         debugShowCheckedModeBanner: false,
         theme: MaterialTheme(const TextTheme()).light(),
-        home: const SplashScreen(),
+        home: const DetailReportPage(
+          id: 'c93bd9b1-508a-4d90-89c8-3d986f215bad',
+        ),
       ),
     );
   }

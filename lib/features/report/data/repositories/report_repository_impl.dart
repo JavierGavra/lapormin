@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 
 import 'package:lapormin/core/error/failures.dart';
+import 'package:lapormin/features/report/domain/entities/report.dart';
 import 'package:lapormin/features/report/domain/entities/report_summary.dart';
 import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
 import '../../domain/repositories/report_repository.dart';
@@ -65,6 +66,24 @@ class ReportRepositoryImpl implements ReportRepository {
   Future<Either<Failure, List<ReportSummary>>> getUserReports() async {
     try {
       final data = await remoteDataSource.fetchUserReports();
+      return Right(data);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteReport(String reportId) async {
+    // TODO: implement deleteReport
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, Report>> getReport(String id) async {
+    try {
+      final data = await remoteDataSource.fetchReport(id);
       return Right(data);
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
