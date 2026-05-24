@@ -1,7 +1,8 @@
 import 'package:equatable/equatable.dart';
-import 'package:lapormin/features/report/domain/entities/field_check.dart';
-import 'package:lapormin/features/report/domain/entities/final_report.dart';
-import 'package:lapormin/features/report/domain/entities/report.dart';
+
+import 'field_check.dart';
+import 'final_report.dart';
+import 'report.dart';
 
 class ReportAggregate extends Equatable {
   final Report report;
