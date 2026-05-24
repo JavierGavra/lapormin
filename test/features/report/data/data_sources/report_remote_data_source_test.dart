@@ -29,6 +29,7 @@ void main() async {
       description: "This is a test report.",
       latitude: -6.984643,
       longitude: 110.403724,
+      address: "Jl. Raya Semarang - Demak, Semarang, Jawa Tengah",
       category: ReportCategory.infrastructure,
       evidences: [],
     ),
