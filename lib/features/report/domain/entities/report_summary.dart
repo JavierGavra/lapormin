@@ -9,7 +9,7 @@ class ReportSummary extends Equatable {
   final String category;
   final String evidence;
   final DateTime createdAt;
-  final DateTime dueDate;
+  final DateTime? dueAction;
   final ReportStatus status;
 
   const ReportSummary({
@@ -20,7 +20,7 @@ class ReportSummary extends Equatable {
     required this.evidence,
     required this.createdAt,
     required this.status,
-    required this.dueDate,
+    this.dueAction,
   });
 
   @override
@@ -32,6 +32,6 @@ class ReportSummary extends Equatable {
     evidence,
     createdAt,
     status,
-    dueDate,
+    dueAction,
   ];
 }

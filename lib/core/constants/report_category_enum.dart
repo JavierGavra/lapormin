@@ -11,11 +11,11 @@ enum ReportCategory {
     Icons.account_balance_outlined,
   );
 
-  final String value;
+  final String dbValue;
   final String label;
   final IconData icon;
 
-  const ReportCategory(this.value, this.label, this.icon);
+  const ReportCategory(this.dbValue, this.label, this.icon);
 
   // Fungsi pengelompokan warna (Hanya panggil Theme 1 kali!)
   CategoryColors getColor(BuildContext context) {
@@ -51,7 +51,7 @@ enum ReportCategory {
 
   static ReportCategory fromString(String status) =>
       ReportCategory.values.firstWhere(
-        (e) => e.value == status,
+        (e) => e.dbValue == status,
         orElse: () => ReportCategory.publicService,
       );
 }
