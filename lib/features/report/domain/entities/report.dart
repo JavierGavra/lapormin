@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
-import 'package:latlong2/latlong.dart';
+
+import '../../../../core/constants/report_status_enum.dart';
 
 class Report extends Equatable {
   final String id;
@@ -9,7 +9,8 @@ class Report extends Equatable {
   final String category;
   final String adddress;
   final String description;
-  final LatLng position;
+  final double latitude;
+  final double longitude;
   final DateTime dueDate;
   final DateTime createdAt;
   final ReportStatus status;
@@ -22,7 +23,8 @@ class Report extends Equatable {
     required this.category,
     required this.adddress,
     required this.description,
-    required this.position,
+    required this.latitude,
+    required this.longitude,
     required this.dueDate,
     required this.createdAt,
     required this.status,
@@ -37,7 +39,8 @@ class Report extends Equatable {
     category,
     adddress,
     description,
-    position,
+    latitude,
+    longitude,
     dueDate,
     createdAt,
     status,

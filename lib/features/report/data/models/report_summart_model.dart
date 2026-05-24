@@ -1,5 +1,5 @@
-import 'package:lapormin/core/constants/report_status_enum.dart';
-import 'package:lapormin/features/report/domain/entities/report_summary.dart';
+import '../../../../core/constants/report_status_enum.dart';
+import '../../domain/entities/report_summary.dart';
 
 class ReportSummartModel extends ReportSummary {
   const ReportSummartModel({

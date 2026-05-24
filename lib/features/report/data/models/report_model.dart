@@ -1,6 +1,5 @@
-import 'package:lapormin/core/constants/report_status_enum.dart';
-import 'package:lapormin/features/report/domain/entities/report.dart';
-import 'package:latlong2/latlong.dart';
+import '../../../../core/constants/report_status_enum.dart';
+import '../../domain/entities/report.dart';
 
 class ReportModel extends Report {
   const ReportModel({
@@ -10,7 +9,8 @@ class ReportModel extends Report {
     required super.category,
     required super.adddress,
     required super.description,
-    required super.position,
+    required super.latitude,
+    required super.longitude,
     required super.dueDate,
     required super.createdAt,
     required super.status,
@@ -25,7 +25,8 @@ class ReportModel extends Report {
       category: map['category'] as String,
       adddress: map['adddress'] as String,
       description: map['description'] as String,
-      position: LatLng(map['latitude'] as double, map['longitude'] as double),
+      latitude: map['latitude'] as double,
+      longitude: map['longitude'] as double,
       dueDate: DateTime.parse(map['due_action'] as String),
       createdAt: DateTime.parse(map['created_at'] as String),
       status: ReportStatus.values.byName(map['status'] as String),

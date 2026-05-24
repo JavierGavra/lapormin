@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
+
+import '../../../../core/constants/report_status_enum.dart';
 
 class ReportSummary extends Equatable {
   final String id;
