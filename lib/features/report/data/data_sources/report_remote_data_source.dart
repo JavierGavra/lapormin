@@ -1,10 +1,12 @@
-import 'package:lapormin/features/report/data/models/report_summary_model.dart';
-import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
+import 'package:flutter/rendering.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:lapormin/core/constants/report_status_enum.dart';
-import 'package:lapormin/core/error/exceptions.dart';
+import '../../../../core/constants/report_status_enum.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../domain/params/report_filter_params.dart';
 import '../../domain/use_cases/submit_report.dart';
+import '../models/report_model.dart';
+import '../models/report_summary_model.dart';
 
 abstract interface class ReportRemoteDataSource {
   Future<bool> insertReport(SubmitReportParams params);
@@ -17,6 +19,8 @@ abstract interface class ReportRemoteDataSource {
   Future<List<ReportSummaryModel>> fetchFieldOfficerReports(
     ReportFilterParams filter,
   );
+  Future<ReportModel> fetchReport(String id);
+  Future<bool> deleteReport(String id);
 }
 
 class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
@@ -144,6 +148,33 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
           );
       return response.map((e) => ReportSummaryModel.fromMap(e)).toList();
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> deleteReport(String id) async {
+    // TODO: implement deleteReport
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<ReportModel> fetchReport(String id) async {
+    try {
+      final response = await supabase
+          .from('report')
+          .select()
+          .eq('id', id)
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => throw const TimeoutException(),
+          );
+
+      debugPrint("Fetched report data: ${response.first}");
+
+      return ReportModel.fromMap(response.first);
+    } catch (e) {
+      debugPrint("Error fetching report: $e");
       rethrow;
     }
   }
