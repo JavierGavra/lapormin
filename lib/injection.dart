@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:lapormin/features/auth/data/data_sources/auth_local_data_source.dart';
 
 import 'package:lapormin/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:lapormin/features/auth/data/repositories/auth_repository_impl.dart';
@@ -57,10 +58,13 @@ void _initAuthFeature() {
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(remoteDataSource: sl()),
+    () => AuthRepositoryImpl(localDataSource: sl(), remoteDataSource: sl()),
   );
 
   // Data Sources
+  sl.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(sharedPreferences: sl()),
+  );
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(supabase: sl()),
   );

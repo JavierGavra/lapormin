@@ -1,15 +1,21 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
-import 'package:lapormin/core/error/exceptions.dart';
-import 'package:lapormin/core/error/failures.dart';
-import 'package:lapormin/features/auth/data/data_sources/auth_remote_data_source.dart';
-import 'package:lapormin/features/auth/domain/entities/user.dart';
-import 'package:lapormin/features/auth/domain/repositories/auth_repository.dart';
+
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/failures.dart';
+import '../../domain/entities/user.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../data_sources/auth_local_data_source.dart';
+import '../data_sources/auth_remote_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
+  final AuthLocalDataSource localDataSource;
   final AuthRemoteDataSource remoteDataSource;
 
-  AuthRepositoryImpl({required this.remoteDataSource});
+  AuthRepositoryImpl({
+    required this.localDataSource,
+    required this.remoteDataSource,
+  });
 
   @override
   Future<Either<Failure, bool>> isPhoneExist(String phoneNumber) {
@@ -23,6 +29,7 @@ class AuthRepositoryImpl implements AuthRepository {
   ) async {
     try {
       final response = await remoteDataSource.postLogin(phoneNumber, password);
+      await localDataSource.saveUserData(response);
       return Right(response);
     } catch (e) {
       if (kDebugMode) print(e);

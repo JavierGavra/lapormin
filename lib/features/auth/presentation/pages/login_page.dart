@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
 
-import 'package:lapormin/injection.dart';
-import 'package:lapormin/main.dart';
-import 'package:lapormin/core/constants/user_role_enum.dart';
-import 'package:lapormin/core/layouts/main_layout.dart';
-import 'package:lapormin/core/widgets/button/app_filled_button.dart';
-import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
+import '../../../../core/constants/user_role_enum.dart';
+import '../../../../core/layouts/admin_main_layout.dart';
+import '../../../../core/layouts/field_officer_main_layout.dart';
+import '../../../../core/layouts/main_layout.dart';
+import '../../../../core/widgets/button/app_filled_button.dart';
+import '../../../../core/widgets/snackbar/custom_snackbar.dart';
+import '../../../../injection.dart';
+import '../../../../main.dart';
 import '../bloc/login/login_bloc.dart';
 import '../widgets/button/auth_switch_button.dart';
 import '../widgets/login/login_form.dart';
@@ -29,8 +31,8 @@ class _LoginPageState extends State<LoginPage> {
     if (state.status == LoginStatus.success) {
       final destination = switch (state.role) {
         UserRole.informant => const MainLayout(),
-        UserRole.admin => const TempPage(),
-        UserRole.fieldOfficer => const TempPage(),
+        UserRole.admin => const AdminMainLayout(),
+        UserRole.fieldOfficer => const FieldOfficerMainLayout(),
         _ => const TempPage(),
       };
 
