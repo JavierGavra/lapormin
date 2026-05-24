@@ -8,6 +8,7 @@ import 'package:lapormin/features/home/presentation/widgets/category_card/catego
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/hero_button/hero_button.dart';
 import 'package:lapormin/features/report/presentation/pages/create_report_page.dart';
+import 'package:lapormin/features/report/presentation/pages/public_detail_report_page.dart';
 import 'package:page_transition/page_transition.dart';
 
 class HomePage extends StatelessWidget {
@@ -139,7 +140,14 @@ class HomePage extends StatelessWidget {
                       status: ReportStatus.verified,
                       categoryIcon: Icons.apartment_outlined,
                       categoryColor: color.primaryContainer,
-                      onTap: () {},
+                      onTap: () {
+                        context.pushTransition(
+                          type: PageTransitionType.rightToLeft,
+                          child: const DetailReportPage(
+                            id: "c93bd9b1-508a-4d90-89c8-3d986f215bad",
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 16),
                     ReportCard(
