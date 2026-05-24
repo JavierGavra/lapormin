@@ -11,7 +11,7 @@ class Report extends Equatable {
   final String description;
   final double latitude;
   final double longitude;
-  final DateTime dueDate;
+  final DateTime? dueDate;
   final DateTime createdAt;
   final ReportStatus status;
   final ReportCategory category;

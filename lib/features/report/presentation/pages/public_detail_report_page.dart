@@ -1,14 +1,15 @@
 import 'dart:async';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../core/constants/report_category_enum.dart';
-import '../../../../core/constants/report_status_enum.dart';
+import '../../../../injection.dart';
 import '../../../../core/widgets/button/app_back_button.dart';
 import '../../../../core/widgets/button/app_icon_button.dart';
 import '../../../../core/widgets/snackbar/custom_snackbar.dart';
 import '../../../home/presentation/widgets/location_banner/app_location_banner.dart';
+import '../bloc/public_detail_report/public_detail_report_bloc.dart';
 import '../widgets/detail_report/information/report_info_description.dart';
 import '../widgets/detail_report/information/report_info_header.dart';
 import '../widgets/detail_report/information/report_info_map.dart';
@@ -71,100 +72,133 @@ class _DetailReportPageState extends State<DetailReportPage> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
 
-    return Scaffold(
-      backgroundColor: color.secondaryContainer,
-      body: SizedBox(
-        width: double.infinity,
-        child: Stack(
-          alignment: Alignment.topCenter,
-          children: [
-            Image.asset(
-              "assets/images/backgrounds/detail_report_background.png",
-              fit: BoxFit.fitWidth,
+    return BlocProvider(
+      create: (context) =>
+          sl<PublicDetailReportBloc>()..add(LoadPublicDetailReport(widget.id)),
+      child: Scaffold(
+        backgroundColor: color.secondaryContainer,
+        body: BlocConsumer<PublicDetailReportBloc, PublicDetailReportState>(
+          listener: (context, state) {
+            if (state.status == PublicDetailReportStatus.failure) {
+              showSnackBar(
+                context,
+                state.errorMessage ?? "Gagal memuat laporan",
+                type: SnackBarType.failure,
+              );
+            }
+          },
+          builder: (context, state) {
+            if (!state.isSuccess) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            final report = state.report!;
+
+            return SizedBox(
               width: double.infinity,
-            ),
-            CustomScrollView(
-              slivers: [
-                _buildAppBar(context),
-                SliverPadding(
-                  padding: EdgeInsets.fromLTRB(18, 16, 18, 20),
-                  sliver: SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: 135,
-                      child: CarouselView.weightedBuilder(
-                        controller: _controller,
-                        itemSnapping: true,
-                        padding: EdgeInsets.zero,
-                        backgroundColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        flexWeights: [5, 1],
-                        itemCount: _evidences.length,
-                        itemBuilder: (context, index) => Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 6),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Image.asset(
-                              _evidences[index],
-                              fit: BoxFit.cover,
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  Image.asset(
+                    "assets/images/backgrounds/detail_report_background.png",
+                    fit: BoxFit.fitWidth,
+                    width: double.infinity,
+                  ),
+                  RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<PublicDetailReportBloc>().add(
+                        LoadPublicDetailReport(widget.id),
+                      );
+                    },
+                    child: CustomScrollView(
+                      slivers: [
+                        _buildAppBar(context),
+                        SliverPadding(
+                          padding: EdgeInsets.fromLTRB(18, 16, 18, 20),
+                          sliver: SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: 135,
+                              child: CarouselView.weightedBuilder(
+                                controller: _controller,
+                                itemSnapping: true,
+                                padding: EdgeInsets.zero,
+                                backgroundColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                flexWeights: [5, 1],
+                                itemCount: _evidences.length,
+                                itemBuilder: (context, index) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Image.asset(
+                                      _evidences[index],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                ),
 
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 20,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(24),
-                      ),
-                      color: color.surface,
-                    ),
-                    child: SafeArea(
-                      top: false,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        spacing: 20,
-                        children: [
-                          ReportInfoTags(
-                            ticket: "#LPR-2025-0013",
-                            status: ReportStatus.verified,
+                        SliverFillRemaining(
+                          hasScrollBody: false,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 20,
+                            ),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(24),
+                              ),
+                              color: color.surface,
+                            ),
+                            child: SafeArea(
+                              top: false,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                spacing: 20,
+                                children: [
+                                  ReportInfoTags(
+                                    ticket: report.ticket,
+                                    status: report.status,
+                                  ),
+                                  ReportInfoHeader(
+                                    title: report.title,
+                                    createdAt: report.createdAt,
+                                    category: report.category,
+                                  ),
+                                  LocationBanner(
+                                    location: report.adddress,
+                                    isSmall: true,
+                                  ),
+                                  ReportInfoDescription(
+                                    description: report.description,
+                                  ),
+                                  ReportInfoMap(
+                                    position: LatLng(
+                                      report.latitude,
+                                      report.longitude,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                          ReportInfoHeader(
-                            title: "Jalan Terkikis di dekat sekolah",
-                            createdAt: DateTime.now(),
-                            category: ReportCategory.infrastructure,
-                          ),
-                          LocationBanner(
-                            location:
-                                "Bonduren, Gondangmanis, Kec. Bae, Kabupaten Kudus, Jawa Tengah 59327",
-                            isSmall: true,
-                          ),
-                          ReportInfoDescription(
-                            description:
-                                "Jalan yang dekat dengan Sekolah SDIT Al-Akhyar mengalami kerusakan serius akibat curah hujan dan genangan air yang berlangsung lama. Kondisi ini mengganggu kelancaran lalu lintas dan membahayakan keselamatan pengguna jalan.",
-                          ),
-                          ReportInfoMap(
-                            position: const LatLng(-6.9175, 107.6191),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            );
+          },
         ),
       ),
     );

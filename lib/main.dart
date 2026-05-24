@@ -11,10 +11,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:lapormin/core/theme/theme.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
   await Supabase.initialize(url: Api.baseUrl, anonKey: Api.anonKey);
   await initializeServiceLocator();
-  WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('id_ID', null);
   runApp(const MyApp());
 }
@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting('id_ID');
     return MultiBlocProvider(
       providers: Provider.providers(),
       child: MaterialApp(
