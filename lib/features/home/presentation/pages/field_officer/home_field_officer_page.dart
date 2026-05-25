@@ -7,9 +7,11 @@ import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/features/home/presentation/widgets/location_banner/app_location_banner.dart';
 import 'package:lapormin/core/widgets/quick_info_card/quick_info_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/field_officer_home_greeting/field_officer_home_greeting.dart';
+import 'package:lapormin/features/report/presentation/pages/field_officer_report_listt_page.dart';
 
 class HomeFieldOfficerPage extends StatelessWidget {
-  const HomeFieldOfficerPage({super.key});
+  final VoidCallback onNavigateToReports;
+  const HomeFieldOfficerPage({super.key, required this.onNavigateToReports});
 
   @override
   Widget build(BuildContext context) {
@@ -105,22 +107,36 @@ class HomeFieldOfficerPage extends StatelessWidget {
                           "Penugasan Terbaru",
                           style: AppTextStyle.s16(fontWeight: FontWeight.w600),
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Lihat Semua",
-                              style: AppTextStyle.s14(
-                                color: color.primary,
-                                fontWeight: FontWeight.w500,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const FieldOfficerReportListPage(),
                               ),
-                            ),
-                            Icon(
-                              Icons.chevron_right,
-                              size: 20,
-                              color: color.primary,
-                            ),
-                          ],
+                            );
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GestureDetector(
+                                onTap: onNavigateToReports,
+                                child: Text(
+                                  "Lihat Semua",
+                                  style: AppTextStyle.s14(
+                                    color: color.primary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                size: 20,
+                                color: color.primary,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
