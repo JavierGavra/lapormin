@@ -163,6 +163,29 @@ abstract final class AppTextStyle {
     overflow: overflow,
     inherit: inherit,
   );
+  static TextStyle s20({
+    Color? color,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    double? letterSpacing,
+    double? wordSpacing,
+    Color? backgroundColor,
+    String? fontFamily,
+    TextOverflow? overflow,
+    bool inherit = true,
+  }) => _build(
+    fontSize: 20,
+    lineHeight: 28,
+    color: color,
+    fontWeight: fontWeight,
+    fontStyle: fontStyle,
+    letterSpacing: letterSpacing,
+    wordSpacing: wordSpacing,
+    backgroundColor: backgroundColor,
+    fontFamily: fontFamily,
+    overflow: overflow,
+    inherit: inherit,
+  );
 
   static TextStyle s22({
     Color? color,

@@ -6,11 +6,12 @@ import 'package:lapormin/core/widgets/report_card/report_card.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/features/home/presentation/widgets/location_banner/app_location_banner.dart';
 import 'package:lapormin/core/widgets/quick_info_card/quick_info_card.dart';
-
 import 'package:lapormin/features/home/presentation/widgets/admin_home_greeting/admin_home_greeting.dart';
 
 class HomeAdminPage extends StatelessWidget {
-  const HomeAdminPage({super.key});
+  final VoidCallback? onSeeAllTapped;
+
+  const HomeAdminPage({super.key, this.onSeeAllTapped});
 
   @override
   Widget build(BuildContext context) {
@@ -129,22 +130,26 @@ class HomeAdminPage extends StatelessWidget {
                           "Laporan Terbaru",
                           style: AppTextStyle.s16(fontWeight: FontWeight.w600),
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "Lihat Semua",
-                              style: AppTextStyle.s14(
-                                color: color.primary,
-                                fontWeight: FontWeight.w500,
+                        GestureDetector(
+                          onTap: onSeeAllTapped,
+                          behavior: HitTestBehavior.opaque,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "Lihat Semua",
+                                style: AppTextStyle.s14(
+                                  color: color.primary,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                            Icon(
-                              Icons.chevron_right,
-                              size: 20,
-                              color: color.primary,
-                            ),
-                          ],
+                              Icon(
+                                Icons.chevron_right,
+                                size: 20,
+                                color: color.primary,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),

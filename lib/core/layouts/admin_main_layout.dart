@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/core/widgets/admin_buttom_nav/admin_bottom_nav.dart';
+import 'package:lapormin/core/widgets/bottom_nav/admin_bottom_nav.dart';
 import 'package:lapormin/features/home/presentation/pages/admin/home_admin_page.dart';
+import 'package:lapormin/features/report/presentation/pages/admin_report_list_page.dart';
 
 class AdminMainLayout extends StatefulWidget {
   const AdminMainLayout({super.key});
@@ -12,9 +13,19 @@ class AdminMainLayout extends StatefulWidget {
 class _AdminMainLayoutState extends State<AdminMainLayout> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = [
-    const HomeAdminPage(),
-    const Center(child: Text("Halaman Laporan (Admin)")),
+  void _changeTab(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  List<Widget> get _pages => [
+    HomeAdminPage(
+      onSeeAllTapped: () {
+        _changeTab(1);
+      },
+    ),
+    const AdminReportListPage(),
     const Center(child: Text("Halaman Petugas (Admin)")),
     const Center(child: Text("Halaman Peta (Admin)")),
   ];
@@ -25,11 +36,7 @@ class _AdminMainLayoutState extends State<AdminMainLayout> {
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: AdminBottomNav(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        onTap: _changeTab,
       ),
     );
   }

@@ -11,7 +11,9 @@ import 'package:lapormin/features/report/presentation/pages/create_report_page.d
 import 'package:page_transition/page_transition.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  // const HomePage({super.key});
+  final VoidCallback? onSeeAllTapped;
+  const HomePage({super.key, this.onSeeAllTapped});
 
   @override
   Widget build(BuildContext context) {
@@ -118,13 +120,26 @@ class HomePage extends StatelessWidget {
                       children: [
                         Text(
                           "Laporan Terbaru",
-                          style: AppTextStyle.s14(fontWeight: FontWeight.w700),
+                          style: AppTextStyle.s16(fontWeight: FontWeight.w600),
                         ),
-                        Text(
-                          "Lihat Semua >",
-                          style: AppTextStyle.s12(
-                            color: color.primary,
-                            fontWeight: FontWeight.w600,
+                        GestureDetector(
+                          onTap: onSeeAllTapped,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "Lihat Semua",
+                                style: AppTextStyle.s14(
+                                  color: color.primary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Icon(
+                                Icons.chevron_right,
+                                size: 20,
+                                color: color.primary,
+                              ),
+                            ],
                           ),
                         ),
                       ],
