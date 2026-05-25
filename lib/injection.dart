@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:lapormin/features/auth/data/data_sources/auth_local_data_source.dart';
 
 import 'package:lapormin/features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'package:lapormin/features/auth/data/repositories/auth_repository_impl.dart';
@@ -16,6 +17,13 @@ import 'package:lapormin/features/location/domain/repositories/location_reposito
 import 'package:lapormin/features/location/domain/use_cases/get_address_from_coordinate.dart';
 import 'package:lapormin/features/location/domain/use_cases/get_current_location.dart';
 import 'package:lapormin/features/location/presentation/bloc/location_picker/location_picker_bloc.dart';
+import 'package:lapormin/features/report/data/data_sources/report_remote_data_source.dart';
+import 'package:lapormin/features/report/data/repositories/report_repository_impl.dart';
+import 'package:lapormin/features/report/domain/repositories/report_repository.dart';
+import 'package:lapormin/features/report/domain/use_cases/get_report.dart';
+import 'package:lapormin/features/report/domain/use_cases/submit_report.dart';
+import 'package:lapormin/features/report/presentation/bloc/create_report/create_report_bloc.dart';
+import 'package:lapormin/features/report/presentation/bloc/public_detail_report/public_detail_report_bloc.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,6 +34,7 @@ Future<void> initializeServiceLocator() async {
   // Feature
   _initAuthFeature();
   _initLocationFeature();
+  _initReportFeature();
 
   // External
   // final database = await DatabaseHelper.instance.database;
@@ -49,10 +58,13 @@ void _initAuthFeature() {
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(remoteDataSource: sl()),
+    () => AuthRepositoryImpl(localDataSource: sl(), remoteDataSource: sl()),
   );
 
   // Data Sources
+  sl.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(sharedPreferences: sl()),
+  );
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(supabase: sl()),
   );
@@ -81,5 +93,24 @@ void _initLocationFeature() {
   );
   sl.registerLazySingleton<LocationRemoteDataSource>(
     () => LocationRemoteDataSourceImpl(),
+  );
+}
+
+void _initReportFeature() {
+  sl.registerFactory(() => CreateReportBloc(submitReport: sl()));
+  sl.registerFactory(() => PublicDetailReportBloc(getReport: sl()));
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetReport(sl()));
+  sl.registerLazySingleton(() => SubmitReport(sl()));
+
+  // Repository
+  sl.registerLazySingleton<ReportRepository>(
+    () => ReportRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  // Data Sources
+  sl.registerLazySingleton<ReportRemoteDataSource>(
+    () => ReportRemoteDataSourceImpl(supabase: sl()),
   );
 }

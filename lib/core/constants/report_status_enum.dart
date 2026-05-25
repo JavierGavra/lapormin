@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lapormin/core/theme/theme.dart';
 
 enum ReportStatus {
   pending('pending'),
@@ -28,6 +29,38 @@ enum ReportStatus {
     }
   }
 
+  StatusColors getColor(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+
+    return switch (this) {
+      ReportStatus.pending => StatusColors(
+        mainColor: color.onSurface, // outline
+        containerColor: color.surfaceContainerHighest,
+      ),
+      ReportStatus.verified => StatusColors(
+        mainColor: color.primary,
+        containerColor: color.primaryContainer,
+      ),
+      ReportStatus.fieldCheck => StatusColors(
+        mainColor: color.warning,
+        containerColor: color.warningContainer,
+      ),
+      ReportStatus.action => StatusColors(
+        mainColor: color.tertiary,
+        containerColor: color.tertiaryContainer,
+      ),
+      ReportStatus.done => StatusColors(
+        mainColor: color.success,
+        containerColor: color.successContainer,
+      ),
+      ReportStatus.rejected => StatusColors(
+        mainColor: color.error,
+        containerColor: color.errorContainer,
+      ),
+    };
+  }
+
+  @Deprecated('Gunakan getColor(context)')
   Color get color {
     switch (this) {
       case ReportStatus.pending:
@@ -51,4 +84,11 @@ enum ReportStatus {
       orElse: () => ReportStatus.pending,
     );
   }
+}
+
+class StatusColors {
+  final Color mainColor;
+  final Color containerColor;
+
+  StatusColors({required this.mainColor, required this.containerColor});
 }

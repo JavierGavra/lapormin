@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppBackButton extends StatelessWidget {
+  final Color? backgroundColor;
   final void Function()? onPressed;
 
-  const AppBackButton({super.key, this.onPressed});
+  const AppBackButton({super.key, this.backgroundColor, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +19,7 @@ class AppBackButton extends StatelessWidget {
           ),
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           backgroundColor: WidgetStatePropertyAll<Color>(
-            color.surfaceContainer,
+            backgroundColor ?? color.surfaceContainer,
           ),
           shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

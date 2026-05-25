@@ -3,37 +3,49 @@ import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 
 class LocationBanner extends StatelessWidget {
   final String location;
-  final VoidCallback? onTap;
+  final bool isSmall;
 
-  const LocationBanner({super.key, required this.location, this.onTap});
+  const LocationBanner({
+    super.key,
+    required this.location,
+    this.isSmall = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
 
-    return Material(
-      color: color.primary,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          width: double.infinity,
-          child: Row(
-            children: [
-              Icon(Icons.location_on_rounded, color: color.onPrimary, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                location,
-                style: AppTextStyle.s14(
-                  color: color.onPrimary,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 12, 20, 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(isSmall ? 12 : 8),
+        color: isSmall ? color.secondary : color.primary,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 8,
+        children: [
+          Icon(
+            Icons.location_on_rounded,
+            color: color.onPrimary,
+            size: isSmall ? 16 : 20,
           ),
-        ),
+          Expanded(
+            child: Text(
+              location,
+              style: isSmall
+                  ? AppTextStyle.s12(
+                      color: color.onPrimary,
+                      fontWeight: FontWeight.w500,
+                    )
+                  : AppTextStyle.s14(
+                      color: color.onPrimary,
+                      fontWeight: FontWeight.w500,
+                    ),
+            ),
+          ),
+        ],
       ),
     );
   }

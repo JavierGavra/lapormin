@@ -1,22 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:lapormin/core/layouts/main_layout.dart';
-import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import '../../../../core/constants/user_role_enum.dart';
+import '../../../../core/layouts/admin_main_layout.dart';
+import '../../../../core/layouts/field_officer_main_layout.dart';
+import '../../../../core/layouts/main_layout.dart';
+import '../../../../core/utils/text_style/app_text_style.dart';
 import '../bloc/auth/auth_bloc.dart';
 import '../pages/login_page.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
-  void _listerner(BuildContext context, AuthState state) {
+  void _listerner(BuildContext context, AuthState state) async {
     if (state.status == AuthStatus.authenticated) {
+      final prefs = await SharedPreferences.getInstance();
+      final role = UserRole.fromString(prefs.getString("role") ?? "informant");
+      final destination = switch (role) {
+        UserRole.informant => const MainLayout(),
+        UserRole.admin => const AdminMainLayout(),
+        UserRole.fieldOfficer => const FieldOfficerMainLayout(),
+      };
+
+      if (!context.mounted) return;
+
       context.pushReplacementTransition(
         type: PageTransitionType.fade,
         curve: Curves.easeInOut,
         duration: const Duration(milliseconds: 300),
-        child: const MainLayout(),
+        child: destination,
       );
     } else if (state.status == AuthStatus.unauthenticated) {
       context.pushReplacementTransition(

@@ -19,6 +19,7 @@ class SubmitReport implements UseCase<bool, SubmitReportParams> {
 class SubmitReportParams extends Equatable {
   final String title;
   final String description;
+  final String address;
   final double latitude;
   final double longitude;
   final ReportCategory category;
@@ -27,6 +28,7 @@ class SubmitReportParams extends Equatable {
   const SubmitReportParams({
     required this.title,
     required this.description,
+    required this.address,
     required this.latitude,
     required this.longitude,
     required this.category,
@@ -37,6 +39,7 @@ class SubmitReportParams extends Equatable {
   List<Object?> get props => [
     title,
     description,
+    address,
     latitude,
     longitude,
     category,

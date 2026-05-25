@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import 'package:lapormin/core/error/failures.dart';
 
+import '../../../../core/error/failures.dart';
 import '../entities/user.dart';
 
 abstract interface class AuthRepository {

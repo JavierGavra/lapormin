@@ -40,12 +40,7 @@ class HomeFieldOfficerPage extends StatelessWidget {
                     const FieldOfficerHomeGreeting(),
                     const SizedBox(height: 24),
 
-                    LocationBanner(
-                      location: 'Semarang',
-                      onTap: () {
-                        debugPrint("Pilih lokasi petugas");
-                      },
-                    ),
+                    LocationBanner(location: 'Semarang'),
                     const SizedBox(height: 24),
 
                     Row(
