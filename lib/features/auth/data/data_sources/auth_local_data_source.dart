@@ -17,7 +17,16 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       await sharedPreferences.setString('user_id', user.id);
       await sharedPreferences.setString('username', user.username);
       await sharedPreferences.setString('phone_number', user.phoneNumber);
+      await sharedPreferences.setString(
+        'created_at',
+        user.createdAt.toIso8601String(),
+      );
       await sharedPreferences.setString('role', user.role.dbValue);
+
+      if (user.photoProfile != null) {
+        await sharedPreferences.setString('photo_profile', user.photoProfile!);
+      }
+
       return true;
     } catch (e) {
       debugPrint("$e");

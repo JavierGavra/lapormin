@@ -15,4 +15,11 @@ class PhoneNumberFormat {
     // 87654321098
     return '$prefix$phoneNumber';
   }
+
+  static String formatted(String phone) {
+    return phone.replaceAllMapped(
+      RegExp(r'^(\d{4})(\d{4})(\d+)$'),
+      (Match m) => '${m[1]}-${m[2]}-${m[3]}',
+    );
+  }
 }
