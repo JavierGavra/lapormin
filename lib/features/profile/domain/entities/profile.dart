@@ -1,30 +1,26 @@
 import 'package:equatable/equatable.dart';
-import 'package:lapormin/core/constants/user_role_enum.dart';
 
-class User extends Equatable {
-  final String id;
+class Profile extends Equatable {
+  final int reportAmount;
   final String username;
   final String phoneNumber;
   final String? photoProfile;
-  final UserRole role;
   final DateTime createdAt;
 
-  const User({
-    required this.id,
+  const Profile({
+    required this.reportAmount,
     required this.username,
     required this.phoneNumber,
-    this.photoProfile,
-    required this.role,
+    required this.photoProfile,
     required this.createdAt,
   });
 
   @override
   List<Object?> get props => [
-    id,
+    reportAmount,
     username,
     phoneNumber,
     photoProfile,
-    role,
     createdAt,
   ];
 }

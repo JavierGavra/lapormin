@@ -5,6 +5,7 @@ import 'package:lapormin/features/auth/data/data_sources/auth_remote_data_source
 import 'package:lapormin/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:lapormin/features/auth/domain/repositories/auth_repository.dart';
 import 'package:lapormin/features/auth/domain/use_cases/login.dart';
+import 'package:lapormin/features/auth/domain/use_cases/logout.dart';
 import 'package:lapormin/features/auth/domain/use_cases/send_otp.dart';
 import 'package:lapormin/features/auth/domain/use_cases/verify_otp.dart';
 import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
@@ -17,6 +18,11 @@ import 'package:lapormin/features/location/domain/repositories/location_reposito
 import 'package:lapormin/features/location/domain/use_cases/get_address_from_coordinate.dart';
 import 'package:lapormin/features/location/domain/use_cases/get_current_location.dart';
 import 'package:lapormin/features/location/presentation/bloc/location_picker/location_picker_bloc.dart';
+import 'package:lapormin/features/profile/data/data_sources/profile_local_data_source.dart';
+import 'package:lapormin/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:lapormin/features/profile/domain/repositories/profile_repository.dart';
+import 'package:lapormin/features/profile/domain/use_cases/get_profile.dart';
+import 'package:lapormin/features/profile/presentation/bloc/profile/profile_bloc.dart';
 import 'package:lapormin/features/report/data/data_sources/report_remote_data_source.dart';
 import 'package:lapormin/features/report/data/repositories/report_repository_impl.dart';
 import 'package:lapormin/features/report/domain/repositories/report_repository.dart';
@@ -35,6 +41,7 @@ Future<void> initializeServiceLocator() async {
   _initAuthFeature();
   _initLocationFeature();
   _initReportFeature();
+  _initProfileFeature();
 
   // External
   // final database = await DatabaseHelper.instance.database;
@@ -53,6 +60,7 @@ void _initAuthFeature() {
 
   // Use Cases
   sl.registerLazySingleton(() => Login(sl()));
+  sl.registerLazySingleton(() => Logout(sl()));
   sl.registerLazySingleton(() => SendOtp(sl()));
   sl.registerLazySingleton(() => VerifyOtp(sl()));
 
@@ -112,5 +120,22 @@ void _initReportFeature() {
   // Data Sources
   sl.registerLazySingleton<ReportRemoteDataSource>(
     () => ReportRemoteDataSourceImpl(supabase: sl()),
+  );
+}
+
+void _initProfileFeature() {
+  sl.registerFactory(() => ProfileBloc(getProfile: sl(), logout: sl()));
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetProfile(sl()));
+
+  // Repository
+  sl.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(localDataSource: sl()),
+  );
+
+  // Data Sources
+  sl.registerLazySingleton<ProfileLocalDataSource>(
+    () => ProfileLocalDataSourceImpl(prefs: sl()),
   );
 }

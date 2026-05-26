@@ -13,6 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     : _supabase = supabase,
       super(AuthState()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
+    on<_AuthLogoutRequested>(_onAuthLogoutRequested);
 
     _listenToSupabaseAuthState();
   }
@@ -36,11 +37,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
+  Future<void> _onAuthLogoutRequested(
+    _AuthLogoutRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthState(status: AuthStatus.unauthenticated));
+  }
+
   void _listenToSupabaseAuthState() {
     _supabase.auth.onAuthStateChange.listen((data) {
       final AuthChangeEvent event = data.event;
       if (event == AuthChangeEvent.signedOut) {
         if (kDebugMode) print("=== User signed out ===");
+        add(_AuthLogoutRequested());
       }
     });
   }

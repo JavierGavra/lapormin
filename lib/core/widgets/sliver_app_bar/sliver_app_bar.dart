@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/features/profile/presentation/pages/profile_page.dart';
+import 'package:page_transition/page_transition.dart';
 
 class AppSliverAppBar extends StatelessWidget {
   final String profileUrl;
@@ -36,7 +38,20 @@ class AppSliverAppBar extends StatelessWidget {
           icon: Icon(Icons.notifications_none_rounded, color: color.onSurface),
         ),
         const SizedBox(width: 4),
-        CircleAvatar(radius: 16, backgroundImage: AssetImage(profileUrl)),
+        GestureDetector(
+          onTap: () {
+            context.pushTransition(
+              duration: const Duration(milliseconds: 300),
+              type: PageTransitionType.rightToLeft,
+              curve: Curves.easeOut,
+              child: const ProfilePage(),
+            );
+          },
+          child: CircleAvatar(
+            radius: 16,
+            backgroundImage: AssetImage(profileUrl),
+          ),
+        ),
         const SizedBox(width: 24),
       ],
     );

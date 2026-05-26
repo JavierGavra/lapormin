@@ -46,8 +46,25 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> logout() {
-    throw UnimplementedError();
+  Future<Either<Failure, bool>> logout() async {
+    try {
+      bool result = await remoteDataSource.postLogout();
+
+      if (result) result = await localDataSource.clearUserData();
+
+      return Right(result);
+    } catch (e) {
+      if (kDebugMode) print(e);
+      if (e is InvalidCredentialsException) {
+        return Left(ValidationFailure("Gagal logout."));
+      } else if (e is ServerException) {
+        return Left(ServerFailure(e.message!));
+      } else if (e is NetworkException) {
+        return Left(NetworkFailure());
+      } else {
+        return const Left(ServerFailure('Gagal logout. Coba lagi nanti.'));
+      }
+    }
   }
 
   @override

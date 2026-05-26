@@ -43,8 +43,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<bool> postLogout() {
-    throw UnimplementedError();
+  Future<bool> postLogout() async {
+    try {
+      await supabase.auth.signOut();
+      return true;
+    } on AuthException catch (e) {
+      throw InvalidCredentialsException(e.message);
+    } catch (e) {
+      if (e is NetworkException) rethrow;
+      throw const ServerException();
+    }
   }
 
   @override
