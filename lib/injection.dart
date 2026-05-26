@@ -5,6 +5,7 @@ import 'package:lapormin/features/auth/data/data_sources/auth_remote_data_source
 import 'package:lapormin/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:lapormin/features/auth/domain/repositories/auth_repository.dart';
 import 'package:lapormin/features/auth/domain/use_cases/login.dart';
+import 'package:lapormin/features/auth/domain/use_cases/logout.dart';
 import 'package:lapormin/features/auth/domain/use_cases/send_otp.dart';
 import 'package:lapormin/features/auth/domain/use_cases/verify_otp.dart';
 import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
@@ -59,6 +60,7 @@ void _initAuthFeature() {
 
   // Use Cases
   sl.registerLazySingleton(() => Login(sl()));
+  sl.registerLazySingleton(() => Logout(sl()));
   sl.registerLazySingleton(() => SendOtp(sl()));
   sl.registerLazySingleton(() => VerifyOtp(sl()));
 
@@ -122,7 +124,7 @@ void _initReportFeature() {
 }
 
 void _initProfileFeature() {
-  sl.registerFactory(() => ProfileBloc(getProfile: sl()));
+  sl.registerFactory(() => ProfileBloc(getProfile: sl(), logout: sl()));
 
   // Use Cases
   sl.registerLazySingleton(() => GetProfile(sl()));

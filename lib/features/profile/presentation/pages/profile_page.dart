@@ -7,6 +7,7 @@ import 'package:lapormin/features/profile/presentation/bloc/profile/profile_bloc
 import 'package:lapormin/features/profile/presentation/widgets/profile_header.dart';
 import 'package:lapormin/features/profile/presentation/widgets/profile_info.dart';
 import 'package:lapormin/features/profile/presentation/widgets/profile_actions.dart';
+import 'package:lapormin/features/profile/presentation/widgets/logout_dialog.dart';
 import 'package:lapormin/injection.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -127,7 +128,12 @@ class ProfilePage extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => logoutDialog(context),
+            );
+          },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(

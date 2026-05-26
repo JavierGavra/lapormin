@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 abstract interface class AuthLocalDataSource {
   Future<bool> saveUserData(UserModel user);
+  Future<bool> clearUserData();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -27,6 +28,17 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
         await sharedPreferences.setString('photo_profile', user.photoProfile!);
       }
 
+      return true;
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> clearUserData() async {
+    try {
+      await sharedPreferences.clear();
       return true;
     } catch (e) {
       debugPrint("$e");
