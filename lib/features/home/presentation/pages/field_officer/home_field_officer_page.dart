@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
+import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
+import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/features/home/presentation/widgets/location_banner/app_location_banner.dart';
 import 'package:lapormin/core/widgets/quick_info_card/quick_info_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/field_officer_home_greeting/field_officer_home_greeting.dart';
-import 'package:lapormin/features/report/presentation/pages/field_officer_report_listt_page.dart';
+import 'package:lapormin/features/report/presentation/bloc/field_officer_reports/field_officer_reports_bloc.dart';
 
-class HomeFieldOfficerPage extends StatelessWidget {
+class HomeFieldOfficerPage extends StatefulWidget {
   final VoidCallback onNavigateToReports;
+
   const HomeFieldOfficerPage({super.key, required this.onNavigateToReports});
 
+  @override
+  State<HomeFieldOfficerPage> createState() => _HomeFieldOfficerPageState();
+}
+
+class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
@@ -28,6 +37,7 @@ class HomeFieldOfficerPage extends StatelessWidget {
                 debugPrint("Buka notifikasi petugas");
               },
             ),
+
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
@@ -39,17 +49,15 @@ class HomeFieldOfficerPage extends StatelessWidget {
                   children: [
                     const FieldOfficerHomeGreeting(),
                     const SizedBox(height: 24),
-
-                    LocationBanner(location: 'Semarang'),
+                    const LocationBanner(location: 'Semarang'),
                     const SizedBox(height: 24),
-
                     Row(
                       children: [
                         Expanded(
                           child: AdminQuickInfoCard(
                             iconData: Icons.content_paste_search_outlined,
                             title: "Inspeksi",
-                            count: "1",
+                            count: "1", // TODO: Dinamis dari API nanti
                             backgroundColor: Colors.white,
                             iconBackgroundColor: color.warningContainer,
                             iconColor: color.onWarningContainer,
@@ -62,7 +70,7 @@ class HomeFieldOfficerPage extends StatelessWidget {
                           child: AdminQuickInfoCard(
                             iconData: Icons.build_outlined,
                             title: "Tindakan",
-                            count: "1",
+                            count: "1", // TODO: Dinamis dari API nanti
                             backgroundColor: Colors.white,
                             iconBackgroundColor: color.tertiaryContainer,
                             iconColor: color.onTertiaryContainer,
@@ -75,7 +83,7 @@ class HomeFieldOfficerPage extends StatelessWidget {
                           child: AdminQuickInfoCard(
                             iconData: Icons.assignment_outlined,
                             title: "Penugasan",
-                            count: "2",
+                            count: "2", // TODO: Dinamis dari API nanti
                             backgroundColor: color.primary,
                             iconBackgroundColor: Colors.white,
                             iconColor: color.primary,
@@ -86,9 +94,7 @@ class HomeFieldOfficerPage extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 24),
-
                     Container(
                       height: 2,
                       width: double.infinity,
@@ -97,9 +103,7 @@ class HomeFieldOfficerPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-
                     const SizedBox(height: 26),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -108,26 +112,15 @@ class HomeFieldOfficerPage extends StatelessWidget {
                           style: AppTextStyle.s16(fontWeight: FontWeight.w600),
                         ),
                         GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const FieldOfficerReportListPage(),
-                              ),
-                            );
-                          },
+                          onTap: widget.onNavigateToReports,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              GestureDetector(
-                                onTap: onNavigateToReports,
-                                child: Text(
-                                  "Lihat Semua",
-                                  style: AppTextStyle.s14(
-                                    color: color.primary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                              Text(
+                                "Lihat Semua",
+                                style: AppTextStyle.s14(
+                                  color: color.primary,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                               Icon(
@@ -141,33 +134,98 @@ class HomeFieldOfficerPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-
-                    ReportCard(
-                      imageUrl: 'assets/images/cards/kriminal.png',
-                      title: "Pencurian motor",
-                      location: "Jl. Merdeka No. 12",
-                      timeAgo: "1 hari lalu",
-                      status: ReportStatus.action,
-                      deadlineDate: DateTime(2026, 9, 20),
-                      categoryIcon: Icons.warning_amber_rounded,
-                      categoryColor: color.errorContainer,
-                      onTap: () {},
-                    ),
-                    const SizedBox(height: 16),
-                    ReportCard(
-                      imageUrl: 'assets/images/cards/banjir.png',
-                      title: "Banjir di area perumahan",
-                      location: "Perumahan griya indah",
-                      timeAgo: "3 hari lalu",
-                      status: ReportStatus.done,
-                      categoryIcon: Icons.flood_outlined,
-                      categoryColor: color.warningContainer,
-                      onTap: () {},
-                    ),
                   ],
                 ),
               ),
             ),
+
+            BlocBuilder<FieldOfficerReportsBloc, FieldOfficerReportsState>(
+              builder: (context, state) {
+                if (state.status == FieldOfficerReportsStatus.loading ||
+                    state.status == FieldOfficerReportsStatus.initial) {
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    sliver: SliverList.separated(
+                      itemCount: 3,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 16),
+                      itemBuilder: (context, index) =>
+                          const ReportCardShimmer(),
+                    ),
+                  );
+                }
+
+                if (state.status == FieldOfficerReportsStatus.failure) {
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Text(
+                          state.errorMessage ?? "Gagal memuat laporan petugas.",
+                          style: TextStyle(color: color.error),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (state.reports.isEmpty) {
+                  return const SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: Text("Yey! Belum ada penugasan baru."),
+                      ),
+                    ),
+                  );
+                }
+
+                final displayReports = state.reports.take(5).toList();
+
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  sliver: SliverList.separated(
+                    itemCount: displayReports.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      final report = displayReports[index];
+                      final categoryEnum = ReportCategory.fromString(
+                        report.category,
+                      );
+
+                      timeago.setLocaleMessages('id', timeago.IdMessages());
+                      final timeAgoText = timeago.format(
+                        report.createdAt,
+                        locale: 'id',
+                      );
+
+                      return ReportCard(
+                        imageUrl: report.evidence,
+                        title: report.title,
+                        location: report.shortAdddress,
+                        timeAgo: timeAgoText,
+                        status: report.status,
+                        categoryIcon: categoryEnum.icon,
+                        categoryColor: categoryEnum
+                            .getColor(context)
+                            .containerColor,
+                        isVideo: report.evidence.endsWith('.mp4'),
+
+                        deadlineDate: report.dueAction,
+                        onTap: () {
+                          debugPrint("Buka Detail Penugasan: ${report.id}");
+                          // TODO: Navigasi ke detail
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 80)),
           ],
         ),
       ),

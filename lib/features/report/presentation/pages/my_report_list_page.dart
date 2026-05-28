@@ -1,0 +1,146 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/widgets/report_card/compact_report_card_shimmer.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/features/report/presentation/widgets/report_list/compact_report_card.dart';
+import 'package:lapormin/features/report/presentation/bloc/my_reports/my_reports_bloc.dart';
+import 'package:lapormin/features/report/domain/entities/report_summary.dart';
+
+class MyReportListPage extends StatefulWidget {
+  const MyReportListPage({super.key});
+
+  @override
+  State<MyReportListPage> createState() => _MyReportListPageState();
+}
+
+class _MyReportListPageState extends State<MyReportListPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<MyReportsBloc>().add(const FetchMyReports());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildCustomHeader(context, color),
+
+            Expanded(
+              child: BlocBuilder<MyReportsBloc, MyReportsState>(
+                builder: (context, state) {
+                  if (state.status == MyReportsStatus.loading ||
+                      state.status == MyReportsStatus.initial) {
+                    return ListView.separated(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24.0,
+                        vertical: 24.0,
+                      ),
+                      itemCount: 4,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 12),
+                      itemBuilder: (context, index) =>
+                          const CompactReportCardShimmer(),
+                    );
+                  }
+
+                  if (state.status == MyReportsStatus.failure) {
+                    return Center(
+                      child: Text(
+                        state.errorMessage ?? "Gagal memuat laporanku",
+                        style: TextStyle(color: color.error),
+                      ),
+                    );
+                  }
+
+                  if (state.reports.isEmpty) {
+                    return const Center(
+                      child: Text("Kamu belum membuat laporan apapun."),
+                    );
+                  }
+
+                  return _buildMyReportList(color, state.reports);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomHeader(BuildContext context, ColorScheme color) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x0A000000),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.surfaceContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.arrow_back, color: color.onSurface, size: 20),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Text(
+            'Laporanku',
+            style: AppTextStyle.s16(
+              color: color.primary,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'DM Sans',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMyReportList(ColorScheme color, List<ReportSummary> reports) {
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+      itemCount: reports.length,
+      separatorBuilder: (context, index) => const SizedBox(height: 12),
+      itemBuilder: (context, index) {
+        final report = reports[index];
+
+        timeago.setLocaleMessages('id', timeago.IdMessages());
+        final timeAgoText = timeago.format(report.createdAt, locale: 'id');
+
+        return CompactReportCard(
+          title: report.title,
+          location: report.shortAdddress,
+          timeAgo: timeAgoText,
+          status: report.status,
+          deadlineDate: report.dueAction,
+          onTap: () {
+            debugPrint("Buka detail laporanku: ${report.id}");
+            // TODO: Navigasi ke halaman detail
+          },
+        );
+      },
+    );
+  }
+}
