@@ -33,10 +33,11 @@ class SplashScreen extends StatelessWidget {
         child: destination,
       );
     } else if (state.status == AuthStatus.unauthenticated) {
-      context.pushReplacementTransition(
+      context.pushAndRemoveUntilTransition(
+        duration: const Duration(milliseconds: 300),
+        predicate: (route) => false,
         type: PageTransitionType.fade,
         curve: Curves.easeInOut,
-        duration: const Duration(milliseconds: 300),
         child: const LoginPage(),
       );
     }
