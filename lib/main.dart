@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         title: 'LaporMin!',
         debugShowCheckedModeBanner: false,
         theme: MaterialTheme(const TextTheme()).light(),
-        home: const SplashScreen(),
+        home: const FieldOfficerMainLayout(),
       ),
     );
   }

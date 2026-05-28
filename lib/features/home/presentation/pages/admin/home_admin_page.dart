@@ -1,18 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
+import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
+import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/features/home/presentation/widgets/location_banner/app_location_banner.dart';
 import 'package:lapormin/core/widgets/quick_info_card/quick_info_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/admin_home_greeting/admin_home_greeting.dart';
+import 'package:lapormin/features/report/presentation/bloc/admin_reports/admin_reports_bloc.dart';
 
-class HomeAdminPage extends StatelessWidget {
+class HomeAdminPage extends StatefulWidget {
   final VoidCallback? onSeeAllTapped;
 
   const HomeAdminPage({super.key, this.onSeeAllTapped});
 
+  @override
+  State<HomeAdminPage> createState() => _HomeAdminPageState();
+}
+
+class _HomeAdminPageState extends State<HomeAdminPage> {
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
@@ -40,8 +49,7 @@ class HomeAdminPage extends StatelessWidget {
                   children: [
                     const AdminHomeGreeting(),
                     const SizedBox(height: 24),
-
-                    LocationBanner(location: 'Semarang'),
+                    const LocationBanner(location: 'Semarang'),
                     const SizedBox(height: 24),
 
                     Row(
@@ -50,7 +58,7 @@ class HomeAdminPage extends StatelessWidget {
                           child: AdminQuickInfoCard(
                             iconData: Icons.pending_actions,
                             title: "Menunggu Verifikasi",
-                            count: "12",
+                            count: "12", // TODO: Nanti hubungkan ke API
                             backgroundColor: color.surface,
                             iconBackgroundColor: color.primaryContainer,
                             iconColor: color.onPrimaryContainer,
@@ -63,7 +71,7 @@ class HomeAdminPage extends StatelessWidget {
                           child: AdminQuickInfoCard(
                             iconData: Icons.cached,
                             title: "Sedang Diproses",
-                            count: "5",
+                            count: "5", // TODO: Nanti hubungkan ke API
                             backgroundColor: color.surface,
                             iconBackgroundColor: color.tertiaryContainer,
                             iconColor: color.onTertiaryContainer,
@@ -80,7 +88,7 @@ class HomeAdminPage extends StatelessWidget {
                           child: AdminQuickInfoCard(
                             iconData: Icons.task_alt,
                             title: "Laporan Selesai",
-                            count: "3",
+                            count: "3", // TODO: Nanti hubungkan ke API
                             backgroundColor: color.surface,
                             iconBackgroundColor: color.successContainer,
                             iconColor: color.onSuccessContainer,
@@ -93,7 +101,7 @@ class HomeAdminPage extends StatelessWidget {
                           child: AdminQuickInfoCard(
                             iconData: Icons.description_outlined,
                             title: "Total Laporan",
-                            count: "20",
+                            count: "20", // TODO: Nanti hubungkan ke API
                             backgroundColor: color.primary,
                             iconBackgroundColor: color.surfaceContainerLowest,
                             iconColor: color.primary,
@@ -104,7 +112,6 @@ class HomeAdminPage extends StatelessWidget {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 24),
 
                     Container(
@@ -115,7 +122,6 @@ class HomeAdminPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-
                     const SizedBox(height: 26),
 
                     Row(
@@ -126,7 +132,7 @@ class HomeAdminPage extends StatelessWidget {
                           style: AppTextStyle.s16(fontWeight: FontWeight.w600),
                         ),
                         GestureDetector(
-                          onTap: onSeeAllTapped,
+                          onTap: widget.onSeeAllTapped,
                           behavior: HitTestBehavior.opaque,
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -149,43 +155,96 @@ class HomeAdminPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-
-                    ReportCard(
-                      imageUrl: 'assets/images/cards/jlnberlubang.png',
-                      title: "Jalan Berlubang di Jl. Sudirman",
-                      location: "Jl. Gatot Subroto",
-                      timeAgo: "2 jam lalu",
-                      status: ReportStatus.pending,
-                      categoryIcon: Icons.apartment_outlined,
-                      categoryColor: color.primaryContainer,
-                      onTap: () {},
-                    ),
-                    const SizedBox(height: 16),
-                    ReportCard(
-                      imageUrl: 'assets/images/cards/kriminal.png',
-                      title: "Pencurian motor",
-                      location: "Jl. Merdeka No. 12",
-                      timeAgo: "1 hari lalu",
-                      status: ReportStatus.fieldCheck,
-                      categoryIcon: Icons.warning_amber_rounded,
-                      categoryColor: color.errorContainer,
-                      onTap: () {},
-                    ),
-                    const SizedBox(height: 16),
-                    ReportCard(
-                      imageUrl: 'assets/images/cards/banjir.png',
-                      title: "Banjir di area perumahan",
-                      location: "Perumahan griya indah",
-                      timeAgo: "3 hari lalu",
-                      status: ReportStatus.action,
-                      categoryIcon: Icons.flood_outlined,
-                      categoryColor: color.warningContainer,
-                      onTap: () {},
-                    ),
                   ],
                 ),
               ),
             ),
+
+            BlocBuilder<AdminReportsBloc, AdminReportsState>(
+              builder: (context, state) {
+                if (state.status == AdminReportsStatus.loading ||
+                    state.status == AdminReportsStatus.initial) {
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    sliver: SliverList.separated(
+                      itemCount: 3,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 16),
+                      itemBuilder: (context, index) =>
+                          const ReportCardShimmer(),
+                    ),
+                  );
+                }
+
+                if (state.status == AdminReportsStatus.failure) {
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Text(
+                          state.errorMessage ?? "Gagal memuat laporan admin.",
+                          style: TextStyle(color: color.error),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (state.reports.isEmpty) {
+                  return const SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: Text("Belum ada laporan yang masuk."),
+                      ),
+                    ),
+                  );
+                }
+
+                final displayReports = state.reports.take(5).toList();
+
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  sliver: SliverList.separated(
+                    itemCount: displayReports.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      final report = displayReports[index];
+                      final categoryEnum = ReportCategory.fromString(
+                        report.category,
+                      );
+
+                      timeago.setLocaleMessages('id', timeago.IdMessages());
+                      final timeAgoText = timeago.format(
+                        report.createdAt,
+                        locale: 'id',
+                      );
+
+                      return ReportCard(
+                        imageUrl: report.evidence,
+                        title: report.title,
+                        location: report.shortAdddress,
+                        timeAgo: timeAgoText,
+                        status: report.status,
+                        categoryIcon: categoryEnum.icon,
+                        categoryColor: categoryEnum
+                            .getColor(context)
+                            .containerColor,
+                        deadlineDate: report.dueAction,
+                        isVideo: report.evidence.endsWith('.mp4'),
+                        onTap: () {
+                          debugPrint("Buka detail laporan admin: ${report.id}");
+                          // TODO: Navigasi ke halaman detail khusus admin
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 80)),
           ],
         ),
       ),

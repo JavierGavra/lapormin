@@ -19,7 +19,7 @@ class LocationBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 12, 20, 12),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(isSmall ? 12 : 8),
+        borderRadius: BorderRadius.circular(isSmall ? 16 : 8),
         color: isSmall ? color.secondary : color.primary,
       ),
       child: Row(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
+import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
@@ -10,9 +10,12 @@ import 'package:lapormin/features/home/presentation/widgets/hero_button/hero_but
 import 'package:lapormin/features/report/presentation/pages/create_report_page.dart';
 import 'package:lapormin/features/report/presentation/pages/public_detail_report_page.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:lapormin/features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
+import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
 
 class HomePage extends StatelessWidget {
-  // const HomePage({super.key});
   final VoidCallback? onSeeAllTapped;
   const HomePage({super.key, this.onSeeAllTapped});
 
@@ -22,7 +25,6 @@ class HomePage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: color.surface,
-
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -47,7 +49,6 @@ class HomePage extends StatelessWidget {
                       location: "Semarang",
                     ),
                     const SizedBox(height: 24),
-
                     HeroButton(
                       label: "Buat Laporan",
                       onTap: () {
@@ -55,17 +56,14 @@ class HomePage extends StatelessWidget {
                           type: PageTransitionType.rightToLeft,
                           child: const CreateReportPage(),
                         );
-                        debugPrint("Tombol Buat Laporan Diklik!");
                       },
                     ),
                     const SizedBox(height: 24),
-
                     Text(
                       "Kategori",
                       style: AppTextStyle.s14(fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(height: 12),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -74,31 +72,22 @@ class HomePage extends StatelessWidget {
                           title: "Infrastruktur",
                           backgroundColor: color.primaryContainer,
                           iconColor: color.onPrimaryContainer,
-                          onTap: () {
-                            debugPrint("Menu Infrastruktur");
-                          },
+                          onTap: () => debugPrint("Menu Infrastruktur"),
                         ),
-
                         CategoryCard(
                           icon: Icons.flood_outlined,
                           title: "Bencana",
                           backgroundColor: color.warningContainer,
                           iconColor: color.onTertiaryContainer,
-                          onTap: () {
-                            debugPrint("Menu Bencana");
-                          },
+                          onTap: () => debugPrint("Menu Bencana"),
                         ),
-
                         CategoryCard(
                           icon: Icons.warning_amber_rounded,
                           title: "Kriminal",
                           backgroundColor: color.errorContainer,
                           iconColor: color.onErrorContainer,
-                          onTap: () {
-                            debugPrint("Menu Kriminal");
-                          },
+                          onTap: () => debugPrint("Menu Kriminal"),
                         ),
-
                         CategoryCard(
                           icon: Icons.account_balance_outlined,
                           title: "Layanan Publik",
@@ -108,14 +97,11 @@ class HomePage extends StatelessWidget {
                           iconColor: Theme.of(
                             context,
                           ).colorScheme.onSuccessContainer,
-                          onTap: () {
-                            debugPrint("Menu Layanan Publik");
-                          },
+                          onTap: () => debugPrint("Menu Layanan Publik"),
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
-
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -146,62 +132,102 @@ class HomePage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-
-                    ReportCard(
-                      imageUrl: 'assets/images/cards/jlnberlubang.png',
-                      title: "Jalan Berlubang di Jl. Sudirman",
-                      location: "Jl. Gatot Subroto",
-                      timeAgo: "2 jam lalu",
-                      status: ReportStatus.verified,
-                      categoryIcon: Icons.apartment_outlined,
-                      categoryColor: color.primaryContainer,
-                      onTap: () {
-                        context.pushTransition(
-                          type: PageTransitionType.rightToLeft,
-                          child: const DetailReportPage(
-                            id: "c93bd9b1-508a-4d90-89c8-3d986f215bad",
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    ReportCard(
-                      imageUrl: 'assets/images/cards/kriminal.png',
-                      title: "Pencurian Motor ",
-                      location: "Jl. Merdeka No.12",
-                      timeAgo: "1 hari lalu",
-                      status: ReportStatus.fieldCheck,
-                      categoryIcon: Icons.warning_amber_rounded,
-                      categoryColor: color.errorContainer,
-                      isVideo: true,
-                      onTap: () {},
-                    ),
-                    const SizedBox(height: 16),
-                    ReportCard(
-                      imageUrl: 'assets/images/cards/banjir.png',
-                      title: "Banjir di Area Perumahan",
-                      location: "Perumahan Griya Indah",
-                      timeAgo: "3 hari lalu",
-                      status: ReportStatus.action,
-                      categoryIcon: Icons.flood_outlined,
-                      categoryColor: color.warningContainer,
-                      onTap: () {},
-                    ),
-                    const SizedBox(height: 16),
-                    ReportCard(
-                      imageUrl: 'assets/images/cards/infrastruktur.png',
-                      title: "Lampu Pertigaan Mati",
-                      location: "Jl. Gatot Subroto",
-                      timeAgo: "17 Juli 2025",
-                      status: ReportStatus.done,
-                      categoryIcon: Icons.account_balance_outlined,
-                      categoryColor: color.successContainer,
-                      onTap: () {},
-                    ),
                   ],
                 ),
               ),
             ),
+
+            BlocBuilder<PublicReportsBloc, PublicReportsState>(
+              builder: (context, state) {
+                if (state.status == PublicReportsStatus.loading ||
+                    state.status == PublicReportsStatus.initial) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Column(
+                        children: List.generate(
+                          3,
+                          (index) => const Padding(
+                            padding: EdgeInsets.only(bottom: 16.0),
+                            child: ReportCardShimmer(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (state.status == PublicReportsStatus.failure) {
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Text(
+                          state.errorMessage ?? "Gagal memuat laporan",
+                          style: TextStyle(color: color.error),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (state.reports.isEmpty) {
+                  return const SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: Text("Belum ada laporan di areamu."),
+                      ),
+                    ),
+                  );
+                }
+
+                final displayReports = state.reports.take(5).toList();
+
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  sliver: SliverList.separated(
+                    itemCount: displayReports.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      final report = displayReports[index];
+                      final categoryEnum = ReportCategory.fromString(
+                        report.category,
+                      );
+
+                      timeago.setLocaleMessages('id', timeago.IdMessages());
+                      final timeAgoText = timeago.format(
+                        report.createdAt,
+                        locale: 'id',
+                      );
+
+                      return ReportCard(
+                        imageUrl: report.evidence,
+                        title: report.title,
+                        location: report.shortAdddress,
+                        timeAgo: timeAgoText,
+                        status: report.status,
+                        categoryIcon: categoryEnum.icon,
+                        categoryColor: categoryEnum
+                            .getColor(context)
+                            .containerColor,
+                        deadlineDate: report.dueAction,
+                        isVideo: report.evidence.endsWith('.mp4'),
+                        onTap: () {
+                          context.pushTransition(
+                            type: PageTransitionType.rightToLeft,
+                            child: DetailReportPage(id: report.id),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 80)),
           ],
         ),
       ),

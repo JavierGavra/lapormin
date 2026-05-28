@@ -44,8 +44,14 @@ class ReportRepositoryImpl implements ReportRepository {
   Future<Either<Failure, List<ReportSummary>>> getFieldOfficerReports(
     ReportFilterParams filter,
   ) async {
-    // TODO: implement getFieldOfficerReports
-    throw UnimplementedError();
+    try {
+      final data = await remoteDataSource.fetchFieldOfficerReports(filter);
+      return Right(data);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
   }
 
   @override

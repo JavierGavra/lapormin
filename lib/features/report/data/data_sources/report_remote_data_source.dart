@@ -104,8 +104,27 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
   Future<List<ReportSummaryModel>> fetchFieldOfficerReports(
     ReportFilterParams filter,
   ) async {
-    // TODO: Implement field officer report
-    throw UnimplementedError();
+    try {
+      final userId = supabase.auth.currentUser!.id;
+
+      var query = supabase
+          .from('report')
+          .select('$_reportSummaryColumn, field_check!inner(user_id)')
+          .eq('field_check.user_id', userId);
+
+      query = _applyFilter(query, filter);
+
+      final response = await query
+          .order('created_at', ascending: false)
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => throw const TimeoutException(),
+          );
+
+      return response.map((e) => ReportSummaryModel.fromMap(e)).toList();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
