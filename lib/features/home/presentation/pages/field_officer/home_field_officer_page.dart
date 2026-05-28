@@ -6,12 +6,10 @@ import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
 import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/features/home/presentation/widgets/location_banner/app_location_banner.dart';
 import 'package:lapormin/core/widgets/quick_info_card/quick_info_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/field_officer_home_greeting/field_officer_home_greeting.dart';
-import 'package:lapormin/features/report/presentation/pages/field_officer_report_listt_page.dart';
 import 'package:lapormin/features/report/presentation/bloc/field_officer_reports/field_officer_reports_bloc.dart';
 
 class HomeFieldOfficerPage extends StatefulWidget {

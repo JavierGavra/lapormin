@@ -107,6 +107,8 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
     try {
       final userId = supabase.auth.currentUser!.id;
 
+      debugPrint("🔍 ID YANG LAGI LOGIN: $userId");
+
       var query = supabase
           .from('report')
           .select('$_reportSummaryColumn, field_check!inner(user_id)')
@@ -121,8 +123,11 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
             onTimeout: () => throw const TimeoutException(),
           );
 
+      debugPrint("🔍 HASIL TARIK DATA: $response");
+
       return response.map((e) => ReportSummaryModel.fromMap(e)).toList();
     } catch (e) {
+      debugPrint("🔍 ERROR DARI SUPABASE: $e");
       rethrow;
     }
   }
