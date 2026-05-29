@@ -15,16 +15,16 @@ import '../widgets/detail_report/information/report_info_header.dart';
 import '../widgets/detail_report/information/report_info_map.dart';
 import '../widgets/detail_report/information/report_info_tags.dart';
 
-class DetailReportPage extends StatefulWidget {
+class PublicReportDetailPage extends StatefulWidget {
   final String id;
 
-  const DetailReportPage({super.key, required this.id});
+  const PublicReportDetailPage({super.key, required this.id});
 
   @override
-  State<DetailReportPage> createState() => _DetailReportPageState();
+  State<PublicReportDetailPage> createState() => _PublicReportDetailPageState();
 }
 
-class _DetailReportPageState extends State<DetailReportPage> {
+class _PublicReportDetailPageState extends State<PublicReportDetailPage> {
   final _controller = CarouselController();
 
   Timer? _carouselTimer;

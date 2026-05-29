@@ -8,7 +8,7 @@ import 'package:lapormin/features/home/presentation/widgets/category_card/catego
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/hero_button/hero_button.dart';
 import 'package:lapormin/features/report/presentation/pages/create_report_page.dart';
-import 'package:lapormin/features/report/presentation/pages/public_detail_report_page.dart';
+import 'package:lapormin/features/report/presentation/pages/public_report_detail_page.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -217,7 +217,7 @@ class HomePage extends StatelessWidget {
                         onTap: () {
                           context.pushTransition(
                             type: PageTransitionType.rightToLeft,
-                            child: DetailReportPage(id: report.id),
+                            child: PublicReportDetailPage(id: report.id),
                           );
                         },
                       );
