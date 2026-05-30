@@ -37,7 +37,7 @@ class ReportInfoTab extends StatelessWidget {
                     createdAt: report.createdAt,
                     category: report.category,
                   ),
-                  LocationBanner(location: report.adddress, isSmall: true),
+                  LocationBanner(location: report.address, isSmall: true),
                   ReportInfoDescription(description: report.description),
                   GridReportInfoEvidences(evidences: report.evidences),
                   ReportInfoMap(

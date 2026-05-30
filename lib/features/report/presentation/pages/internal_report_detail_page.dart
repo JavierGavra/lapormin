@@ -8,10 +8,10 @@ import '../../../../core/widgets/button/app_back_button.dart';
 import '../../../../core/widgets/button/app_icon_button.dart';
 import '../../../../core/widgets/snackbar/custom_snackbar.dart';
 import '../bloc/internal_report_detail/internal_report_detail_bloc.dart';
-import '../widgets/detail_report/information/report_info_tab.dart';
-import '../widgets/detail_report/status/informant/informant_report_status_tab.dart';
-import '../widgets/detail_report/status/admin/admin_report_status_tab.dart';
-import '../widgets/detail_report/status/field_officer/field_officer_report_status_tab.dart';
+import '../widgets/report_detail/information/report_info_tab.dart';
+import '../widgets/report_detail/status/informant/informant_report_status_tab.dart';
+import '../widgets/report_detail/status/admin/admin_report_status_tab.dart';
+import '../widgets/report_detail/status/field_officer/field_officer_report_status_tab.dart';
 
 class InternalReportDetailPage extends StatefulWidget {
   final String id;
