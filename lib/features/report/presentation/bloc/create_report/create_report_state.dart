@@ -11,6 +11,7 @@ final class CreateReportState extends Equatable {
   final String? address;
   final String? description;
   final String? errorMessage;
+  final List<String> evidences;
 
   const CreateReportState({
     this.status = CreateReportStatus.initial,
@@ -21,6 +22,7 @@ final class CreateReportState extends Equatable {
     this.address,
     this.description,
     this.errorMessage,
+    this.evidences = const [],
   });
 
   bool get isLoading => status == CreateReportStatus.loading;
@@ -33,6 +35,7 @@ final class CreateReportState extends Equatable {
     LatLng? position,
     String? address,
     String? description,
+    List<String>? evidences,
     String? errorMessage,
   }) {
     return CreateReportState(
@@ -43,6 +46,7 @@ final class CreateReportState extends Equatable {
       position: position ?? this.position,
       address: address ?? this.address,
       description: description ?? this.description,
+      evidences: evidences ?? this.evidences,
       errorMessage: errorMessage,
     );
   }
@@ -56,6 +60,7 @@ final class CreateReportState extends Equatable {
     position,
     address,
     description,
+    evidences,
     errorMessage,
   ];
 }

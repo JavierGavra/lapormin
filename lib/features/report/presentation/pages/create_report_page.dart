@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/core/constants/report_category_enum.dart';
-import 'package:lapormin/core/widgets/button/app_filled_button.dart';
-import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
-import 'package:lapormin/core/widgets/success/success_page.dart';
-import 'package:lapormin/features/report/presentation/bloc/create_report/create_report_bloc.dart';
-import 'package:lapormin/features/report/presentation/widgets/create_report/create_report_header.dart';
-import 'package:lapormin/features/report/presentation/widgets/create_report/evidences_step.dart';
-import 'package:lapormin/features/report/presentation/widgets/create_report/location_step.dart';
-import 'package:lapormin/features/report/presentation/widgets/create_report/summary_description_step.dart';
-import 'package:lapormin/features/report/presentation/widgets/create_report/title_category_step.dart';
-import 'package:lapormin/injection.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:page_transition/page_transition.dart';
+
+import '../../../../core/constants/report_category_enum.dart';
+import '../../../../core/widgets/button/app_filled_button.dart';
+import '../../../../core/widgets/snackbar/custom_snackbar.dart';
+import '../../../../core/widgets/success/success_page.dart';
+import '../../../../injection.dart';
+import '../bloc/create_report/create_report_bloc.dart';
+import '../widgets/create_report/create_report_header.dart';
+import '../widgets/create_report/evidences_step.dart';
+import '../widgets/create_report/location_step.dart';
+import '../widgets/create_report/summary_description_step.dart';
+import '../widgets/create_report/title_category_step.dart';
 
 class CreateReportPage extends StatefulWidget {
   const CreateReportPage({super.key});
@@ -31,6 +32,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
   ReportCategory _reportCategory = ReportCategory.infrastructure;
   LatLng? _position;
   String? _address;
+  List<String> _evidences = [];
 
   late final List<Widget> _steps;
 
@@ -90,7 +92,11 @@ class _CreateReportPageState extends State<CreateReportPage> {
   }
 
   CreateReportEvent? _onStep3() {
-    return CreateReportStep3Submitted(evidences: []);
+    if (_evidences.isEmpty) {
+      showSnackBar(context, "Bukti harus diisi!", type: SnackBarType.failure);
+      return null;
+    }
+    return CreateReportStep3Submitted(evidences: _evidences);
   }
 
   CreateReportEvent? _onStep4() {
@@ -130,7 +136,10 @@ class _CreateReportPageState extends State<CreateReportPage> {
           _address = address;
         },
       ),
-      EvidencesStep(),
+      EvidencesStep(
+        initialEvidences: _evidences,
+        onEvidencesChanged: (files) => _evidences = files,
+      ),
       SummaryDescriptionStep(
         formKey: _step4formKey,
         descriptionController: _descriptionController,

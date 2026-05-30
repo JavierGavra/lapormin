@@ -19,9 +19,11 @@ class ReportRepositoryImpl implements ReportRepository {
   @override
   Future<Either<Failure, bool>> submitReport(SubmitReportParams params) async {
     try {
-      await remoteDataSource.insertReport(params);
-      await remoteDataSource.insertReportEvidences(params.evidences);
+      final reportId = await remoteDataSource.insertReport(params);
+      await remoteDataSource.insertReportEvidences(reportId, params.evidences);
       return Right(true);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
     } catch (e) {
       return Left(ServerFailure());
     }
