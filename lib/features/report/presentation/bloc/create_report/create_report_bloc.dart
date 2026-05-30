@@ -1,8 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:lapormin/core/constants/report_category_enum.dart';
-import 'package:lapormin/features/report/domain/use_cases/submit_report.dart';
 import 'package:latlong2/latlong.dart';
+
+import '../../../../../core/constants/report_category_enum.dart';
+import '../../../domain/use_cases/submit_report.dart';
 
 part 'create_report_event.dart';
 part 'create_report_state.dart';
@@ -56,6 +57,7 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
       state.copyWith(
         status: CreateReportStatus.next,
         currentStep: state.currentStep + 1,
+        evidences: event.evidences,
       ),
     );
   }
@@ -79,7 +81,7 @@ class CreateReportBloc extends Bloc<CreateReportEvent, CreateReportState> {
         longitude: state.position!.longitude,
         category: state.category!,
         address: state.address!,
-        evidences: [],
+        evidences: state.evidences,
       ),
     );
 

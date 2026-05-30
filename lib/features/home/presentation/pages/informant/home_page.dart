@@ -52,9 +52,11 @@ class HomePage extends StatelessWidget {
                     HeroButton(
                       label: "Buat Laporan",
                       onTap: () {
-                        context.pushTransition(
-                          type: PageTransitionType.rightToLeft,
-                          child: const CreateReportPage(),
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const CreateReportPage(),
+                          ),
                         );
                       },
                     ),

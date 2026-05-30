@@ -1,5 +1,4 @@
-import 'package:lapormin/core/constants/report_category_enum.dart';
-
+import '../../../../core/constants/report_category_enum.dart';
 import '../../../../core/constants/report_status_enum.dart';
 import '../../domain/entities/report.dart';
 
@@ -34,12 +33,9 @@ class ReportModel extends Report {
           : null,
       createdAt: DateTime.parse(map['created_at'] as String),
       status: ReportStatus.fromString(map['status'] as String),
-      evidences: [
-        "assets/images/cards/banjir.png",
-        "assets/images/cards/infrastruktur.png",
-        "assets/images/cards/jlnberlubang.png",
-        "assets/images/cards/kriminal.png",
-      ],
+      evidences: (map['evidences'] as List<dynamic>)
+          .map((e) => e['media'] as String)
+          .toList(),
     );
   }
 }

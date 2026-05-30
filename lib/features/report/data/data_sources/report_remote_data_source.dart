@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/rendering.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -10,8 +12,8 @@ import '../models/report_model.dart';
 import '../models/report_summary_model.dart';
 
 abstract interface class ReportRemoteDataSource {
-  Future<bool> insertReport(SubmitReportParams params);
-  Future<bool> insertReportEvidences(List<String> evidences);
+  Future<String> insertReport(SubmitReportParams params);
+  Future<bool> insertReportEvidences(String reportId, List<String> evidences);
   Future<List<ReportSummaryModel>> fetchUserReports();
   Future<List<ReportSummaryModel>> fetchPublicReports(
     ReportFilterParams filter,
@@ -55,20 +57,28 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
   }
 
   @override
-  Future<bool> insertReport(SubmitReportParams params) async {
+  Future<String> insertReport(SubmitReportParams params) async {
     try {
-      await supabase.from('report').insert({
-        'title': params.title,
-        'user_id': supabase.auth.currentUser!.id,
-        'description': params.description,
-        'address': params.address,
-        'latitude': params.latitude,
-        'longitude': params.longitude,
-        'category': params.category.dbValue,
-        'status': ReportStatus.pending.dbValue,
-      });
+      final response = await supabase
+          .from('report')
+          .insert({
+            'title': params.title,
+            'user_id': supabase.auth.currentUser!.id,
+            'description': params.description,
+            'address': params.address,
+            'latitude': params.latitude,
+            'longitude': params.longitude,
+            'category': params.category.dbValue,
+            'status': ReportStatus.pending.dbValue,
+          })
+          .select('id')
+          .single()
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => throw const TimeoutException(),
+          );
 
-      return true;
+      return response['id'];
     } catch (e) {
       if (e is NetworkException) rethrow;
       throw ServerException("$e");
@@ -76,9 +86,42 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
   }
 
   @override
-  Future<bool> insertReportEvidences(List<String> evidences) async {
-    await Future.delayed(const Duration(seconds: 1));
-    return true;
+  Future<bool> insertReportEvidences(
+    String reportId,
+    List<String> evidences,
+  ) async {
+    try {
+      final List<Map<String, dynamic>> evidenceDataToInsert = [];
+
+      const String bucketName = 'reports';
+      const String folderName = 'report_evidences';
+
+      await Future.wait(
+        evidences.map((localPath) async {
+          final file = File(localPath);
+
+          final extension = localPath.split('.').last;
+          final fileName = '${localPath.hashCode}.$extension';
+          final storageFilePath = '$folderName/$reportId/$fileName';
+
+          await supabase.storage.from(bucketName).upload(storageFilePath, file);
+
+          evidenceDataToInsert.add({
+            'report_id': reportId,
+            'media': storageFilePath,
+          });
+        }),
+      );
+
+      if (evidenceDataToInsert.isNotEmpty) {
+        await supabase.from('report_evidence').insert(evidenceDataToInsert);
+      }
+
+      return true;
+    } catch (e) {
+      debugPrint("Error inserting report evidences: $e");
+      rethrow;
+    }
   }
 
   @override
@@ -189,7 +232,12 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
     try {
       final response = await supabase
           .from('report')
-          .select()
+          .select('''
+            *,
+            evidences: report_evidence (
+              media
+            )
+          ''')
           .eq('id', id)
           .timeout(
             const Duration(seconds: 5),

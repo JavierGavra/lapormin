@@ -5,7 +5,7 @@ import 'package:lapormin/core/utils/validator/input_validator.dart';
 import 'package:lapormin/core/widgets/text_field/app_text_field.dart';
 import 'package:lapormin/features/report/presentation/widgets/create_report/category_picker_widget.dart';
 
-class TitleCategoryStep extends StatelessWidget {
+class TitleCategoryStep extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController titleController;
   final ReportCategory initialCategory;
@@ -20,7 +20,17 @@ class TitleCategoryStep extends StatelessWidget {
   });
 
   @override
+  State<TitleCategoryStep> createState() => _TitleCategoryStepState();
+}
+
+class _TitleCategoryStepState extends State<TitleCategoryStep>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final color = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -43,8 +53,8 @@ class TitleCategoryStep extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             CategoryPickerWidget(
-              initialCategory: initialCategory,
-              onChanged: (value) => onCategoryChanged(value),
+              initialCategory: widget.initialCategory,
+              onChanged: (value) => widget.onCategoryChanged(value),
             ),
             const SizedBox(height: 40),
             Text(
@@ -56,9 +66,9 @@ class TitleCategoryStep extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Form(
-              key: formKey,
+              key: widget.formKey,
               child: AppTextField(
-                controller: titleController,
+                controller: widget.titleController,
                 hintText: "Mau laporin apa...",
                 validator: (value) => InputValidator.empty(value),
               ),

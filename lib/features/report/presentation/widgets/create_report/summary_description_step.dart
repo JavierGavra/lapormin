@@ -10,8 +10,14 @@ class _SummaryData {
   final String category;
   final String title;
   final String address;
+  final int evidenceAmount;
 
-  const _SummaryData(this.category, this.title, this.address);
+  const _SummaryData(
+    this.category,
+    this.title,
+    this.address,
+    this.evidenceAmount,
+  );
 }
 
 class SummaryDescriptionStep extends StatelessWidget {
@@ -51,6 +57,7 @@ class SummaryDescriptionStep extends StatelessWidget {
         state.category?.label ?? '-',
         state.title ?? '-',
         state.address ?? '-',
+        state.evidences.length,
       ),
       builder: (context, data) {
         return Container(
@@ -93,7 +100,7 @@ class SummaryDescriptionStep extends StatelessWidget {
                 color,
                 icon: Icons.video_collection_outlined,
                 title: "Jumlah Bukti",
-                value: "4",
+                value: "${data.evidenceAmount}",
               ),
             ],
           ),
