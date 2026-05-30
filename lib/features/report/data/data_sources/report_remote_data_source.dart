@@ -239,12 +239,26 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
             )
           ''')
           .eq('id', id)
+          .single()
           .timeout(
             const Duration(seconds: 5),
             onTimeout: () => throw const TimeoutException(),
           );
 
-      return ReportModel.fromMap(response.first);
+      final rawData = response;
+
+      if (rawData['evidences'] != null) {
+        final List<dynamic> rawEvidences = rawData['evidences'];
+
+        final List<String> imageUrls = rawEvidences.map((evidence) {
+          final mediaPath = evidence['media'] as String;
+          return supabase.storage.from('reports').getPublicUrl(mediaPath);
+        }).toList();
+
+        rawData['evidences'] = imageUrls;
+      }
+
+      return ReportModel.fromMap(rawData);
     } catch (e) {
       debugPrint("Error fetching report: $e");
       rethrow;

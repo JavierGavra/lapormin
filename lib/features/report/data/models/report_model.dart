@@ -33,9 +33,9 @@ class ReportModel extends Report {
           : null,
       createdAt: DateTime.parse(map['created_at'] as String),
       status: ReportStatus.fromString(map['status'] as String),
-      evidences: (map['evidences'] as List<dynamic>)
-          .map((e) => e['media'] as String)
-          .toList(),
+      evidences: map['evidences'] != null
+          ? List<String>.from(map['evidences'])
+          : [],
     );
   }
 }

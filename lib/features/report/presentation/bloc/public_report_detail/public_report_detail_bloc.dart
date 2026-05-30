@@ -32,12 +32,15 @@ class PublicReportDetailBloc
           errorMessage: failure.message,
         ),
       ),
-      (report) => emit(
-        state.copyWith(
-          status: PublicReportDetailStatus.success,
-          report: report,
-        ),
-      ),
+      (report) {
+        print(report.evidences);
+        emit(
+          state.copyWith(
+            status: PublicReportDetailStatus.success,
+            report: report,
+          ),
+        );
+      },
     );
   }
 }

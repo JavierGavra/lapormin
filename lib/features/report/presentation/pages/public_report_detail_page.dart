@@ -1,72 +1,23 @@
-import 'dart:async';
-
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../../injection.dart';
 import '../../../../core/widgets/button/app_back_button.dart';
 import '../../../../core/widgets/button/app_icon_button.dart';
 import '../../../../core/widgets/snackbar/custom_snackbar.dart';
+import '../../../../injection.dart';
 import '../../../home/presentation/widgets/location_banner/app_location_banner.dart';
 import '../bloc/public_report_detail/public_report_detail_bloc.dart';
+import '../widgets/report_detail/information/carousel_report_info_evidences.dart';
 import '../widgets/report_detail/information/report_info_description.dart';
 import '../widgets/report_detail/information/report_info_header.dart';
 import '../widgets/report_detail/information/report_info_map.dart';
 import '../widgets/report_detail/information/report_info_tags.dart';
 
-class PublicReportDetailPage extends StatefulWidget {
+class PublicReportDetailPage extends StatelessWidget {
   final String id;
 
   const PublicReportDetailPage({super.key, required this.id});
-
-  @override
-  State<PublicReportDetailPage> createState() => _PublicReportDetailPageState();
-}
-
-class _PublicReportDetailPageState extends State<PublicReportDetailPage> {
-  final _controller = CarouselController();
-
-  Timer? _carouselTimer;
-
-  final List<String> _evidences = [
-    "assets/images/cards/banjir.png",
-    "assets/images/cards/infrastruktur.png",
-    "assets/images/cards/kriminal.png",
-  ];
-
-  void _startAutoSlide() {
-    _carouselTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (_controller.hasClients) {
-        final double currentOffset = _controller.offset;
-        final double maxScrollExtent = _controller.position.maxScrollExtent;
-        double nextOffset = currentOffset + 200;
-
-        if (currentOffset >= maxScrollExtent) {
-          nextOffset = 0;
-        }
-
-        _controller.animateTo(
-          nextOffset,
-          duration: const Duration(milliseconds: 800),
-          curve: Curves.fastOutSlowIn,
-        );
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _startAutoSlide();
-  }
-
-  @override
-  void dispose() {
-    _carouselTimer?.cancel();
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,8 +25,7 @@ class _PublicReportDetailPageState extends State<PublicReportDetailPage> {
 
     return BlocProvider(
       create: (context) =>
-          sl<PublicReportDetailBloc>()
-            ..add(PublicReportDetailOpened(widget.id)),
+          sl<PublicReportDetailBloc>()..add(PublicReportDetailOpened(id)),
       child: Scaffold(
         backgroundColor: color.secondaryContainer,
         body: BlocConsumer<PublicReportDetailBloc, PublicReportDetailState>(
@@ -108,7 +58,7 @@ class _PublicReportDetailPageState extends State<PublicReportDetailPage> {
                   RefreshIndicator(
                     onRefresh: () async {
                       context.read<PublicReportDetailBloc>().add(
-                        PublicReportDetailOpened(widget.id),
+                        PublicReportDetailOpened(id),
                       );
                     },
                     child: CustomScrollView(
@@ -117,31 +67,8 @@ class _PublicReportDetailPageState extends State<PublicReportDetailPage> {
                         SliverPadding(
                           padding: EdgeInsets.fromLTRB(18, 16, 18, 20),
                           sliver: SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: 135,
-                              child: CarouselView.weightedBuilder(
-                                controller: _controller,
-                                itemSnapping: true,
-                                padding: EdgeInsets.zero,
-                                backgroundColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                flexWeights: [5, 1],
-                                itemCount: _evidences.length,
-                                itemBuilder: (context, index) => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Image.asset(
-                                      _evidences[index],
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                            child: CarouselReportInfoEvidences(
+                              evidences: report.evidences,
                             ),
                           ),
                         ),
