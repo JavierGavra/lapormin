@@ -9,11 +9,11 @@ import '../../../../core/widgets/button/app_back_button.dart';
 import '../../../../core/widgets/button/app_icon_button.dart';
 import '../../../../core/widgets/snackbar/custom_snackbar.dart';
 import '../../../home/presentation/widgets/location_banner/app_location_banner.dart';
-import '../bloc/public_detail_report/public_detail_report_bloc.dart';
-import '../widgets/detail_report/information/report_info_description.dart';
-import '../widgets/detail_report/information/report_info_header.dart';
-import '../widgets/detail_report/information/report_info_map.dart';
-import '../widgets/detail_report/information/report_info_tags.dart';
+import '../bloc/public_report_detail/public_report_detail_bloc.dart';
+import '../widgets/report_detail/information/report_info_description.dart';
+import '../widgets/report_detail/information/report_info_header.dart';
+import '../widgets/report_detail/information/report_info_map.dart';
+import '../widgets/report_detail/information/report_info_tags.dart';
 
 class PublicReportDetailPage extends StatefulWidget {
   final String id;
@@ -74,12 +74,13 @@ class _PublicReportDetailPageState extends State<PublicReportDetailPage> {
 
     return BlocProvider(
       create: (context) =>
-          sl<PublicDetailReportBloc>()..add(LoadPublicDetailReport(widget.id)),
+          sl<PublicReportDetailBloc>()
+            ..add(PublicReportDetailOpened(widget.id)),
       child: Scaffold(
         backgroundColor: color.secondaryContainer,
-        body: BlocConsumer<PublicDetailReportBloc, PublicDetailReportState>(
+        body: BlocConsumer<PublicReportDetailBloc, PublicReportDetailState>(
           listener: (context, state) {
-            if (state.status == PublicDetailReportStatus.failure) {
+            if (state.status == PublicReportDetailStatus.failure) {
               showSnackBar(
                 context,
                 state.errorMessage ?? "Gagal memuat laporan",
@@ -100,14 +101,14 @@ class _PublicReportDetailPageState extends State<PublicReportDetailPage> {
                 alignment: Alignment.topCenter,
                 children: [
                   Image.asset(
-                    "assets/images/backgrounds/detail_report_background.png",
+                    "assets/images/backgrounds/report_detail_background.png",
                     fit: BoxFit.fitWidth,
                     width: double.infinity,
                   ),
                   RefreshIndicator(
                     onRefresh: () async {
-                      context.read<PublicDetailReportBloc>().add(
-                        LoadPublicDetailReport(widget.id),
+                      context.read<PublicReportDetailBloc>().add(
+                        PublicReportDetailOpened(widget.id),
                       );
                     },
                     child: CustomScrollView(
@@ -175,7 +176,7 @@ class _PublicReportDetailPageState extends State<PublicReportDetailPage> {
                                     category: report.category,
                                   ),
                                   LocationBanner(
-                                    location: report.adddress,
+                                    location: report.address,
                                     isSmall: true,
                                   ),
                                   ReportInfoDescription(

@@ -7,7 +7,7 @@ class Report extends Equatable {
   final String id;
   final String ticket;
   final String title;
-  final String adddress;
+  final String address;
   final String description;
   final double latitude;
   final double longitude;
@@ -22,7 +22,7 @@ class Report extends Equatable {
     required this.ticket,
     required this.title,
     required this.category,
-    required this.adddress,
+    required this.address,
     required this.description,
     required this.latitude,
     required this.longitude,
@@ -38,7 +38,7 @@ class Report extends Equatable {
     ticket,
     title,
     category,
-    adddress,
+    address,
     description,
     latitude,
     longitude,

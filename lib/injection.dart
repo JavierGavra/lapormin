@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
-import 'features/auth/data/data_sources/auth_local_data_source.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'features/auth/data/data_sources/auth_local_data_source.dart';
 import 'features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
@@ -26,22 +28,20 @@ import 'features/profile/presentation/bloc/profile/profile_bloc.dart';
 import 'features/report/data/data_sources/report_remote_data_source.dart';
 import 'features/report/data/repositories/report_repository_impl.dart';
 import 'features/report/domain/repositories/report_repository.dart';
+import 'features/report/domain/use_cases/get_admin_reports.dart';
 import 'features/report/domain/use_cases/get_field_officer_reports.dart';
+import 'features/report/domain/use_cases/get_public_reports.dart';
 import 'features/report/domain/use_cases/get_report.dart';
 import 'features/report/domain/use_cases/get_report_aggregate.dart';
 import 'features/report/domain/use_cases/get_user_reports.dart';
 import 'features/report/domain/use_cases/submit_report.dart';
+import 'features/report/presentation/bloc/admin_reports/admin_reports_bloc.dart';
 import 'features/report/presentation/bloc/create_report/create_report_bloc.dart';
 import 'features/report/presentation/bloc/field_officer_reports/field_officer_reports_bloc.dart';
 import 'features/report/presentation/bloc/internal_report_detail/internal_report_detail_bloc.dart';
 import 'features/report/presentation/bloc/my_reports/my_reports_bloc.dart';
-import 'features/report/presentation/bloc/public_detail_report/public_detail_report_bloc.dart';
-import 'features/report/domain/use_cases/get_public_reports.dart';
+import 'features/report/presentation/bloc/public_report_detail/public_report_detail_bloc.dart';
 import 'features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'features/report/domain/use_cases/get_admin_reports.dart';
-import 'features/report/presentation/bloc/admin_reports/admin_reports_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -115,7 +115,7 @@ void _initLocationFeature() {
 
 void _initReportFeature() {
   sl.registerFactory(() => CreateReportBloc(submitReport: sl()));
-  sl.registerFactory(() => PublicDetailReportBloc(getReport: sl()));
+  sl.registerFactory(() => PublicReportDetailBloc(getReport: sl()));
   sl.registerFactory(() => PublicReportsBloc(getPublicReports: sl()));
   sl.registerFactory(() => MyReportsBloc(getUserReports: sl()));
   sl.registerFactory(() => AdminReportsBloc(getAdminReports: sl()));
