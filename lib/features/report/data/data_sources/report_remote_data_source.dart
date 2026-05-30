@@ -5,6 +5,7 @@ import '../../../../core/constants/report_status_enum.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../domain/params/report_filter_params.dart';
 import '../../domain/use_cases/submit_report.dart';
+import '../models/report_aggregate_model.dart';
 import '../models/report_model.dart';
 import '../models/report_summary_model.dart';
 
@@ -20,6 +21,7 @@ abstract interface class ReportRemoteDataSource {
     ReportFilterParams filter,
   );
   Future<ReportModel> fetchReport(String id);
+  Future<ReportAggregateModel> fetchReportAggregate(String id);
   Future<bool> deleteReport(String id);
 }
 
@@ -194,9 +196,40 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
             onTimeout: () => throw const TimeoutException(),
           );
 
-      debugPrint("Fetched report data: ${response.first}");
-
       return ReportModel.fromMap(response.first);
+    } catch (e) {
+      debugPrint("Error fetching report: $e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ReportAggregateModel> fetchReportAggregate(String id) async {
+    try {
+      final response = await supabase
+          .from('report')
+          .select('''
+              *,
+              report_status_logs: report_status_log (
+                id, user_id, status, created_at
+              ),
+              field_check (
+                *,
+                ...users(
+                  field_officer_name: username,
+                  field_officer_phone: no_telp
+                )
+              ),
+              final_report (*)
+            ''')
+          .eq('id', id)
+          .single()
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => throw const TimeoutException(),
+          );
+
+      return ReportAggregateModel.fromMap(response);
     } catch (e) {
       debugPrint("Error fetching report: $e");
       rethrow;

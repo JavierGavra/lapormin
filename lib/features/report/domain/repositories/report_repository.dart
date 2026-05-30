@@ -1,9 +1,11 @@
 import 'package:dartz/dartz.dart';
-import 'package:lapormin/core/error/failures.dart';
-import 'package:lapormin/features/report/domain/entities/report.dart';
-import 'package:lapormin/features/report/domain/entities/report_summary.dart';
-import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
-import 'package:lapormin/features/report/domain/use_cases/submit_report.dart';
+
+import '../../../../core/error/failures.dart';
+import '../entities/report.dart';
+import '../entities/report_aggregate.dart';
+import '../entities/report_summary.dart';
+import '../params/report_filter_params.dart';
+import '../use_cases/submit_report.dart';
 
 abstract interface class ReportRepository {
   Future<Either<Failure, bool>> submitReport(SubmitReportParams params);
@@ -18,5 +20,6 @@ abstract interface class ReportRepository {
     ReportFilterParams filter,
   );
   Future<Either<Failure, Report>> getReport(String id);
+  Future<Either<Failure, ReportAggregate>> getReportAggregate(String id);
   Future<Either<Failure, bool>> deleteReport(String id);
 }

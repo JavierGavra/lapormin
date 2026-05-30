@@ -34,7 +34,12 @@ class ReportModel extends Report {
           : null,
       createdAt: DateTime.parse(map['created_at'] as String),
       status: ReportStatus.fromString(map['status'] as String),
-      evidences: [],
+      evidences: [
+        "assets/images/cards/banjir.png",
+        "assets/images/cards/infrastruktur.png",
+        "assets/images/cards/jlnberlubang.png",
+        "assets/images/cards/kriminal.png",
+      ],
     );
   }
 }
