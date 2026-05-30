@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/core/widgets/loading/shimmer_widget.dart';
 
 class ReportCard extends StatelessWidget {
   final String imageUrl;
@@ -55,6 +56,18 @@ class ReportCard extends StatelessWidget {
                         ? Image.network(
                             imageUrl,
                             fit: BoxFit.cover,
+                            frameBuilder:
+                                (
+                                  context,
+                                  child,
+                                  frame,
+                                  wasSynchronouslyLoaded,
+                                ) {
+                                  if (wasSynchronouslyLoaded || frame != null) {
+                                    return child;
+                                  }
+                                  return ShimmerWidget();
+                                },
                             errorBuilder: (context, error, stackTrace) =>
                                 Container(color: color.surfaceContainerHighest),
                           )
