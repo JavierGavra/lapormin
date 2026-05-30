@@ -29,7 +29,7 @@ class HomePage extends StatelessWidget {
         child: CustomScrollView(
           slivers: [
             AppSliverAppBar(
-              profileUrl: "assets/images/profiles/profile.png",
+              profileUrl: "assets/images/profiles/profile.jpg",
               onNotificationTap: () {
                 debugPrint("Buka notifikasi");
               },

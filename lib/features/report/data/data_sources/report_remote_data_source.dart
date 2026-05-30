@@ -182,13 +182,13 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
     ReportFilterParams filter,
   ) async {
     try {
+      // 1. Tambahkan relasi evidences ke dalam select
       var query = supabase
           .from('report')
-          .select(_reportSummaryColumn)
+          .select('$_reportSummaryColumn, evidences:report_evidence(media)')
           .neq('status', 'pending')
-          .neq('status', 'rejected');
-
-      query = _applyFilter(query, filter);
+          .neq('status', 'rejected')
+          .limit(1, referencedTable: 'report_evidence');
 
       final response = await query
           .order('created_at', ascending: false)
@@ -196,8 +196,27 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
             const Duration(seconds: 5),
             onTimeout: () => throw const TimeoutException(),
           );
-      return response.map((e) => ReportSummaryModel.fromMap(e)).toList();
+
+      return response.map((e) {
+        final Map<String, dynamic> rawData = Map<String, dynamic>.from(e);
+
+        if (rawData['evidences'] != null &&
+            (rawData['evidences'] as List).isNotEmpty) {
+          final mediaPath = rawData['evidences'][0]['media'] as String;
+
+          final publicUrl = supabase.storage
+              .from('reports')
+              .getPublicUrl(mediaPath);
+
+          rawData['evidences'] = [publicUrl];
+        } else {
+          rawData['evidences'] = <String>[];
+        }
+
+        return ReportSummaryModel.fromMap(rawData);
+      }).toList();
     } catch (e) {
+      debugPrint("Error fetching public reports: $e");
       rethrow;
     }
   }
@@ -239,12 +258,26 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
             )
           ''')
           .eq('id', id)
+          .single()
           .timeout(
             const Duration(seconds: 5),
             onTimeout: () => throw const TimeoutException(),
           );
 
-      return ReportModel.fromMap(response.first);
+      final rawData = response;
+
+      if (rawData['evidences'] != null) {
+        final List<dynamic> rawEvidences = rawData['evidences'];
+
+        final List<String> imageUrls = rawEvidences.map((evidence) {
+          final mediaPath = evidence['media'] as String;
+          return supabase.storage.from('reports').getPublicUrl(mediaPath);
+        }).toList();
+
+        rawData['evidences'] = imageUrls;
+      }
+
+      return ReportModel.fromMap(rawData);
     } catch (e) {
       debugPrint("Error fetching report: $e");
       rethrow;
