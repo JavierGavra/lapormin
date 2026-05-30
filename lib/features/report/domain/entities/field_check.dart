@@ -5,8 +5,8 @@ class FieldCheck extends Equatable {
   final String fieldOfficerName;
   final String fieldOfficerPhone;
   final String description;
-  final String createdAt;
-  final String updatedAt;
+  final DateTime createdAt;
+  final DateTime updatedAt;
   final List<String> evidences;
 
   const FieldCheck({

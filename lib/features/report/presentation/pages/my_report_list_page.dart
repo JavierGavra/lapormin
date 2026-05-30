@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/constants/user_role_enum.dart';
 import 'package:lapormin/core/widgets/report_card/compact_report_card_shimmer.dart';
+import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_list/compact_report_card.dart';
@@ -137,7 +139,15 @@ class _MyReportListPageState extends State<MyReportListPage> {
           deadlineDate: report.dueAction,
           onTap: () {
             debugPrint("Buka detail laporanku: ${report.id}");
-            // TODO: Navigasi ke halaman detail
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => InternalReportDetailPage(
+                  id: report.id,
+                  role: UserRole.informant,
+                ),
+              ),
+            );
           },
         );
       },

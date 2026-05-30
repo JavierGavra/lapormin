@@ -1,45 +1,47 @@
 import 'package:get_it/get_it.dart';
-import 'package:lapormin/features/auth/data/data_sources/auth_local_data_source.dart';
+import 'features/auth/data/data_sources/auth_local_data_source.dart';
 
-import 'package:lapormin/features/auth/data/data_sources/auth_remote_data_source.dart';
-import 'package:lapormin/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:lapormin/features/auth/domain/repositories/auth_repository.dart';
-import 'package:lapormin/features/auth/domain/use_cases/login.dart';
-import 'package:lapormin/features/auth/domain/use_cases/logout.dart';
-import 'package:lapormin/features/auth/domain/use_cases/send_otp.dart';
-import 'package:lapormin/features/auth/domain/use_cases/verify_otp.dart';
-import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
-import 'package:lapormin/features/auth/presentation/bloc/login/login_bloc.dart';
-import 'package:lapormin/features/auth/presentation/bloc/register/register_bloc.dart';
-import 'package:lapormin/features/location/data/data_sources/location_local_data_source.dart';
-import 'package:lapormin/features/location/data/data_sources/location_remote_data_source.dart';
-import 'package:lapormin/features/location/data/repositories/location_repository_impl.dart';
-import 'package:lapormin/features/location/domain/repositories/location_repository.dart';
-import 'package:lapormin/features/location/domain/use_cases/get_address_from_coordinate.dart';
-import 'package:lapormin/features/location/domain/use_cases/get_current_location.dart';
-import 'package:lapormin/features/location/presentation/bloc/location_picker/location_picker_bloc.dart';
-import 'package:lapormin/features/profile/data/data_sources/profile_local_data_source.dart';
-import 'package:lapormin/features/profile/data/repositories/profile_repository_impl.dart';
-import 'package:lapormin/features/profile/domain/repositories/profile_repository.dart';
-import 'package:lapormin/features/profile/domain/use_cases/get_profile.dart';
-import 'package:lapormin/features/profile/presentation/bloc/profile/profile_bloc.dart';
-import 'package:lapormin/features/report/data/data_sources/report_remote_data_source.dart';
-import 'package:lapormin/features/report/data/repositories/report_repository_impl.dart';
-import 'package:lapormin/features/report/domain/repositories/report_repository.dart';
-import 'package:lapormin/features/report/domain/use_cases/get_field_officer_reports.dart';
-import 'package:lapormin/features/report/domain/use_cases/get_report.dart';
-import 'package:lapormin/features/report/domain/use_cases/get_user_reports.dart';
-import 'package:lapormin/features/report/domain/use_cases/submit_report.dart';
-import 'package:lapormin/features/report/presentation/bloc/create_report/create_report_bloc.dart';
-import 'package:lapormin/features/report/presentation/bloc/field_officer_reports/field_officer_reports_bloc.dart';
-import 'package:lapormin/features/report/presentation/bloc/my_reports/my_reports_bloc.dart';
-import 'package:lapormin/features/report/presentation/bloc/public_detail_report/public_detail_report_bloc.dart';
-import 'package:lapormin/features/report/domain/use_cases/get_public_reports.dart';
-import 'package:lapormin/features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
+import 'features/auth/data/data_sources/auth_remote_data_source.dart';
+import 'features/auth/data/repositories/auth_repository_impl.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/domain/use_cases/login.dart';
+import 'features/auth/domain/use_cases/logout.dart';
+import 'features/auth/domain/use_cases/send_otp.dart';
+import 'features/auth/domain/use_cases/verify_otp.dart';
+import 'features/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'features/auth/presentation/bloc/login/login_bloc.dart';
+import 'features/auth/presentation/bloc/register/register_bloc.dart';
+import 'features/location/data/data_sources/location_local_data_source.dart';
+import 'features/location/data/data_sources/location_remote_data_source.dart';
+import 'features/location/data/repositories/location_repository_impl.dart';
+import 'features/location/domain/repositories/location_repository.dart';
+import 'features/location/domain/use_cases/get_address_from_coordinate.dart';
+import 'features/location/domain/use_cases/get_current_location.dart';
+import 'features/location/presentation/bloc/location_picker/location_picker_bloc.dart';
+import 'features/profile/data/data_sources/profile_local_data_source.dart';
+import 'features/profile/data/repositories/profile_repository_impl.dart';
+import 'features/profile/domain/repositories/profile_repository.dart';
+import 'features/profile/domain/use_cases/get_profile.dart';
+import 'features/profile/presentation/bloc/profile/profile_bloc.dart';
+import 'features/report/data/data_sources/report_remote_data_source.dart';
+import 'features/report/data/repositories/report_repository_impl.dart';
+import 'features/report/domain/repositories/report_repository.dart';
+import 'features/report/domain/use_cases/get_field_officer_reports.dart';
+import 'features/report/domain/use_cases/get_report.dart';
+import 'features/report/domain/use_cases/get_report_aggregate.dart';
+import 'features/report/domain/use_cases/get_user_reports.dart';
+import 'features/report/domain/use_cases/submit_report.dart';
+import 'features/report/presentation/bloc/create_report/create_report_bloc.dart';
+import 'features/report/presentation/bloc/field_officer_reports/field_officer_reports_bloc.dart';
+import 'features/report/presentation/bloc/internal_report_detail/internal_report_detail_bloc.dart';
+import 'features/report/presentation/bloc/my_reports/my_reports_bloc.dart';
+import 'features/report/presentation/bloc/public_detail_report/public_detail_report_bloc.dart';
+import 'features/report/domain/use_cases/get_public_reports.dart';
+import 'features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:lapormin/features/report/domain/use_cases/get_admin_reports.dart';
-import 'package:lapormin/features/report/presentation/bloc/admin_reports/admin_reports_bloc.dart';
+import 'features/report/domain/use_cases/get_admin_reports.dart';
+import 'features/report/presentation/bloc/admin_reports/admin_reports_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -120,8 +122,11 @@ void _initReportFeature() {
   sl.registerFactory(
     () => FieldOfficerReportsBloc(getFieldOfficerReports: sl()),
   );
+  sl.registerFactory(() => InternalReportDetailBloc(getReportAggregate: sl()));
+
   // Use Cases
   sl.registerLazySingleton(() => GetReport(sl()));
+  sl.registerLazySingleton(() => GetReportAggregate(sl()));
   sl.registerLazySingleton(() => SubmitReport(sl()));
   sl.registerLazySingleton(() => GetPublicReports(sl()));
   sl.registerLazySingleton(() => GetUserReports(sl()));

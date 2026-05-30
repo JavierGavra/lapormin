@@ -1,10 +1,10 @@
-import 'package:lapormin/core/use_case/usecase.dart';
+// import 'package:lapormin/core/use_case/usecase.dart';
 import 'package:lapormin/features/report/data/data_sources/report_remote_data_source.dart';
 import 'package:lapormin/features/report/data/repositories/report_repository_impl.dart';
 import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
 import 'package:lapormin/features/report/domain/use_cases/get_admin_reports.dart';
-import 'package:lapormin/features/report/domain/use_cases/get_public_reports.dart';
-import 'package:lapormin/features/report/domain/use_cases/get_user_reports.dart';
+// import 'package:lapormin/features/report/domain/use_cases/get_public_reports.dart';
+// import 'package:lapormin/features/report/domain/use_cases/get_user_reports.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -20,9 +20,9 @@ void main() async {
   final repository = ReportRepositoryImpl(
     remoteDataSource: ReportRemoteDataSourceImpl(supabase: supabase),
   );
-  final getUserReportsResult = GetUserReports(repository);
+  // final getUserReportsResult = GetUserReports(repository);
   final getAdminReportsResult = GetAdminReports(repository);
-  final getPublicReportsResult = GetPublicReports(repository);
+  // final getPublicReportsResult = GetPublicReports(repository);
 
   await supabase.auth.signInWithPassword(
     phone: "+6285866478673",

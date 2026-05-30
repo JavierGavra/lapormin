@@ -1,7 +1,5 @@
-import 'package:lapormin/core/constants/report_category_enum.dart';
-import 'package:lapormin/features/report/data/data_sources/report_remote_data_source.dart';
-import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
-import 'package:lapormin/features/report/domain/use_cases/submit_report.dart';
+// import 'package:lapormin/features/report/data/data_sources/report_remote_data_source.dart';
+import 'package:flutter/rendering.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -14,7 +12,7 @@ void main() async {
   );
 
   final supabase = Supabase.instance.client;
-  final remoteDataSource = ReportRemoteDataSourceImpl(supabase: supabase);
+  // final remoteDataSource = ReportRemoteDataSourceImpl(supabase: supabase);
 
   await supabase.auth.signInWithPassword(
     phone: "+6285866478673",
@@ -26,8 +24,8 @@ void main() async {
   // );
 
   // b9364f1f-4109-4801-8417-6433b148d176
-  print(supabase.auth.currentUser!.id);
-  print(supabase.auth.currentUser!.role);
+  // print(supabase.auth.currentUser!.id);
+  // print(supabase.auth.currentUser!.role);
 
   // await remoteDataSource.insertReport(
   //   SubmitReportParams(
@@ -60,22 +58,24 @@ void main() async {
   //   print(e);
   // }
 
-  try {
-    final reports = await remoteDataSource.fetchFieldOfficerReports(
-      ReportFilterParams(category: null, status: null, keyword: null),
-    );
+  final response = await supabase
+      .from('report')
+      .select('''
+              *,
+              report_status_logs: report_status_log (
+                id, user_id, status, created_at
+              ),
+              field_check (
+                *,
+                ...users(
+                  field_officer_name: username,
+                  field_officer_phone: no_telp
+                )
+              ),
+              final_report (*)
+            ''')
+      .eq('id', "c93bd9b1-508a-4d90-89c8-3d986f215bad")
+      .single();
 
-    for (var report in reports) {
-      print("ID: ${report.id}");
-      print("Title: ${report.title}");
-      print("Address: ${report.shortAdddress}");
-      print("Category: ${report.category}");
-      print("Status: ${report.status}");
-      print("Created At: ${report.createdAt}");
-      print("Due Action: ${report.dueAction}");
-      print("-----------------------------");
-    }
-  } catch (e) {
-    print(e);
-  }
+  debugPrint("$response");
 }
