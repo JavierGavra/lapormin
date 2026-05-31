@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/core/constants/report_category_enum.dart';
-import 'package:lapormin/core/utils/text_style/app_text_style.dart';
-import 'package:lapormin/core/utils/validator/input_validator.dart';
-import 'package:lapormin/core/widgets/text_field/app_text_field.dart';
-import 'package:lapormin/features/report/presentation/widgets/create_report/category_picker_widget.dart';
+
+import '../../../../../core/constants/report_category_enum.dart';
+import '../../../../../core/utils/text_style/app_text_style.dart';
+import '../../../../../core/utils/validator/input_validator.dart';
+import '../../../../../core/widgets/text_field/app_text_field.dart';
+import 'category_picker_widget.dart';
 
 class TitleCategoryStep extends StatefulWidget {
   final GlobalKey<FormState> formKey;
@@ -70,6 +71,7 @@ class _TitleCategoryStepState extends State<TitleCategoryStep>
               child: AppTextField(
                 controller: widget.titleController,
                 hintText: "Mau laporin apa...",
+                textCapitalization: TextCapitalization.words,
                 validator: (value) => InputValidator.empty(value),
               ),
             ),

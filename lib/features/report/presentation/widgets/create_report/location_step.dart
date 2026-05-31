@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/features/location/presentation/widgets/location_picker/location_picker.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+
+import '../../../../../core/utils/text_style/app_text_style.dart';
+import '../../../../location/presentation/widgets/location_picker/location_picker.dart';
 
 class LocationStep extends StatelessWidget {
   const LocationStep({super.key, required this.onLocationChanged});

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/core/constants/report_category_enum.dart';
-import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+
+import '../../../../../core/constants/report_category_enum.dart';
+import '../../../../../core/utils/text_style/app_text_style.dart';
 
 class CategoryPickerWidget extends StatefulWidget {
   final ReportCategory initialCategory;

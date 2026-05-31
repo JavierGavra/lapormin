@@ -4,15 +4,16 @@ import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 class AppTextField extends StatefulWidget {
   final bool autofocus;
   final bool isPassword;
+  final int? minLines;
+  final int? maxLines;
   final String hintText;
   final Color? fillColor;
   final TextStyle? hintStyle;
   final Widget? prefixIcon;
   final TextInputType? keyboardType;
   final TextEditingController? controller;
+  final TextCapitalization textCapitalization;
   final String? Function(String?)? validator;
-  final int? minLines;
-  final int? maxLines;
 
   const AppTextField({
     super.key,
@@ -27,6 +28,7 @@ class AppTextField extends StatefulWidget {
     this.validator,
     this.minLines,
     this.maxLines = 1,
+    this.textCapitalization = TextCapitalization.none,
   });
 
   @override
@@ -54,6 +56,7 @@ class _AppTextFieldState extends State<AppTextField> {
       keyboardType: widget.keyboardType,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
+      textCapitalization: widget.textCapitalization,
       decoration: InputDecoration(
         hintText: widget.hintText,
         hintStyle:

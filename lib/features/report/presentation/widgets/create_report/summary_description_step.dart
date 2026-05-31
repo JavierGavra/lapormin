@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/core/utils/text_style/app_text_style.dart';
-import 'package:lapormin/core/utils/validator/input_validator.dart';
-import 'package:lapormin/core/widgets/text_field/app_text_field.dart';
-import 'package:lapormin/features/report/presentation/bloc/create_report/create_report_bloc.dart';
-import 'package:lapormin/features/report/presentation/widgets/create_report/create_report_step_header.dart';
+
+import '../../../../../core/utils/text_style/app_text_style.dart';
+import '../../../../../core/utils/validator/input_validator.dart';
+import '../../../../../core/widgets/text_field/app_text_field.dart';
+import '../../bloc/create_report/create_report_bloc.dart';
+import 'create_report_step_header.dart';
 
 class _SummaryData {
   final String category;
@@ -172,6 +173,7 @@ class SummaryDescriptionStep extends StatelessWidget {
             minLines: 3,
             maxLines: null,
             keyboardType: TextInputType.multiline,
+            textCapitalization: TextCapitalization.sentences,
             validator: (value) => InputValidator.empty(value),
           ),
         ),
