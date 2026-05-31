@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/core/utils/text_style/app_text_style.dart';
-import 'package:lapormin/core/widgets/button/app_back_button.dart';
-import 'package:lapormin/core/widgets/progress_bar/segmented_progress_bar.dart';
-import 'package:lapormin/features/report/presentation/bloc/create_report/create_report_bloc.dart';
+
+import '../../../../../core/utils/text_style/app_text_style.dart';
+import '../../../../../core/widgets/button/app_back_button.dart';
+import '../../../../../core/widgets/progress_bar/segmented_progress_bar.dart';
+import '../../bloc/create_report/create_report_bloc.dart';
 
 class CreateReportHeader extends StatelessWidget {
   final int totalSteps;

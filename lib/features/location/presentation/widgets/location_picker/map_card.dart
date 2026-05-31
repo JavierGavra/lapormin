@@ -50,7 +50,7 @@ class _MapCardState extends State<MapCard> {
               FlutterMap(
                 mapController: _mapController,
                 options: MapOptions(
-                  initialCenter: const LatLng(-6.9175, 107.6191),
+                  initialCenter: const LatLng(0, 0),
                   initialZoom: 16,
                   onMapEvent: _onMapEvent,
                 ),
@@ -69,6 +69,10 @@ class _MapCardState extends State<MapCard> {
                 buildWhen: (prev, curr) =>
                     prev.isLocationLoading != curr.isLocationLoading,
                 builder: (context, state) {
+                  if (state.status == LocationPickerStatus.failure) {
+                    return Container(color: color.errorContainer);
+                  }
+
                   if (!state.isLocationLoading) return const SizedBox.shrink();
                   return Container(
                     color: color.surfaceContainer,

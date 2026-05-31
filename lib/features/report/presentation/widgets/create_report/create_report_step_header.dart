@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+
+import '../../../../../core/utils/text_style/app_text_style.dart';
 
 class CreateReportStepHeader extends StatelessWidget {
   final String title;

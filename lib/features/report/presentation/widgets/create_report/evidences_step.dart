@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/features/report/presentation/widgets/picker/evidences_picker/evidences_picker.dart';
+
+import '../picker/evidences_picker/evidences_picker.dart';
 import 'create_report_step_header.dart';
 
 class EvidencesStep extends StatefulWidget {
