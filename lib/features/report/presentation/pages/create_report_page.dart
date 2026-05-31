@@ -160,7 +160,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
     return BlocProvider(
       create: (context) => sl<CreateReportBloc>(),
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        // resizeToAvoidBottomInset: false,
         body: BlocListener<CreateReportBloc, CreateReportState>(
           listener: _listener,
           child: Builder(

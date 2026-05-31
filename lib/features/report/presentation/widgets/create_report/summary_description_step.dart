@@ -172,6 +172,7 @@ class SummaryDescriptionStep extends StatelessWidget {
             minLines: 3,
             maxLines: null,
             keyboardType: TextInputType.multiline,
+            textCapitalization: TextCapitalization.sentences,
             validator: (value) => InputValidator.empty(value),
           ),
         ),

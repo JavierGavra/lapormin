@@ -70,6 +70,7 @@ class _TitleCategoryStepState extends State<TitleCategoryStep>
               child: AppTextField(
                 controller: widget.titleController,
                 hintText: "Mau laporin apa...",
+                textCapitalization: TextCapitalization.words,
                 validator: (value) => InputValidator.empty(value),
               ),
             ),
