@@ -56,6 +56,12 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
     return filteredQuery;
   }
 
+  String? _resolveEvidenceUrl(dynamic evidences) {
+    final media = (evidences as List?)?.firstOrNull?['media'] as String?;
+    if (media == null) return null;
+    return supabase.storage.from('reports').getPublicUrl(media);
+  }
+
   @override
   Future<String> insertReport(SubmitReportParams params) async {
     try {
@@ -129,18 +135,26 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
     ReportFilterParams filter,
   ) async {
     try {
-      var query = supabase.from('report').select(_reportSummaryColumn);
+      var query = supabase
+          .from('report')
+          .select('$_reportSummaryColumn, evidence:report_evidence(media)');
 
-      query = _applyFilter(query, filter);
-
-      final response = await query
+      final response = await _applyFilter(query, filter)
+          .limit(1, referencedTable: 'report_evidence')
           .order('created_at', ascending: false)
           .timeout(
             const Duration(seconds: 5),
             onTimeout: () => throw const TimeoutException(),
           );
-      return response.map((e) => ReportSummaryModel.fromMap(e)).toList();
+
+      return response.map((e) {
+        return ReportSummaryModel.fromMap({
+          ...e,
+          'evidence': _resolveEvidenceUrl(e['evidence']),
+        });
+      }).toList();
     } catch (e) {
+      debugPrint("$e");
       rethrow;
     }
   }
@@ -151,28 +165,30 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
   ) async {
     try {
       final userId = supabase.auth.currentUser!.id;
-
-      debugPrint("🔍 ID YANG LAGI LOGIN: $userId");
-
       var query = supabase
           .from('report')
-          .select('$_reportSummaryColumn, field_check!inner(user_id)')
+          .select('''
+            $_reportSummaryColumn,
+            evidence:report_evidence(media),
+            field_check!inner(user_id)
+          ''')
           .eq('field_check.user_id', userId);
 
-      query = _applyFilter(query, filter);
-
-      final response = await query
+      final response = await _applyFilter(query, filter)
           .order('created_at', ascending: false)
           .timeout(
             const Duration(seconds: 5),
             onTimeout: () => throw const TimeoutException(),
           );
 
-      debugPrint("🔍 HASIL TARIK DATA: $response");
-
-      return response.map((e) => ReportSummaryModel.fromMap(e)).toList();
+      return response.map((e) {
+        return ReportSummaryModel.fromMap({
+          ...e,
+          'evidence': _resolveEvidenceUrl(e['evidence']),
+        });
+      }).toList();
     } catch (e) {
-      debugPrint("🔍 ERROR DARI SUPABASE: $e");
+      debugPrint("$e");
       rethrow;
     }
   }
@@ -182,15 +198,14 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
     ReportFilterParams filter,
   ) async {
     try {
-      // 1. Tambahkan relasi evidences ke dalam select
       var query = supabase
           .from('report')
-          .select('$_reportSummaryColumn, evidences:report_evidence(media)')
+          .select('$_reportSummaryColumn, evidence:report_evidence(media)')
           .neq('status', 'pending')
-          .neq('status', 'rejected')
-          .limit(1, referencedTable: 'report_evidence');
+          .neq('status', 'rejected');
 
-      final response = await query
+      final response = await _applyFilter(query, filter)
+          .limit(1, referencedTable: 'report_evidence')
           .order('created_at', ascending: false)
           .timeout(
             const Duration(seconds: 5),
@@ -198,25 +213,13 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
           );
 
       return response.map((e) {
-        final Map<String, dynamic> rawData = Map<String, dynamic>.from(e);
-
-        if (rawData['evidences'] != null &&
-            (rawData['evidences'] as List).isNotEmpty) {
-          final mediaPath = rawData['evidences'][0]['media'] as String;
-
-          final publicUrl = supabase.storage
-              .from('reports')
-              .getPublicUrl(mediaPath);
-
-          rawData['evidences'] = [publicUrl];
-        } else {
-          rawData['evidences'] = <String>[];
-        }
-
-        return ReportSummaryModel.fromMap(rawData);
+        return ReportSummaryModel.fromMap({
+          ...e,
+          'evidence': _resolveEvidenceUrl(e['evidence']),
+        });
       }).toList();
     } catch (e) {
-      debugPrint("Error fetching public reports: $e");
+      debugPrint("$e");
       rethrow;
     }
   }

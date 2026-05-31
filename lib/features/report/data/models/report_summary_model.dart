@@ -19,7 +19,7 @@ class ReportSummaryModel extends ReportSummary {
       title: map['title'] as String,
       shortAdddress: (map['address'] as String).split(',').first,
       category: map['category'] as String,
-      evidence: map['evidences'][0] as String,
+      evidence: map['evidence'] as String,
       createdAt: DateTime.parse(map['created_at'] as String),
       status: ReportStatus.fromString(map['status'] as String),
       dueAction: map['due_action'] != null
