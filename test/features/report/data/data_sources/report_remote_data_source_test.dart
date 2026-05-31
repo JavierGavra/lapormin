@@ -58,24 +58,32 @@ void main() async {
   //   print(e);
   // }
 
-  final response = await supabase
+  // final response = await supabase
+  //     .from('report')
+  //     .select('''
+  //             *,
+  //             report_status_logs: report_status_log (
+  //               id, user_id, status, created_at
+  //             ),
+  //             field_check (
+  //               *,
+  //               ...users(
+  //                 field_officer_name: username,
+  //                 field_officer_phone: no_telp
+  //               )
+  //             ),
+  //             final_report (*)
+  //           ''')
+  //     .eq('id', "c93bd9b1-508a-4d90-89c8-3d986f215bad")
+  //     .single();
+
+  var response = await supabase
       .from('report')
-      .select('''
-              *,
-              report_status_logs: report_status_log (
-                id, user_id, status, created_at
-              ),
-              field_check (
-                *,
-                ...users(
-                  field_officer_name: username,
-                  field_officer_phone: no_telp
-                )
-              ),
-              final_report (*)
-            ''')
-      .eq('id', "c93bd9b1-508a-4d90-89c8-3d986f215bad")
-      .single();
+      .select(
+        'id, title, address, category, status, created_at, due_action, evidence:report_evidence(media)',
+      )
+      .limit(1, referencedTable: 'report_evidence')
+      .order('created_at', ascending: false);
 
   debugPrint("$response");
 }
