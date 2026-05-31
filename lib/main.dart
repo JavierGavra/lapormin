@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
       providers: Provider.providers(),
       child: MaterialApp(
         title: 'LaporMin!',
+        locale: const Locale('id', 'ID'),
         debugShowCheckedModeBanner: false,
         theme: MaterialTheme(const TextTheme()).light(),
         home: const SplashScreen(),

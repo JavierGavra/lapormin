@@ -294,6 +294,9 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
           .from('report')
           .select('''
               *,
+              evidences: report_evidence (
+                media
+              ),
               report_status_logs: report_status_log (
                 id, user_id, status, created_at
               ),
@@ -313,7 +316,20 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
             onTimeout: () => throw const TimeoutException(),
           );
 
-      return ReportAggregateModel.fromMap(response);
+      final rawData = response;
+
+      if (rawData['evidences'] != null) {
+        final List<dynamic> rawEvidences = rawData['evidences'];
+
+        final List<String> imageUrls = rawEvidences.map((evidence) {
+          final mediaPath = evidence['media'] as String;
+          return supabase.storage.from('reports').getPublicUrl(mediaPath);
+        }).toList();
+
+        rawData['evidences'] = imageUrls;
+      }
+
+      return ReportAggregateModel.fromMap(rawData);
     } catch (e) {
       debugPrint("Error fetching report: $e");
       rethrow;

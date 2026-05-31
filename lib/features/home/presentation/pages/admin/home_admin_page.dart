@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/constants/user_role_enum.dart';
+import 'package:lapormin/core/route/navigate.dart';
+import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
@@ -234,8 +237,13 @@ class _HomeAdminPageState extends State<HomeAdminPage> {
                         deadlineDate: report.dueAction,
                         isVideo: report.evidence.endsWith('.mp4'),
                         onTap: () {
-                          debugPrint("Buka detail laporan admin: ${report.id}");
-                          // TODO: Navigasi ke halaman detail khusus admin
+                          Navigate.push(
+                            context,
+                            InternalReportDetailPage(
+                              role: UserRole.admin,
+                              id: report.id,
+                            ),
+                          );
                         },
                       );
                     },

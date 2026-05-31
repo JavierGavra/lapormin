@@ -57,7 +57,7 @@ class ReportInfoHeader extends StatelessWidget {
               color: color.onSurfaceVariant,
             ),
             Text(
-              DateFormat("dd MMMM yyyy - HH:mm").format(createdAt),
+              DateFormat("dd MMMM yyyy - HH:mm", 'id_ID').format(createdAt),
               // "${createdAt.day.toString().padLeft(2, '0')} ${createdAt.month.toString().padLeft(2, '0')} ${createdAt.year} - ${createdAt.hour.toString().padLeft(2, '0')}:${createdAt.minute.toString().padLeft(2, '0')}",
               style: AppTextStyle.s14(
                 fontWeight: FontWeight.w500,
