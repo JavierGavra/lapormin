@@ -62,7 +62,7 @@ class GridReportInfoEvidences extends StatelessWidget {
                           color: color.primaryContainer,
                           borderRadius: BorderRadius.circular(12),
                           image: DecorationImage(
-                            image: AssetImage(evidence),
+                            image: NetworkImage(evidence),
                             fit: BoxFit.cover,
                           ),
                         ),

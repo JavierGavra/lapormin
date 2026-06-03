@@ -25,6 +25,9 @@ abstract interface class ReportRemoteDataSource {
   Future<ReportModel> fetchReport(String id);
   Future<ReportAggregateModel> fetchReportAggregate(String id);
   Future<bool> deleteReport(String id);
+  Future<ReportModel> updateReportStatus(String id, ReportStatus status);
+  Future<bool> assignFieldOfficer(String reportId, String fieldOfficerId);
+  Future<bool> provideAction(String id, DateTime? dueAction);
 }
 
 class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
@@ -228,17 +231,25 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
   Future<List<ReportSummaryModel>> fetchUserReports() async {
     try {
       final userId = supabase.auth.currentUser!.id;
-      final response = await supabase
+      var response = await supabase
           .from('report')
-          .select(_reportSummaryColumn)
+          .select('$_reportSummaryColumn, evidence:report_evidence(media)')
           .eq('user_id', userId)
+          .limit(1, referencedTable: 'report_evidence')
           .order('created_at', ascending: false)
           .timeout(
             const Duration(seconds: 5),
             onTimeout: () => throw const TimeoutException(),
           );
-      return response.map((e) => ReportSummaryModel.fromMap(e)).toList();
+
+      return response.map((e) {
+        return ReportSummaryModel.fromMap({
+          ...e,
+          'evidence': _resolveEvidenceUrl(e['evidence']),
+        });
+      }).toList();
     } catch (e) {
+      debugPrint("$e");
       rethrow;
     }
   }
@@ -294,6 +305,9 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
           .from('report')
           .select('''
               *,
+              evidences: report_evidence (
+                media
+              ),
               report_status_logs: report_status_log (
                 id, user_id, status, created_at
               ),
@@ -313,9 +327,74 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
             onTimeout: () => throw const TimeoutException(),
           );
 
-      return ReportAggregateModel.fromMap(response);
+      final rawData = response;
+
+      if (rawData['evidences'] != null) {
+        final List<dynamic> rawEvidences = rawData['evidences'];
+
+        final List<String> imageUrls = rawEvidences.map((evidence) {
+          final mediaPath = evidence['media'] as String;
+          return supabase.storage.from('reports').getPublicUrl(mediaPath);
+        }).toList();
+
+        rawData['evidences'] = imageUrls;
+      }
+
+      return ReportAggregateModel.fromMap(rawData);
     } catch (e) {
       debugPrint("Error fetching report: $e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ReportModel> updateReportStatus(String id, ReportStatus status) async {
+    try {
+      final response = await supabase
+          .from('report')
+          .update({'status': status.dbValue})
+          .eq('id', id)
+          .select()
+          .single();
+
+      return ReportModel.fromMap(response);
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> assignFieldOfficer(
+    String reportId,
+    String fieldOfficerId,
+  ) async {
+    try {
+      await supabase.from('field_check').insert({
+        'report_id': reportId,
+        'user_id': fieldOfficerId,
+      });
+
+      return true;
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> provideAction(String id, DateTime? dueAction) async {
+    try {
+      await supabase
+          .from('report')
+          .update({'due_action': dueAction})
+          .eq('id', id)
+          .select()
+          .single();
+
+      return true;
+    } catch (e) {
+      debugPrint('$e');
       rethrow;
     }
   }

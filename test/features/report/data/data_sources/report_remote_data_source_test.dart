@@ -1,3 +1,4 @@
+import 'package:lapormin/core/constants/report_status_enum.dart';
 // import 'package:lapormin/features/report/data/data_sources/report_remote_data_source.dart';
 import 'package:flutter/rendering.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,8 +16,8 @@ void main() async {
   // final remoteDataSource = ReportRemoteDataSourceImpl(supabase: supabase);
 
   await supabase.auth.signInWithPassword(
-    phone: "+6285866478673",
-    password: "masyarakat123",
+    phone: "+6285800000001",
+    password: "adminlapormin",
   );
   // await supabase.auth.signInWithPassword(
   //   phone: "+6285800000002",
@@ -79,11 +80,9 @@ void main() async {
 
   var response = await supabase
       .from('report')
-      .select(
-        'id, title, address, category, status, created_at, due_action, evidence:report_evidence(media)',
-      )
-      .limit(1, referencedTable: 'report_evidence')
-      .order('created_at', ascending: false);
+      .update({'status': ReportStatus.verified.dbValue})
+      .eq('id', "61545c2e-762d-4d26-8d44-d8dc36ee2f40")
+      .select();
 
   debugPrint("$response");
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/constants/user_role_enum.dart';
+import 'package:lapormin/core/route/navigate.dart';
+import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
 import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
@@ -165,8 +168,10 @@ class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
           deadlineDate: report.dueAction,
           isVideo: report.evidence.endsWith('.mp4'),
           onTap: () {
-            debugPrint("Buka Detail Style 1: ${report.id}");
-            // TODO: Navigasi ke detail
+            Navigate.push(
+              context,
+              InternalReportDetailPage(role: UserRole.admin, id: report.id),
+            );
           },
         );
       },

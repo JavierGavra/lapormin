@@ -4,7 +4,7 @@ sealed class InternalReportDetailEvent extends Equatable {
   const InternalReportDetailEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class InternalReportDetailOpened extends InternalReportDetailEvent {
@@ -13,5 +13,29 @@ final class InternalReportDetailOpened extends InternalReportDetailEvent {
   const InternalReportDetailOpened(this.id);
 
   @override
-  List<Object> get props => [id];
+  List<Object?> get props => [id];
 }
+
+final class FieldCheckRequested extends InternalReportDetailEvent {
+  final String fieldOfficerId;
+
+  const FieldCheckRequested({required this.fieldOfficerId});
+
+  @override
+  List<Object?> get props => [fieldOfficerId];
+}
+
+final class VerifiedRequested extends InternalReportDetailEvent {}
+
+final class RejectedRequested extends InternalReportDetailEvent {}
+
+final class ActionRequested extends InternalReportDetailEvent {
+  final DateTime? dueAction;
+
+  const ActionRequested({this.dueAction});
+
+  @override
+  List<Object?> get props => [dueAction];
+}
+
+final class DoneRequested extends InternalReportDetailEvent {}
