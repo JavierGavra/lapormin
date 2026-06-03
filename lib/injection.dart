@@ -42,6 +42,11 @@ import 'features/report/presentation/bloc/internal_report_detail/internal_report
 import 'features/report/presentation/bloc/my_reports/my_reports_bloc.dart';
 import 'features/report/presentation/bloc/public_report_detail/public_report_detail_bloc.dart';
 import 'features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
+import 'features/map/data/data_sources/map_remote_data_source.dart';
+import 'features/map/data/repositories/map_repository_impl.dart';
+import 'features/map/domain/repositories/map_repository.dart';
+import 'features/map/domain/use_cases/get_nearby_active_reports.dart';
+import 'features/map/presentation/bloc/map_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -51,6 +56,7 @@ Future<void> initializeServiceLocator() async {
   _initLocationFeature();
   _initReportFeature();
   _initProfileFeature();
+  _initMapFeature();
 
   // External
   // final database = await DatabaseHelper.instance.database;
@@ -158,5 +164,23 @@ void _initProfileFeature() {
   // Data Sources
   sl.registerLazySingleton<ProfileLocalDataSource>(
     () => ProfileLocalDataSourceImpl(prefs: sl()),
+  );
+}
+
+void _initMapFeature() {
+  // BLoC
+  sl.registerFactory(() => MapBloc(getNearbyActiveReports: sl()));
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetNearbyActiveReports(sl()));
+
+  // Repository
+  sl.registerLazySingleton<MapRepository>(
+    () => MapRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  // Data Sources
+  sl.registerLazySingleton<MapRemoteDataSource>(
+    () => MapRemoteDataSourceImpl(supabase: sl()),
   );
 }
