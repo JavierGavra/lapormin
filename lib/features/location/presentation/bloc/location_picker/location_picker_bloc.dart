@@ -66,7 +66,11 @@ class LocationPickerBloc
         ),
       ),
       (address) => emit(
-        state.copyWith(status: LocationPickerStatus.success, address: address),
+        state.copyWith(
+          status: LocationPickerStatus.success,
+          address: address,
+          position: event.position,
+        ),
       ),
     );
   }

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/injection.dart';
 import 'package:lapormin/core/widgets/bottom_nav/admin_bottom_nav.dart';
 import 'package:lapormin/features/home/presentation/pages/admin/home_admin_page.dart';
 import 'package:lapormin/features/report/presentation/pages/admin_report_list_page.dart';
+import 'package:lapormin/features/map/presentation/pages/map_page.dart';
+import 'package:lapormin/features/map/presentation/bloc/map_bloc.dart';
+import 'package:lapormin/features/location/presentation/bloc/location_picker/location_picker_bloc.dart';
 
 class AdminMainLayout extends StatefulWidget {
   const AdminMainLayout({super.key});
@@ -27,7 +32,15 @@ class _AdminMainLayoutState extends State<AdminMainLayout> {
     ),
     const AdminReportListPage(),
     const Center(child: Text("Halaman Petugas (Admin)")),
-    const Center(child: Text("Halaman Peta (Admin)")),
+
+    // 📍 TEKS DUMMY DIHAPUS, PANGGIL PISAU DAPURNYA DI SINI SOB!
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => sl<MapBloc>()),
+        BlocProvider(create: (_) => sl<LocationPickerBloc>()),
+      ],
+      child: const MapPage(),
+    ),
   ];
 
   @override
