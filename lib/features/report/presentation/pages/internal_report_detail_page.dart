@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/widgets/loading/fullscreen_loading_overlay.dart';
 
 import '../../../../injection.dart';
 import '../../../../core/constants/user_role_enum.dart';
@@ -29,7 +30,19 @@ class InternalReportDetailPage extends StatefulWidget {
 }
 
 class _InternalReportDetailPageState extends State<InternalReportDetailPage> {
+  bool _isOverlayLoadingOpen = false;
+
   void _listener(BuildContext context, InternalReportDetailState state) {
+    if (state.isOverlayLoading) {
+      FullscreenLoadingOverlay.show(context);
+      _isOverlayLoadingOpen = true;
+    }
+
+    if (!state.isOverlayLoading && _isOverlayLoadingOpen) {
+      FullscreenLoadingOverlay.hide(context);
+      _isOverlayLoadingOpen = false;
+    }
+
     if (state.status == InternalReportDetailStatus.failure) {
       showSnackBar(
         context,
@@ -116,10 +129,15 @@ class _InternalReportDetailPageState extends State<InternalReportDetailPage> {
   Widget _buildTabBarView() {
     final statusTab = switch (widget.role) {
       UserRole.informant => InformantReportStatusTab(),
-      UserRole.admin => AdminReportStatusTab(),
+      UserRole.admin => AdminReportStatusTab(id: widget.id),
       UserRole.fieldOfficer => FieldOfficerReportStatusTab(),
     };
 
-    return TabBarView(children: [ReportInfoTab(), statusTab]);
+    return TabBarView(
+      children: [
+        ReportInfoTab(id: widget.id),
+        statusTab,
+      ],
+    );
   }
 }

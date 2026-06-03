@@ -35,8 +35,8 @@ class FieldCheckCard extends StatelessWidget {
         children: [
           _buildOfficerInfo(color),
           _buildDescription(color),
-          _buildEvidences(color),
-          _buildFooter(color),
+          if (fieldCheck.evidences.isNotEmpty) _buildEvidences(color),
+          if (fieldCheck.description != null) _buildFooter(color),
         ],
       ),
     );
@@ -87,7 +87,7 @@ class FieldCheckCard extends StatelessWidget {
 
   Widget _buildDescription(ColorScheme color) {
     return Text(
-      fieldCheck.description,
+      fieldCheck.description ?? "Menunggu laporan dari petugas lapangan...",
       style: AppTextStyle.s14(color: color.onSurfaceVariant),
     );
   }

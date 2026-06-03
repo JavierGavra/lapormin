@@ -32,6 +32,36 @@ class Report extends Equatable {
     required this.evidences,
   });
 
+  Report copyWith({
+    String? id,
+    String? ticket,
+    String? title,
+    String? address,
+    String? description,
+    double? latitude,
+    double? longitude,
+    DateTime? dueDate,
+    DateTime? createdAt,
+    ReportStatus? status,
+    ReportCategory? category,
+    List<String>? evidences,
+  }) {
+    return Report(
+      id: id ?? this.id,
+      ticket: ticket ?? this.ticket,
+      title: title ?? this.title,
+      address: address ?? this.address,
+      description: description ?? this.description,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      dueDate: dueDate ?? this.dueDate,
+      createdAt: createdAt ?? this.createdAt,
+      status: status ?? this.status,
+      category: category ?? this.category,
+      evidences: evidences ?? this.evidences,
+    );
+  }
+
   @override
   List<Object?> get props => [
     id,

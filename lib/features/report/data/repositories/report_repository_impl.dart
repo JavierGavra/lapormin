@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dartz/dartz.dart';
 
+import '../../../../core/constants/report_status_enum.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/report.dart';
 import '../../domain/entities/report_aggregate.dart';
@@ -106,6 +107,60 @@ class ReportRepositoryImpl implements ReportRepository {
     try {
       final data = await remoteDataSource.fetchReportAggregate(id);
       return Right(data);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> assignFieldOfficer({
+    required String reportId,
+    required String fieldOfficerId,
+  }) async {
+    try {
+      await remoteDataSource.assignFieldOfficer(reportId, fieldOfficerId);
+      await remoteDataSource.updateReportStatus(
+        reportId,
+        ReportStatus.fieldCheck,
+      );
+      return Right(true);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Report>> updateReportStatus({
+    required String id,
+    required ReportStatus status,
+  }) async {
+    try {
+      final data = await remoteDataSource.updateReportStatus(id, status);
+      return Right(data);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> provideAction({
+    required String reportId,
+    required DateTime? dueAction,
+  }) async {
+    try {
+      if (dueAction != null) {
+        await remoteDataSource.provideAction(reportId, dueAction);
+      }
+
+      await remoteDataSource.updateReportStatus(reportId, ReportStatus.action);
+
+      return Right(true);
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
     } catch (e) {

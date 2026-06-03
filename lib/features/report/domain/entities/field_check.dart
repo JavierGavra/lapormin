@@ -4,7 +4,7 @@ class FieldCheck extends Equatable {
   final String id;
   final String fieldOfficerName;
   final String fieldOfficerPhone;
-  final String description;
+  final String? description;
   final DateTime createdAt;
   final DateTime updatedAt;
   final List<String> evidences;
@@ -13,7 +13,7 @@ class FieldCheck extends Equatable {
     required this.id,
     required this.fieldOfficerName,
     required this.fieldOfficerPhone,
-    required this.description,
+    this.description,
     required this.createdAt,
     required this.updatedAt,
     required this.evidences,

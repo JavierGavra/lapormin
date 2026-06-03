@@ -1,6 +1,12 @@
 part of 'internal_report_detail_bloc.dart';
 
-enum InternalReportDetailStatus { initial, loading, success, failure }
+enum InternalReportDetailStatus {
+  initial,
+  loading,
+  overlayLoading,
+  success,
+  failure,
+}
 
 final class InternalReportDetailState extends Equatable {
   final InternalReportDetailStatus status;
@@ -15,7 +21,13 @@ final class InternalReportDetailState extends Equatable {
     this.errorMessage,
   });
 
-  bool get isLoading => status == InternalReportDetailStatus.loading;
+  bool get isLoading =>
+      status == InternalReportDetailStatus.loading ||
+      status == InternalReportDetailStatus.initial;
+
+  bool get isOverlayLoading =>
+      status == InternalReportDetailStatus.overlayLoading;
+
   bool get isSuccess => status == InternalReportDetailStatus.success;
 
   InternalReportDetailState copyWith({

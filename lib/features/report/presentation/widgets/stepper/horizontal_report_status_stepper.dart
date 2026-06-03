@@ -37,6 +37,8 @@ class HorizontalReportStatusStepper extends StatelessWidget {
   ];
 
   String _calculateDaysRemaining() {
+    if (dueDate == null) return 'Tanpa batas waktu';
+
     final remaining = dueDate!.difference(DateTime.now()).inDays;
 
     return remaining < 0
@@ -187,7 +189,7 @@ class HorizontalReportStatusStepper extends StatelessWidget {
           ),
         ),
 
-        if (dueDate != null)
+        if (currentStatus == ReportStatus.action)
           Text(
             _calculateDaysRemaining(),
             style: AppTextStyle.s12(
