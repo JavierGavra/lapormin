@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/core/widgets/loading/shimmer_widget.dart';
 
 class GridReportInfoEvidences extends StatelessWidget {
   final List<String> evidences;
@@ -56,14 +57,26 @@ class GridReportInfoEvidences extends StatelessWidget {
                   return SizedBox(
                     width: itemWidth,
                     height: itemWidth,
-                    child: Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: color.primaryContainer,
-                          borderRadius: BorderRadius.circular(12),
-                          image: DecorationImage(
-                            image: NetworkImage(evidence),
-                            fit: BoxFit.cover,
+                    // 1. Positioned.fill dihapus
+                    child: ClipRRect(
+                      // 2. Gunakan ClipRRect untuk border radius
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        evidence,
+                        fit: BoxFit.cover,
+                        // 3. Tambahkan handler dasar untuk best practice
+                        frameBuilder:
+                            (context, child, frame, wasSynchronouslyLoaded) {
+                              if (wasSynchronouslyLoaded || frame != null) {
+                                return child;
+                              }
+                              return ShimmerWidget();
+                            },
+                        errorBuilder: (context, error, stack) => Container(
+                          color: color.surfaceContainerHighest,
+                          child: Icon(
+                            Icons.broken_image_rounded,
+                            color: color.outline,
                           ),
                         ),
                       ),
