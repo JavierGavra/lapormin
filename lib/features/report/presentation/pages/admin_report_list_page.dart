@@ -9,8 +9,21 @@ import 'package:lapormin/features/report/presentation/widgets/admin_report/admin
 import 'package:lapormin/features/report/presentation/widgets/admin_report/admin_stat_card.dart';
 import 'package:lapormin/features/report/presentation/widgets/admin_report/admin_category_stat_card.dart';
 
-class AdminReportListPage extends StatelessWidget {
+class AdminReportListPage extends StatefulWidget {
   const AdminReportListPage({super.key});
+
+  @override
+  State<AdminReportListPage> createState() => _AdminReportListPageState();
+}
+
+class _AdminReportListPageState extends State<AdminReportListPage> {
+  // 📍 FUNGSI REFRESH SEMENTARA
+  Future<void> _onRefresh() async {
+    // TODO: naruh event BLoC Statistik di sini
+    // Contoh: context.read<AdminStatisticBloc>().add(FetchStatistics());
+
+    await Future.delayed(const Duration(milliseconds: 800));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,180 +32,187 @@ class AdminReportListPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: color.surface,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            AppSliverAppBar(
-              profileUrl: "assets/images/profiles/profile.png",
-              onNotificationTap: () {
-                debugPrint("Buka Notifikasi Admin");
-              },
-            ),
+        child: RefreshIndicator(
+          color: color.primary,
+          backgroundColor: color.surfaceContainerHighest,
+          onRefresh: _onRefresh,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              AppSliverAppBar(
+                profileUrl: "assets/images/profiles/profile.png",
+                onNotificationTap: () {
+                  debugPrint("Buka Notifikasi Admin");
+                },
+              ),
 
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24.0,
-                  vertical: 16.0,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AdminInfoBanner(
-                      onTap: () => debugPrint("Banner Admin Info Diklik"),
-                    ),
-                    const SizedBox(height: 24),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 16.0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AdminInfoBanner(
+                        onTap: () => debugPrint("Banner Admin Info Diklik"),
+                      ),
+                      const SizedBox(height: 24),
+                      AdminStatCard(
+                        title: "Semua Laporan",
+                        subtitle: "Laporan dari masyarakat",
+                        count: "20",
+                        icon: Icons.assignment_outlined,
+                        iconBackgroundColor: color.surfaceContainer,
+                        onTap: () => {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const AdminReportListDetailPage(
+                                    title: "Semua Laporan",
+                                  ),
+                            ),
+                          ),
+                        },
+                      ),
+                      const SizedBox(height: 16),
 
-                    AdminStatCard(
-                      title: "Semua Laporan",
-                      subtitle: "Laporan dari masyarakat",
-                      count: "20",
-                      icon: Icons.assignment_outlined,
-                      iconBackgroundColor: color.surfaceContainer,
-                      onTap: () => {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const AdminReportListDetailPage(
-                                  title: "Semua Laporan",
-                                ),
-                          ),
-                        ),
-                      },
-                    ),
-                    const SizedBox(height: 16),
+                      AdminStatCard(
+                        title: "Menunggu Verifikasi",
+                        subtitle:
+                            "Ada laporan yang menunggu untuk di verifikasi",
+                        count: "12",
+                        icon: Icons.pending_actions_outlined,
+                        iconBackgroundColor: color.surfaceContainer,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const AdminReportListDetailPage(
+                                    title: "Menunggu Verifikasi",
+                                    filterStatus: ReportStatus.pending,
+                                  ),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24),
 
-                    AdminStatCard(
-                      title: "Menunggu Verifikasi",
-                      subtitle: "Ada laporan yang menunggu untuk di verifikasi",
-                      count: "12",
-                      icon: Icons.pending_actions_outlined,
-                      iconBackgroundColor: color.surfaceContainer,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const AdminReportListDetailPage(
-                                  title: "Menunggu Verifikasi",
-                                  filterStatus: ReportStatus.pending,
-                                ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 24),
+                      Text(
+                        'Kategori',
+                        style: AppTextStyle.s16(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 16),
 
-                    Text(
-                      'Kategori',
-                      style: AppTextStyle.s16(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AdminCategoryStatCard(
+                              title: "Infrastruktur",
+                              count: "5 laporan",
+                              icon: Icons.apartment_outlined,
+                              backgroundColor: color.primaryContainer,
+                              titleColor: color.onPrimaryContainer,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AdminReportListDetailPage(
+                                          title: "Infrastruktur",
+                                          filterCategory:
+                                              ReportCategory.infrastructure,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: AdminCategoryStatCard(
+                              title: "Bencana",
+                              count: "3 laporan",
+                              icon: Icons.flood_outlined,
+                              backgroundColor: color.warningContainer,
+                              titleColor: color.onWarningContainer,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AdminReportListDetailPage(
+                                          title: "Bencana",
+                                          filterCategory:
+                                              ReportCategory.disaster,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AdminCategoryStatCard(
+                              title: "Kriminal",
+                              count: "2 laporan",
+                              icon: Icons.warning_amber_rounded,
+                              backgroundColor: color.errorContainer,
+                              titleColor: color.onErrorContainer,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AdminReportListDetailPage(
+                                          title: "Kriminal",
+                                          filterCategory: ReportCategory.crime,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: AdminCategoryStatCard(
+                              title: "Layanan Publik",
+                              count: "0 laporan",
+                              icon: Icons.account_balance_outlined,
+                              backgroundColor: color.successContainer,
+                              titleColor: color.onSuccessContainer,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const AdminReportListDetailPage(
+                                          title: "Layanan Publik",
+                                          filterCategory:
+                                              ReportCategory.publicService,
+                                        ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
 
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AdminCategoryStatCard(
-                            title: "Infrastruktur",
-                            count: "5 laporan",
-                            icon: Icons.apartment_outlined,
-                            backgroundColor: color.primaryContainer,
-                            titleColor: color.onPrimaryContainer,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const AdminReportListDetailPage(
-                                        title: "Infrastruktur",
-                                        filterCategory:
-                                            ReportCategory.infrastructure,
-                                      ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: AdminCategoryStatCard(
-                            title: "Bencana",
-                            count: "3 laporan",
-                            icon: Icons.flood_outlined,
-                            backgroundColor: color.warningContainer,
-                            titleColor: color.onWarningContainer,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const AdminReportListDetailPage(
-                                        title: "Bencana",
-                                        filterCategory: ReportCategory.disaster,
-                                      ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: AdminCategoryStatCard(
-                            title: "Kriminal",
-                            count: "2 laporan",
-                            icon: Icons.warning_amber_rounded,
-                            backgroundColor: color.errorContainer,
-                            titleColor: color.onErrorContainer,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const AdminReportListDetailPage(
-                                        title: "Kriminal",
-                                        filterCategory: ReportCategory.crime,
-                                      ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: AdminCategoryStatCard(
-                            title: "Layanan Publik",
-                            count: "0 laporan",
-                            icon: Icons.account_balance_outlined,
-                            backgroundColor: color.successContainer,
-                            titleColor: color.onSuccessContainer,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const AdminReportListDetailPage(
-                                        title: "Layanan Publik",
-                                        filterCategory:
-                                            ReportCategory.publicService,
-                                      ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 40),
-                  ],
+                      const SizedBox(height: 40),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -39,6 +39,10 @@ class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
   @override
   void initState() {
     super.initState();
+    _fetchReports();
+  }
+
+  void _fetchReports() {
     context.read<AdminReportsBloc>().add(
       FetchAdminReports(
         status: widget.filterStatus,
@@ -47,97 +51,109 @@ class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
     );
   }
 
+  Future<void> _onRefresh() async {
+    _fetchReports();
+    await Future.delayed(const Duration(milliseconds: 800));
+  }
+
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
 
     return Scaffold(
       backgroundColor: color.surface,
-      body: CustomScrollView(
-        slivers: [
-          AdminSliverAppBar(
-            title: widget.title,
-            onBackTap: () => Navigator.pop(context),
-          ),
+      body: RefreshIndicator(
+        color: color.primary,
+        backgroundColor: color.surfaceContainerHighest,
+        onRefresh: _onRefresh,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            AdminSliverAppBar(
+              title: widget.title,
+              onBackTap: () => Navigator.pop(context),
+            ),
 
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ReportSearchBar(
-                      onSearchTap: () => debugPrint("Cari laporan admin"),
-                      onFilterTap: () => debugPrint("Filter admin"),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 16.0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ReportSearchBar(
+                        onSearchTap: () => debugPrint("Cari laporan admin"),
+                        onFilterTap: () => debugPrint("Filter admin"),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  ReportLayoutSwitch(
-                    isStyle1: _isStyle1,
-                    onSwitch: (val) => setState(() => _isStyle1 = val),
-                  ),
-                ],
+                    const SizedBox(width: 12),
+                    ReportLayoutSwitch(
+                      isStyle1: _isStyle1,
+                      onSwitch: (val) => setState(() => _isStyle1 = val),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          BlocBuilder<AdminReportsBloc, AdminReportsState>(
-            builder: (context, state) {
-              if (state.status == AdminReportsStatus.loading ||
-                  state.status == AdminReportsStatus.initial) {
+            BlocBuilder<AdminReportsBloc, AdminReportsState>(
+              builder: (context, state) {
+                if (state.status == AdminReportsStatus.loading ||
+                    state.status == AdminReportsStatus.initial) {
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    sliver: SliverList.separated(
+                      itemCount: 4,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 16),
+                      itemBuilder: (context, index) {
+                        return _isStyle1
+                            ? const ReportCardShimmer()
+                            : const CompactReportCardShimmer();
+                      },
+                    ),
+                  );
+                }
+
+                if (state.status == AdminReportsStatus.failure) {
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Text(
+                          state.errorMessage ?? "Gagal memuat laporan admin.",
+                          style: TextStyle(color: color.error),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (state.reports.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Text(
+                          "Tidak ada laporan pada kategori/status ini.",
+                          style: TextStyle(color: color.onSurfaceVariant),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
                 return SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  sliver: SliverList.separated(
-                    itemCount: 4,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 16),
-                    itemBuilder: (context, index) {
-                      return _isStyle1
-                          ? const ReportCardShimmer()
-                          : const CompactReportCardShimmer();
-                    },
-                  ),
+                  sliver: _isStyle1
+                      ? _buildStyle1SliverList(color, state.reports)
+                      : _buildStyle2SliverList(color, state.reports),
                 );
-              }
+              },
+            ),
 
-              if (state.status == AdminReportsStatus.failure) {
-                return SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Text(
-                        state.errorMessage ?? "Gagal memuat laporan admin.",
-                        style: TextStyle(color: color.error),
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              if (state.reports.isEmpty) {
-                return const SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(24.0),
-                      child: Text(
-                        "Tidak ada laporan pada kategori/status ini.",
-                      ),
-                    ),
-                  ),
-                );
-              }
-
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                sliver: _isStyle1
-                    ? _buildStyle1SliverList(color, state.reports)
-                    : _buildStyle2SliverList(color, state.reports),
-              );
-            },
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 80)),
-        ],
+            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+          ],
+        ),
       ),
     );
   }
@@ -199,8 +215,10 @@ class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
           status: report.status,
           deadlineDate: report.dueAction,
           onTap: () {
-            debugPrint("Buka Detail Style 2: ${report.id}");
-            // TODO: Navigasi ke detail
+            Navigate.push(
+              context,
+              InternalReportDetailPage(role: UserRole.admin, id: report.id),
+            );
           },
         );
       },

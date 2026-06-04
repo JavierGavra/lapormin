@@ -6,7 +6,6 @@ import 'package:lapormin/features/report/domain/use_cases/reject_report.dart';
 import 'package:lapormin/features/report/domain/use_cases/verify_report.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import 'features/auth/data/data_sources/auth_local_data_source.dart';
 import 'features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
@@ -52,6 +51,7 @@ import 'features/map/data/repositories/map_repository_impl.dart';
 import 'features/map/domain/repositories/map_repository.dart';
 import 'features/map/domain/use_cases/get_nearby_active_reports.dart';
 import 'features/map/presentation/bloc/map_bloc.dart';
+import 'features/home/presentation/bloc/home_admin/home_admin_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -62,6 +62,7 @@ Future<void> initializeServiceLocator() async {
   _initReportFeature();
   _initProfileFeature();
   _initMapFeature();
+  _initHomeAdminFeature();
 
   // External
   // final database = await DatabaseHelper.instance.database;
@@ -202,4 +203,9 @@ void _initMapFeature() {
   sl.registerLazySingleton<MapRemoteDataSource>(
     () => MapRemoteDataSourceImpl(supabase: sl()),
   );
+}
+
+void _initHomeAdminFeature() {
+  // BLoC
+  sl.registerFactory(() => HomeAdminBloc(getAdminReports: sl()));
 }
