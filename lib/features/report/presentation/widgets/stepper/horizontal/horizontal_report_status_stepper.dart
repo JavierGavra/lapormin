@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../core/constants/report_status_enum.dart';
-import '../../../../../core/utils/text_style/app_text_style.dart';
-import '../chip/custom_chip.dart';
+import '../../../../../../core/constants/report_status_enum.dart';
+import '../../../../../../core/utils/text_style/app_text_style.dart';
+import '../../chip/custom_chip.dart';
 
 class _StepConfig {
   final IconData icon;

@@ -8,7 +8,7 @@ import 'package:lapormin/features/report/presentation/widgets/card/field_check_c
 import 'package:lapormin/features/report/presentation/widgets/card/final_report_card.dart';
 import 'package:lapormin/features/report/presentation/widgets/input/due_action_field.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_detail/status/admin/admin_report_status_action.dart';
-import 'package:lapormin/features/report/presentation/widgets/stepper/horizontal_report_status_stepper.dart';
+import 'package:lapormin/features/report/presentation/widgets/stepper/horizontal/horizontal_report_status_stepper.dart';
 
 class AdminReportStatusTab extends StatefulWidget {
   final String id;
