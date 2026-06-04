@@ -27,9 +27,18 @@ class _FieldOfficerReportListPageState
   @override
   void initState() {
     super.initState();
+    _fetchReports();
+  }
+
+  void _fetchReports() {
     context.read<FieldOfficerReportsBloc>().add(
       const FetchFieldOfficerReports(),
     );
+  }
+
+  Future<void> _onRefresh() async {
+    _fetchReports();
+    await Future.delayed(const Duration(milliseconds: 800));
   }
 
   @override
@@ -38,95 +47,104 @@ class _FieldOfficerReportListPageState
 
     return Scaffold(
       backgroundColor: color.surface,
-      body: CustomScrollView(
-        slivers: [
-          AppSliverAppBar(
-            profileUrl: "assets/images/profiles/profile.png",
-            onNotificationTap: () {
-              debugPrint("Buka notifikasi petugas");
-            },
-          ),
-
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 24.0,
-                right: 24.0,
-                top: 16.0,
-                bottom: 16.0,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: ReportSearchBar(
-                      onSearchTap: () => debugPrint("Cari penugasan"),
-                      onFilterTap: () => debugPrint("Filter penugasan"),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ReportLayoutSwitch(
-                    isStyle1: _isStyle1,
-                    onSwitch: (val) => setState(() => _isStyle1 = val),
-                  ),
-                ],
-              ),
+      body: RefreshIndicator(
+        color: color.primary,
+        backgroundColor: color.surfaceContainerHighest,
+        onRefresh: _onRefresh,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            AppSliverAppBar(
+              profileUrl: "assets/images/profiles/profile.png",
+              onNotificationTap: () {
+                debugPrint("Buka notifikasi petugas");
+              },
             ),
-          ),
 
-          BlocBuilder<FieldOfficerReportsBloc, FieldOfficerReportsState>(
-            builder: (context, state) {
-              if (state.status == FieldOfficerReportsStatus.loading ||
-                  state.status == FieldOfficerReportsStatus.initial) {
-                return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  sliver: SliverList.separated(
-                    itemCount: 4,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 16),
-                    itemBuilder: (context, index) {
-                      return const ReportCardShimmer();
-                    },
-                  ),
-                );
-              }
-
-              if (state.status == FieldOfficerReportsStatus.failure) {
-                return SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Text(
-                        state.errorMessage ?? "Gagal memuat daftar penugasan.",
-                        style: TextStyle(color: color.error),
-                        textAlign: TextAlign.center,
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 24.0,
+                  right: 24.0,
+                  top: 16.0,
+                  bottom: 16.0,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: ReportSearchBar(
+                        onSearchTap: () => debugPrint("Cari penugasan"),
+                        onFilterTap: () => debugPrint("Filter penugasan"),
                       ),
                     ),
-                  ),
-                );
-              }
-
-              if (state.reports.isEmpty) {
-                return const SliverToBoxAdapter(
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(24.0),
-                      child: Text("Yey! Tidak ada penugasan untukmu saat ini."),
+                    const SizedBox(width: 8),
+                    ReportLayoutSwitch(
+                      isStyle1: _isStyle1,
+                      onSwitch: (val) => setState(() => _isStyle1 = val),
                     ),
-                  ),
+                  ],
+                ),
+              ),
+            ),
+
+            BlocBuilder<FieldOfficerReportsBloc, FieldOfficerReportsState>(
+              builder: (context, state) {
+                if (state.status == FieldOfficerReportsStatus.loading ||
+                    state.status == FieldOfficerReportsStatus.initial) {
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    sliver: SliverList.separated(
+                      itemCount: 4,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 16),
+                      itemBuilder: (context, index) {
+                        return const ReportCardShimmer();
+                      },
+                    ),
+                  );
+                }
+
+                if (state.status == FieldOfficerReportsStatus.failure) {
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Text(
+                          state.errorMessage ??
+                              "Gagal memuat daftar penugasan.",
+                          style: TextStyle(color: color.error),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                if (state.reports.isEmpty) {
+                  return const SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: Text(
+                          "Yey! Tidak ada penugasan untukmu saat ini.",
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  sliver: _isStyle1
+                      ? _buildStyle1SliverList(color, state.reports)
+                      : _buildStyle2SliverList(color, state.reports),
                 );
-              }
+              },
+            ),
 
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                sliver: _isStyle1
-                    ? _buildStyle1SliverList(color, state.reports)
-                    : _buildStyle2SliverList(color, state.reports),
-              );
-            },
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 80)),
-        ],
+            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+          ],
+        ),
       ),
     );
   }

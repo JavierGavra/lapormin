@@ -20,7 +20,16 @@ class _MyReportListPageState extends State<MyReportListPage> {
   @override
   void initState() {
     super.initState();
+    _fetchMyReports();
+  }
+
+  void _fetchMyReports() {
     context.read<MyReportsBloc>().add(const FetchMyReports());
+  }
+
+  Future<void> _onRefresh() async {
+    _fetchMyReports();
+    await Future.delayed(const Duration(milliseconds: 800));
   }
 
   @override
@@ -29,17 +38,21 @@ class _MyReportListPageState extends State<MyReportListPage> {
 
     return Scaffold(
       backgroundColor: color.surface,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildCustomHeader(context, color),
+      body: Column(
+        children: [
+          _buildCustomHeader(context, color),
 
-            Expanded(
+          Expanded(
+            child: RefreshIndicator(
+              color: color.primary,
+              backgroundColor: color.surfaceContainerHighest,
+              onRefresh: _onRefresh,
               child: BlocBuilder<MyReportsBloc, MyReportsState>(
                 builder: (context, state) {
                   if (state.status == MyReportsStatus.loading ||
                       state.status == MyReportsStatus.initial) {
                     return ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24.0,
                         vertical: 24.0,
@@ -53,17 +66,31 @@ class _MyReportListPageState extends State<MyReportListPage> {
                   }
 
                   if (state.status == MyReportsStatus.failure) {
-                    return Center(
-                      child: Text(
-                        state.errorMessage ?? "Gagal memuat laporanku",
-                        style: TextStyle(color: color.error),
-                      ),
+                    return CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverFillRemaining(
+                          child: Center(
+                            child: Text(
+                              state.errorMessage ?? "Gagal memuat laporanku",
+                              style: TextStyle(color: color.error),
+                            ),
+                          ),
+                        ),
+                      ],
                     );
                   }
 
                   if (state.reports.isEmpty) {
-                    return const Center(
-                      child: Text("Kamu belum membuat laporan apapun."),
+                    return const CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverFillRemaining(
+                          child: Center(
+                            child: Text("Kamu belum membuat laporan apapun."),
+                          ),
+                        ),
+                      ],
                     );
                   }
 
@@ -71,21 +98,29 @@ class _MyReportListPageState extends State<MyReportListPage> {
                 },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildCustomHeader(BuildContext context, ColorScheme color) {
+    final topPadding = MediaQuery.of(context).padding.top;
+    final color = Theme.of(context).colorScheme;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-      decoration: const BoxDecoration(
-        color: Colors.white,
+      padding: EdgeInsets.only(
+        top: topPadding + 16.0,
+        bottom: 16.0,
+        left: 24.0,
+        right: 24.0,
+      ),
+      decoration: BoxDecoration(
+        color: color.surfaceContainerLowest,
         boxShadow: [
           BoxShadow(
-            color: Color(0x0A000000),
+            color: color.onSurface.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: Offset(0, 2),
           ),
@@ -122,6 +157,7 @@ class _MyReportListPageState extends State<MyReportListPage> {
 
   Widget _buildMyReportList(ColorScheme color, List<ReportSummary> reports) {
     return ListView.separated(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
       itemCount: reports.length,
       separatorBuilder: (context, index) => const SizedBox(height: 12),
@@ -138,7 +174,6 @@ class _MyReportListPageState extends State<MyReportListPage> {
           status: report.status,
           deadlineDate: report.dueAction,
           onTap: () {
-            debugPrint("Buka detail laporanku: ${report.id}");
             Navigator.push(
               context,
               MaterialPageRoute(

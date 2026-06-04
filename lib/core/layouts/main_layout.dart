@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // 👈 Tambahkan ini
-import 'package:lapormin/injection.dart'; // 👈 Tambahkan ini
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/injection.dart';
 import 'package:lapormin/core/widgets/bottom_nav/bottom_nav.dart';
 import 'package:lapormin/features/home/presentation/pages/informant/home_page.dart';
 import 'package:lapormin/features/map/presentation/pages/map_page.dart';
 import 'package:lapormin/features/report/presentation/pages/report_list_page.dart';
-import 'package:lapormin/features/map/presentation/bloc/map_bloc.dart'; // 👈 Tambahkan ini
-import 'package:lapormin/features/location/presentation/bloc/location_picker/location_picker_bloc.dart'; // 👈 Tambahkan ini
+import 'package:lapormin/features/map/presentation/bloc/map_bloc.dart';
+import 'package:lapormin/features/location/presentation/bloc/location_picker/location_picker_bloc.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
@@ -28,7 +28,6 @@ class _MainLayoutState extends State<MainLayout> {
     HomePage(onSeeAllTapped: () => _changeTab(1)),
     const ReportListPage(),
 
-    // 📍 TEKS DUMMY DIHAPUS, DIGANTI JADI INI SOB:
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<MapBloc>()),

@@ -12,6 +12,8 @@ import 'package:lapormin/features/report/presentation/widgets/report_list/my_rep
 import 'package:lapormin/features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
 import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
 import 'package:lapormin/features/report/domain/entities/report_summary.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:lapormin/features/report/presentation/pages/public_report_detail_page.dart';
 
 class ReportListPage extends StatefulWidget {
   const ReportListPage({super.key});
@@ -22,6 +24,11 @@ class ReportListPage extends StatefulWidget {
 
 class _ReportListPageState extends State<ReportListPage> {
   bool _isStyle1 = true;
+
+  Future<void> _onRefresh() async {
+    context.read<PublicReportsBloc>().add(const FetchPublicReports());
+    await Future.delayed(const Duration(milliseconds: 800));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,96 +46,102 @@ class _ReportListPageState extends State<ReportListPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            AppSliverAppBar(
-              profileUrl: "assets/images/profiles/profile.png",
-              onNotificationTap: () {
-                debugPrint("Buka Notifikasi Laporan");
-              },
-            ),
-
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ReportSearchBar(
-                        onSearchTap: () {
-                          debugPrint("Buka halaman cari");
-                        },
-                        onFilterTap: () {
-                          debugPrint("Buka Modal Filter pencarian");
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    ReportLayoutSwitch(
-                      isStyle1: _isStyle1,
-                      onSwitch: (value) {
-                        setState(() {
-                          _isStyle1 = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
+        child: RefreshIndicator(
+          color: color.primary,
+          backgroundColor: color.surfaceContainerHighest,
+          onRefresh: _onRefresh,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
+              AppSliverAppBar(
+                profileUrl: "assets/images/profiles/profile.png",
+                onNotificationTap: () {
+                  debugPrint("Buka Notifikasi Laporan");
+                },
               ),
-            ),
 
-            BlocBuilder<PublicReportsBloc, PublicReportsState>(
-              builder: (context, state) {
-                if (state.status == PublicReportsStatus.loading ||
-                    state.status == PublicReportsStatus.initial) {
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    sliver: SliverList.builder(
-                      itemCount: 4,
-                      itemBuilder: (context, index) => const Padding(
-                        padding: EdgeInsets.only(bottom: 16.0),
-                        child: ReportCardShimmer(),
-                      ),
-                    ),
-                  );
-                }
-
-                if (state.status == PublicReportsStatus.failure) {
-                  return SliverToBoxAdapter(
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Text(
-                          state.errorMessage ?? "Gagal memuat laporan",
-                          style: TextStyle(color: color.error),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: ReportSearchBar(
+                          onSearchTap: () {
+                            debugPrint("Buka halaman cari");
+                          },
+                          onFilterTap: () {
+                            debugPrint("Buka Modal Filter pencarian");
+                          },
                         ),
                       ),
-                    ),
-                  );
-                }
-
-                if (state.reports.isEmpty) {
-                  return const SliverToBoxAdapter(
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(24.0),
-                        child: Text("Belum ada laporan sama sekali."),
+                      const SizedBox(width: 12),
+                      ReportLayoutSwitch(
+                        isStyle1: _isStyle1,
+                        onSwitch: (value) {
+                          setState(() {
+                            _isStyle1 = value;
+                          });
+                        },
                       ),
-                    ),
+                    ],
+                  ),
+                ),
+              ),
+
+              BlocBuilder<PublicReportsBloc, PublicReportsState>(
+                builder: (context, state) {
+                  if (state.status == PublicReportsStatus.loading ||
+                      state.status == PublicReportsStatus.initial) {
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      sliver: SliverList.builder(
+                        itemCount: 4,
+                        itemBuilder: (context, index) => const Padding(
+                          padding: EdgeInsets.only(bottom: 16.0),
+                          child: ReportCardShimmer(),
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (state.status == PublicReportsStatus.failure) {
+                    return SliverToBoxAdapter(
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Text(
+                            state.errorMessage ?? "Gagal memuat laporan",
+                            style: TextStyle(color: color.error),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (state.reports.isEmpty) {
+                    return const SliverToBoxAdapter(
+                      child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(24.0),
+                          child: Text("Belum ada laporan sama sekali."),
+                        ),
+                      ),
+                    );
+                  }
+
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    sliver: _isStyle1
+                        ? _buildStyle1SliverList(color, state.reports)
+                        : _buildStyle2SliverList(color, state.reports),
                   );
-                }
+                },
+              ),
 
-                return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  sliver: _isStyle1
-                      ? _buildStyle1SliverList(color, state.reports)
-                      : _buildStyle2SliverList(color, state.reports),
-                );
-              },
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
-          ],
+              const SliverToBoxAdapter(child: SizedBox(height: 80)),
+            ],
+          ),
         ),
       ),
     );
@@ -159,7 +172,10 @@ class _ReportListPageState extends State<ReportListPage> {
           deadlineDate: report.dueAction,
           isVideo: report.evidence.endsWith('.mp4'),
           onTap: () {
-            debugPrint("Buka Detail Style 1: ${report.id}");
+            context.pushTransition(
+              type: PageTransitionType.rightToLeft,
+              child: PublicReportDetailPage(id: report.id),
+            );
           },
         );
       },
@@ -186,7 +202,10 @@ class _ReportListPageState extends State<ReportListPage> {
           status: report.status,
           deadlineDate: report.dueAction,
           onTap: () {
-            debugPrint("Buka Detail Style 2: ${report.id}");
+            context.pushTransition(
+              type: PageTransitionType.rightToLeft,
+              child: PublicReportDetailPage(id: report.id),
+            );
           },
         );
       },

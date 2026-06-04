@@ -4,6 +4,7 @@ import 'package:lapormin/features/report/presentation/bloc/my_reports/my_reports
 import 'package:lapormin/features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
 import 'package:lapormin/features/report/presentation/bloc/admin_reports/admin_reports_bloc.dart';
 import 'package:lapormin/features/report/presentation/bloc/field_officer_reports/field_officer_reports_bloc.dart';
+import 'package:lapormin/features/home/presentation/bloc/home_admin/home_admin_bloc.dart';
 import 'package:lapormin/injection.dart';
 
 class Provider {
@@ -25,6 +26,10 @@ class Provider {
         create: (context) =>
             sl<FieldOfficerReportsBloc>()
               ..add(const FetchFieldOfficerReports()),
+      ),
+      BlocProvider<HomeAdminBloc>(
+        create: (context) =>
+            sl<HomeAdminBloc>()..add(const FetchHomeAdminReports()),
       ),
     ];
   }
