@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/features/admin/presentation/pages/field_officer_list_page.dart';
 import 'package:lapormin/injection.dart';
 import 'package:lapormin/core/widgets/bottom_nav/admin_bottom_nav.dart';
 import 'package:lapormin/features/home/presentation/pages/admin/home_admin_page.dart';
@@ -31,8 +32,8 @@ class _AdminMainLayoutState extends State<AdminMainLayout> {
       },
     ),
     const AdminReportListPage(),
-    const Center(child: Text("Halaman Petugas (Admin)")),
 
+    const FieldOfficerListPage(),
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<MapBloc>()),

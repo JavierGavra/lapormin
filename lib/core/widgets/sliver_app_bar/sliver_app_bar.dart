@@ -6,11 +6,13 @@ import 'package:page_transition/page_transition.dart';
 class AppSliverAppBar extends StatelessWidget {
   final String profileUrl;
   final VoidCallback onNotificationTap;
+  final String? title;
 
   const AppSliverAppBar({
     super.key,
     required this.profileUrl,
     required this.onNotificationTap,
+    this.title,
   });
 
   @override
@@ -25,9 +27,9 @@ class AppSliverAppBar extends StatelessWidget {
       title: Padding(
         padding: const EdgeInsets.only(left: 8.0),
         child: Text(
-          "LaporMin!",
-          style: AppTextStyle.s22(
-            fontWeight: FontWeight.w800,
+          title ?? "LaporMin!",
+          style: AppTextStyle.s20(
+            fontWeight: FontWeight.w700,
             color: color.primary,
           ),
         ),
