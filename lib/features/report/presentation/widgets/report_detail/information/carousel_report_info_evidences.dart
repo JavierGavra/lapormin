@@ -62,7 +62,7 @@ class _CarouselReportInfoEvidencesState
         padding: EdgeInsets.zero,
         backgroundColor: Colors.transparent,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        flexWeights: [5, 1],
+        flexWeights: widget.evidences.length > 1 ? [5, 1] : [1],
         itemCount: widget.evidences.length,
         itemBuilder: (context, index) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),

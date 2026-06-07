@@ -21,7 +21,10 @@ class ReportInfoTags extends StatelessWidget {
   Widget _buildTicketChip(ColorScheme color) {
     return CustomChip(
       backgroundColor: color.surfaceContainerHighest,
-      child: Text(ticket, style: AppTextStyle.s12(fontWeight: FontWeight.w600)),
+      child: Text(
+        "#$ticket",
+        style: AppTextStyle.s12(fontWeight: FontWeight.w600),
+      ),
     );
   }
 
