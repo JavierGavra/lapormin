@@ -5,6 +5,7 @@ import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/features/report/domain/entities/report.dart';
 import 'package:lapormin/features/report/presentation/widgets/chip/custom_chip.dart';
+import 'package:lapormin/features/report/presentation/widgets/loading/report_info_tab_shimmer.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../../home/presentation/widgets/location_banner/app_location_banner.dart';
@@ -33,9 +34,7 @@ class ReportInfoTab extends StatelessWidget {
       },
       child: BlocBuilder<InternalReportDetailBloc, InternalReportDetailState>(
         builder: (context, state) {
-          if (state.isLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
+          if (state.isLoading) return ReportInfoTabShimmer();
 
           final report = state.reportAggregate!.report;
 

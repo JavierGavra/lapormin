@@ -7,6 +7,7 @@ import 'package:lapormin/features/report/presentation/bloc/internal_report_detai
 import 'package:lapormin/features/report/presentation/widgets/card/field_check_card.dart';
 import 'package:lapormin/features/report/presentation/widgets/card/final_report_card.dart';
 import 'package:lapormin/features/report/presentation/widgets/input/due_action_field.dart';
+import 'package:lapormin/features/report/presentation/widgets/loading/admin_report_status_tab_shimmer.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_detail/status/admin/admin_report_status_action.dart';
 import 'package:lapormin/features/report/presentation/widgets/stepper/horizontal/horizontal_report_status_stepper.dart';
 
@@ -53,9 +54,7 @@ class _AdminReportStatusTabState extends State<AdminReportStatusTab> {
       },
       child: BlocBuilder<InternalReportDetailBloc, InternalReportDetailState>(
         builder: (context, state) {
-          if (state.isLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
+          if (state.isLoading) return AdminReportStatusTabShimmer();
 
           final report = state.reportAggregate!.report;
           final fieldCheck = state.reportAggregate!.fieldCheck;

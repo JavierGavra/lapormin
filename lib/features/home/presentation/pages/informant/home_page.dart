@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
+import 'package:lapormin/core/route/navigate.dart';
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
@@ -9,7 +10,6 @@ import 'package:lapormin/core/widgets/report_card/report_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/hero_button/hero_button.dart';
 import 'package:lapormin/features/report/presentation/pages/create_report_page.dart';
 import 'package:lapormin/features/report/presentation/pages/public_report_detail_page.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
@@ -236,9 +236,9 @@ class _HomePageState extends State<HomePage> {
                           deadlineDate: report.dueAction,
                           isVideo: report.evidence.endsWith('.mp4'),
                           onTap: () {
-                            context.pushTransition(
-                              type: PageTransitionType.rightToLeft,
-                              child: PublicReportDetailPage(id: report.id),
+                            Navigate.push(
+                              context,
+                              PublicReportDetailPage(id: report.id),
                             );
                           },
                         );
