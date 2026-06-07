@@ -4,11 +4,15 @@ class FieldOfficer extends Equatable {
   final String id;
   final String name;
   final String phone;
+  final int reportAmount;
+  final DateTime createdAt;
 
   const FieldOfficer({
     required this.id,
     required this.name,
     required this.phone,
+    required this.reportAmount,
+    required this.createdAt,
   });
 
   String get initial {
@@ -30,5 +34,5 @@ class FieldOfficer extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, name, phone];
+  List<Object?> get props => [id, name, phone, reportAmount, createdAt];
 }

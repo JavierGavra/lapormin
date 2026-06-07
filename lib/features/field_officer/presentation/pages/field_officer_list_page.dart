@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
+import 'package:lapormin/features/field_officer/presentation/widgets/bottom_sheet/field_officer_bottom_sheet.dart';
 import 'package:lapormin/features/field_officer/presentation/widgets/custom_add_fab.dart';
 import 'package:lapormin/features/field_officer/presentation/widgets/field_officer_card.dart';
 import 'package:lapormin/features/field_officer/presentation/bloc/field_officer/field_officer_bloc.dart';
@@ -133,8 +134,7 @@ class _FieldOfficerListPageState extends State<FieldOfficerListPage> {
                           name: officer.name,
                           phone: officer.phone,
                           onTap: () {
-                            debugPrint("Buka detail petugas: ${officer.name}");
-                            // TODO: Munculkan Bottom Sheet (Tugas 2)
+                            FieldOfficerBottomSheet.show(context, officer);
                           },
                         );
                       },

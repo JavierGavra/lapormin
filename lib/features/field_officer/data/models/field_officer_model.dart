@@ -5,6 +5,8 @@ class FieldOfficerModel extends FieldOfficer {
     required super.id,
     required super.name,
     required super.phone,
+    required super.reportAmount,
+    required super.createdAt,
   });
 
   // 📍 Menerjemahkan JSON dari Supabase (username & no_telp) ke Object Flutter
@@ -15,6 +17,8 @@ class FieldOfficerModel extends FieldOfficer {
           json['username'] as String? ??
           'Tanpa Nama', // 👈 Disesuaikan dengan DB
       phone: json['no_telp'] as String? ?? '-', // 👈 Disesuaikan dengan DB
+      reportAmount: json['report_amount'] as int? ?? 0,
+      createdAt: DateTime.parse(json['created_at'] as String),
     );
   }
 
@@ -24,6 +28,8 @@ class FieldOfficerModel extends FieldOfficer {
       'id': id,
       'username': name, // 👈 Dikembalikan ke nama kolom DB
       'no_telp': phone, // 👈 Dikembalikan ke nama kolom DB
+      'report_amount': reportAmount,
+      'created_at': createdAt.toIso8601String(),
       'role': 'field_officer', // Selalu set role saat nambah petugas
     };
   }

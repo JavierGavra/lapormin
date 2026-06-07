@@ -16,11 +16,24 @@ class FieldOfficerRemoteDataSourceImpl implements FieldOfficerRemoteDataSource {
     try {
       final response = await supabase
           .from('users')
-          .select()
+          .select('*, field_check(count)')
           .eq('role', 'field_officer')
           .order('created_at', ascending: false);
 
-      return response.map((e) => FieldOfficerModel.fromJson(e)).toList();
+      return response.map((data) {
+        final Map<String, dynamic> rawData = Map<String, dynamic>.from(data);
+        int totalFieldChecks = 0;
+
+        if (rawData['field_check'] != null &&
+            (rawData['field_check'] as List).isNotEmpty) {
+          totalFieldChecks = rawData['field_check'][0]['count'] ?? 0;
+        }
+
+        rawData['report_amount'] = totalFieldChecks;
+        rawData.remove('field_check');
+
+        return FieldOfficerModel.fromJson(rawData);
+      }).toList();
     } catch (e) {
       throw Exception('Gagal menarik data petugas lapangan: $e');
     }
