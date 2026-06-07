@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/features/admin/presentation/pages/field_officer_list_page.dart';
+import 'package:lapormin/features/field_officer/presentation/pages/field_officer_list_page.dart';
 import 'package:lapormin/injection.dart';
 import 'package:lapormin/core/widgets/bottom_nav/admin_bottom_nav.dart';
 import 'package:lapormin/features/home/presentation/pages/admin/home_admin_page.dart';
@@ -8,6 +8,8 @@ import 'package:lapormin/features/report/presentation/pages/admin_report_list_pa
 import 'package:lapormin/features/map/presentation/pages/map_page.dart';
 import 'package:lapormin/features/map/presentation/bloc/map_bloc.dart';
 import 'package:lapormin/features/location/presentation/bloc/location_picker/location_picker_bloc.dart';
+
+import 'package:lapormin/features/field_officer/presentation/bloc/field_officer/field_officer_bloc.dart';
 
 class AdminMainLayout extends StatefulWidget {
   const AdminMainLayout({super.key});
@@ -33,7 +35,11 @@ class _AdminMainLayoutState extends State<AdminMainLayout> {
     ),
     const AdminReportListPage(),
 
-    const FieldOfficerListPage(),
+    BlocProvider(
+      create: (_) => sl<FieldOfficerBloc>(),
+      child: const FieldOfficerListPage(),
+    ),
+
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<MapBloc>()),

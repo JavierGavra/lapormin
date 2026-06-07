@@ -11,12 +11,14 @@ class SuccessPage extends StatefulWidget {
   final String title;
   final String description;
   final void Function()? onBack;
+  final Widget? extraWidget;
 
   const SuccessPage({
     super.key,
     this.onBack,
     required this.title,
     required this.description,
+    this.extraWidget,
   });
 
   @override
@@ -97,6 +99,10 @@ class _SuccessScreenState extends State<SuccessPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(widget.description, style: AppTextStyle.s14()),
+                      if (widget.extraWidget != null) ...[
+                        const SizedBox(height: 24),
+                        widget.extraWidget!,
+                      ],
                     ],
                   ),
                 ],

@@ -1,4 +1,6 @@
 import 'package:get_it/get_it.dart';
+import 'package:lapormin/features/field_officer/domain/use_cases/add_field_officer.dart';
+import 'package:lapormin/features/field_officer/presentation/bloc/add_field_officer/add_field_officer_bloc.dart';
 import 'package:lapormin/features/report/domain/use_cases/assign_field_officer.dart';
 import 'package:lapormin/features/report/domain/use_cases/completing_report.dart';
 import 'package:lapormin/features/report/domain/use_cases/provide_action.dart';
@@ -52,6 +54,11 @@ import 'features/map/domain/repositories/map_repository.dart';
 import 'features/map/domain/use_cases/get_nearby_active_reports.dart';
 import 'features/map/presentation/bloc/map_bloc.dart';
 import 'features/home/presentation/bloc/home_admin/home_admin_bloc.dart';
+import 'features/field_officer/data/data_sources/field_officer_remote_data_source.dart';
+import 'features/field_officer/data/repositories/field_officer_repository_impl.dart';
+import 'features/field_officer/domain/repositories/field_officer_repository.dart';
+import 'features/field_officer/domain/use_cases/get_field_officers.dart';
+import 'features/field_officer/presentation/bloc/field_officer/field_officer_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -63,7 +70,7 @@ Future<void> initializeServiceLocator() async {
   _initProfileFeature();
   _initMapFeature();
   _initHomeAdminFeature();
-
+  _initFieldOfficerFeature();
   // External
   // final database = await DatabaseHelper.instance.database;
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -208,4 +215,24 @@ void _initMapFeature() {
 void _initHomeAdminFeature() {
   // BLoC
   sl.registerFactory(() => HomeAdminBloc(getAdminReports: sl()));
+}
+
+void _initFieldOfficerFeature() {
+  // BLoC
+  sl.registerFactory(() => FieldOfficerBloc(getFieldOfficers: sl()));
+  sl.registerFactory(() => AddFieldOfficerBloc(addFieldOfficerUseCase: sl()));
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetFieldOfficers(sl()));
+  sl.registerLazySingleton(() => AddFieldOfficer(sl()));
+
+  // Repository
+  sl.registerLazySingleton<FieldOfficerRepository>(
+    () => FieldOfficerRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  // Data Sources
+  sl.registerLazySingleton<FieldOfficerRemoteDataSource>(
+    () => FieldOfficerRemoteDataSourceImpl(supabase: sl()),
+  );
 }
