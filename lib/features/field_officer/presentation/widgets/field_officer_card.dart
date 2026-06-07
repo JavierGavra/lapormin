@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lapormin/core/utils/phone_number/phone_number_format.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 
 class FieldOfficerCard extends StatelessWidget {
@@ -63,7 +64,7 @@ class FieldOfficerCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    phone,
+                    PhoneNumberFormat.formatted(phone),
                     style: AppTextStyle.s12(
                       color: color.onSurface.withValues(alpha: 0.5),
                       fontWeight: FontWeight.w400,
