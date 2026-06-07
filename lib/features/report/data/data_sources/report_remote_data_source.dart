@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/rendering.dart';
+import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
@@ -387,7 +388,11 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
     try {
       await supabase
           .from('report')
-          .update({'due_action': dueAction})
+          .update({
+            'due_action': dueAction != null
+                ? DateFormat('yyyy-MM-dd').format(dueAction)
+                : null,
+          })
           .eq('id', id)
           .select()
           .single();
