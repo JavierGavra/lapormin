@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/features/report/presentation/widgets/loading/public_report_detail_shimmer.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../core/widgets/button/app_back_button.dart';
@@ -28,7 +29,7 @@ class PublicReportDetailPage extends StatelessWidget {
           sl<PublicReportDetailBloc>()..add(PublicReportDetailOpened(id)),
       child: Scaffold(
         backgroundColor: color.secondaryContainer,
-        body: BlocConsumer<PublicReportDetailBloc, PublicReportDetailState>(
+        body: BlocListener<PublicReportDetailBloc, PublicReportDetailState>(
           listener: (context, state) {
             if (state.status == PublicReportDetailStatus.failure) {
               showSnackBar(
@@ -38,95 +39,27 @@ class PublicReportDetailPage extends StatelessWidget {
               );
             }
           },
-          builder: (context, state) {
-            if (!state.isSuccess) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            final report = state.report!;
-
-            return SizedBox(
-              width: double.infinity,
-              child: Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  Image.asset(
-                    "assets/images/backgrounds/report_detail_background.png",
-                    fit: BoxFit.fitWidth,
-                    width: double.infinity,
-                  ),
-                  RefreshIndicator(
-                    onRefresh: () async {
-                      context.read<PublicReportDetailBloc>().add(
-                        PublicReportDetailOpened(id),
-                      );
-                    },
-                    child: CustomScrollView(
-                      slivers: [
-                        _buildAppBar(context),
-                        SliverPadding(
-                          padding: EdgeInsets.fromLTRB(18, 16, 18, 20),
-                          sliver: SliverToBoxAdapter(
-                            child: CarouselReportInfoEvidences(
-                              evidences: report.evidences,
-                            ),
-                          ),
-                        ),
-
-                        SliverFillRemaining(
-                          hasScrollBody: false,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 24,
-                              vertical: 20,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(24),
-                              ),
-                              color: color.surface,
-                            ),
-                            child: SafeArea(
-                              top: false,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                spacing: 20,
-                                children: [
-                                  ReportInfoTags(
-                                    ticket: report.ticket,
-                                    status: report.status,
-                                  ),
-                                  ReportInfoHeader(
-                                    title: report.title,
-                                    createdAt: report.createdAt,
-                                    category: report.category,
-                                  ),
-                                  LocationBanner(
-                                    location: report.address,
-                                    isSmall: true,
-                                  ),
-                                  ReportInfoDescription(
-                                    description: report.description,
-                                  ),
-                                  ReportInfoMap(
-                                    position: LatLng(
-                                      report.latitude,
-                                      report.longitude,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
+          child: SizedBox(
+            width: double.infinity,
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                Image.asset(
+                  "assets/images/backgrounds/report_detail_background.png",
+                  fit: BoxFit.fitWidth,
+                  width: double.infinity,
+                ),
+                RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<PublicReportDetailBloc>().add(
+                      PublicReportDetailOpened(id),
+                    );
+                  },
+                  child: _buildContent(color),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -162,6 +95,66 @@ class PublicReportDetailPage extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildContent(ColorScheme color) {
+    return BlocBuilder<PublicReportDetailBloc, PublicReportDetailState>(
+      builder: (context, state) {
+        if (!state.isSuccess) return PublicReportDetailShimmer();
+
+        final report = state.report!;
+
+        return CustomScrollView(
+          slivers: [
+            _buildAppBar(context),
+            SliverPadding(
+              padding: EdgeInsets.fromLTRB(18, 16, 18, 20),
+              sliver: SliverToBoxAdapter(
+                child: CarouselReportInfoEvidences(evidences: report.evidences),
+              ),
+            ),
+
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                  color: color.surface,
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 20,
+                    children: [
+                      ReportInfoTags(
+                        ticket: report.ticket,
+                        status: report.status,
+                      ),
+                      ReportInfoHeader(
+                        title: report.title,
+                        createdAt: report.createdAt,
+                        category: report.category,
+                      ),
+                      LocationBanner(location: report.address, isSmall: true),
+                      ReportInfoDescription(description: report.description),
+                      ReportInfoMap(
+                        position: LatLng(report.latitude, report.longitude),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

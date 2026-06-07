@@ -25,9 +25,7 @@ class VerticalReportStatusStepper extends StatelessWidget {
 
   // Status terakhir = status saat ini
   ReportStatus? get _currentStatus {
-    return reportAggregate.statusLogs.isEmpty
-        ? null
-        : reportAggregate.statusLogs.last.status;
+    return reportAggregate.report.status;
   }
 
   // Cek apakah laporan ditolak

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/route/navigate.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
@@ -12,7 +13,6 @@ import 'package:lapormin/features/report/presentation/widgets/report_list/my_rep
 import 'package:lapormin/features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
 import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
 import 'package:lapormin/features/report/domain/entities/report_summary.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:lapormin/features/report/presentation/pages/public_report_detail_page.dart';
 
 class ReportListPage extends StatefulWidget {
@@ -172,10 +172,7 @@ class _ReportListPageState extends State<ReportListPage> {
           deadlineDate: report.dueAction,
           isVideo: report.evidence.endsWith('.mp4'),
           onTap: () {
-            context.pushTransition(
-              type: PageTransitionType.rightToLeft,
-              child: PublicReportDetailPage(id: report.id),
-            );
+            Navigate.push(context, PublicReportDetailPage(id: report.id));
           },
         );
       },
@@ -202,10 +199,7 @@ class _ReportListPageState extends State<ReportListPage> {
           status: report.status,
           deadlineDate: report.dueAction,
           onTap: () {
-            context.pushTransition(
-              type: PageTransitionType.rightToLeft,
-              child: PublicReportDetailPage(id: report.id),
-            );
+            Navigate.push(context, PublicReportDetailPage(id: report.id));
           },
         );
       },

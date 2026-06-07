@@ -128,7 +128,7 @@ class _InternalReportDetailPageState extends State<InternalReportDetailPage> {
 
   Widget _buildTabBarView() {
     final statusTab = switch (widget.role) {
-      UserRole.informant => InformantReportStatusTab(),
+      UserRole.informant => InformantReportStatusTab(id: widget.id),
       UserRole.admin => AdminReportStatusTab(id: widget.id),
       UserRole.fieldOfficer => FieldOfficerReportStatusTab(),
     };

@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 
 class CustomChip extends StatelessWidget {
+  final double? horizontal;
+  final double? vertical;
   final Color? backgroundColor;
   final Widget child;
 
-  const CustomChip({super.key, required this.child, this.backgroundColor});
+  const CustomChip({
+    super.key,
+    required this.child,
+    this.backgroundColor,
+    this.horizontal,
+    this.vertical,
+  });
 
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: EdgeInsets.symmetric(
+        horizontal: horizontal ?? 8,
+        vertical: vertical ?? 2,
+      ),
       decoration: BoxDecoration(
         color: backgroundColor ?? color.primaryContainer,
         borderRadius: BorderRadius.circular(12),
