@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/features/notification/presentation/widgets/dialog/ask_notification_dialog.dart';
 import 'package:lapormin/injection.dart';
 import 'package:lapormin/core/widgets/bottom_nav/bottom_nav.dart';
 import 'package:lapormin/features/home/presentation/pages/informant/home_page.dart';
@@ -36,6 +37,12 @@ class _MainLayoutState extends State<MainLayout> {
       child: const MapPage(),
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    AskNotificationDialog.show(context);
+  }
 
   @override
   Widget build(BuildContext context) {

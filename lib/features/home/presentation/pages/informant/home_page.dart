@@ -8,6 +8,7 @@ import 'package:lapormin/features/home/presentation/widgets/home_greeting/home_g
 import 'package:lapormin/features/home/presentation/widgets/category_card/category_card.dart';
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/hero_button/hero_button.dart';
+import 'package:lapormin/features/notification/presentation/pages/notification_history_page.dart';
 import 'package:lapormin/features/report/presentation/pages/create_report_page.dart';
 import 'package:lapormin/features/report/presentation/pages/public_report_detail_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,7 +47,7 @@ class _HomePageState extends State<HomePage> {
               AppSliverAppBar(
                 profileUrl: "assets/images/profiles/profile.jpg",
                 onNotificationTap: () {
-                  debugPrint("Buka notifikasi");
+                  Navigate.push(context, const NotificationHistoryPage());
                 },
               ),
 

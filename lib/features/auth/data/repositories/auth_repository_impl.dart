@@ -28,7 +28,10 @@ class AuthRepositoryImpl implements AuthRepository {
     String password,
   ) async {
     try {
+      final deviceToken = await localDataSource.getDeviceToken();
       final response = await remoteDataSource.postLogin(phoneNumber, password);
+
+      await remoteDataSource.postDeviceToken(response.id, deviceToken);
       await localDataSource.saveUserData(response);
       return Right(response);
     } catch (e) {
@@ -48,6 +51,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, bool>> logout() async {
     try {
+      final userId = await localDataSource.getUserId();
+      await remoteDataSource.removeDeviceToken(userId);
       bool result = await remoteDataSource.postLogout();
 
       if (result) result = await localDataSource.clearUserData();

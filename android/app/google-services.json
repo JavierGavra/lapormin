@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "810088677139",
+    "project_id": "lapormin-4b0a9",
+    "storage_bucket": "lapormin-4b0a9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:810088677139:android:88293c597d4fb346e764e6",
+        "android_client_info": {
+          "package_name": "com.unggulan.lapormin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANRuovd7fc1UdT7Us-t7sSztZZ32rrDKk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
