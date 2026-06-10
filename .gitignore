@@ -46,3 +46,6 @@ app.*.map.json
 
 # Secret Key
 .env
+
+# Node modules
+node_modules/

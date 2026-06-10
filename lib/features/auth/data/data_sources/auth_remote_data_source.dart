@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:lapormin/core/error/exceptions.dart';
 import 'package:lapormin/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -8,6 +9,8 @@ abstract interface class AuthRemoteDataSource {
   Future<bool> verifyOtp(String phoneNumber, String otp);
   Future<UserModel> postLogin(String phoneNumber, String password);
   Future<bool> postLogout();
+  Future<bool> postDeviceToken(String userId, String token);
+  Future<bool> removeDeviceToken(String userId);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -99,5 +102,31 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<bool> isPhoneExist(String phoneNumber) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<bool> postDeviceToken(String userId, String token) async {
+    try {
+      await supabase
+          .from('device_tokens')
+          .upsert({'user_id': userId, 'token': token})
+          .eq('user_id', userId);
+
+      return true;
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> removeDeviceToken(String userId) async {
+    try {
+      await supabase.from('device_tokens').delete().eq('user_id', userId);
+      return true;
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
+    }
   }
 }

@@ -1,6 +1,13 @@
 import 'package:get_it/get_it.dart';
+import 'package:lapormin/core/services/push_notification/push_notification_service.dart';
 import 'package:lapormin/features/field_officer/domain/use_cases/add_field_officer.dart';
 import 'package:lapormin/features/field_officer/presentation/bloc/add_field_officer/add_field_officer_bloc.dart';
+import 'package:lapormin/features/notification/data/data_sources/notification_remote_data_source.dart';
+import 'package:lapormin/features/notification/data/repositories/notification_repository_impl.dart';
+import 'package:lapormin/features/notification/domain/repositories/notification_repository.dart';
+import 'package:lapormin/features/notification/domain/use_cases/get_notification_history.dart';
+import 'package:lapormin/features/notification/presentation/bloc/notification_history/notification_history_bloc.dart';
+import 'package:lapormin/features/notification/presentation/bloc/notification_permission/notification_permission_bloc.dart';
 import 'package:lapormin/features/report/domain/use_cases/assign_field_officer.dart';
 import 'package:lapormin/features/report/domain/use_cases/completing_report.dart';
 import 'package:lapormin/features/report/domain/use_cases/provide_action.dart';
@@ -71,6 +78,8 @@ Future<void> initializeServiceLocator() async {
   _initMapFeature();
   _initHomeAdminFeature();
   _initFieldOfficerFeature();
+  _initNotificationFeature();
+
   // External
   // final database = await DatabaseHelper.instance.database;
   final sharedPreferences = await SharedPreferences.getInstance();
@@ -79,6 +88,9 @@ Future<void> initializeServiceLocator() async {
   // sl.registerSingleton(database);
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => supabase);
+
+  // Push Notification Service
+  sl.registerLazySingleton(() => PushNotificationService());
 }
 
 void _initAuthFeature() {
@@ -99,7 +111,10 @@ void _initAuthFeature() {
 
   // Data Sources
   sl.registerLazySingleton<AuthLocalDataSource>(
-    () => AuthLocalDataSourceImpl(sharedPreferences: sl()),
+    () => AuthLocalDataSourceImpl(
+      sharedPreferences: sl(),
+      pushNotificationService: sl(),
+    ),
   );
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(supabase: sl()),
@@ -234,5 +249,28 @@ void _initFieldOfficerFeature() {
   // Data Sources
   sl.registerLazySingleton<FieldOfficerRemoteDataSource>(
     () => FieldOfficerRemoteDataSourceImpl(supabase: sl()),
+  );
+}
+
+void _initNotificationFeature() {
+  // BLoC
+  sl.registerFactory(
+    () => NotificationPermissionBloc(pushNotificationService: sl()),
+  );
+  sl.registerFactory(
+    () => NotificationHistoryBloc(getNotificationHistory: sl()),
+  );
+
+  // Use Cases
+  sl.registerLazySingleton(() => GetNotificationHistory(sl()));
+
+  // Repository
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  // Data Sources
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSourceImpl(supabase: sl()),
   );
 }

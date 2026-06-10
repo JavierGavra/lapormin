@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'package:lapormin/features/notification/presentation/bloc/notification_history/notification_history_bloc.dart';
 import 'package:lapormin/features/report/presentation/bloc/my_reports/my_reports_bloc.dart';
 import 'package:lapormin/features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
 import 'package:lapormin/features/report/presentation/bloc/admin_reports/admin_reports_bloc.dart';
@@ -30,6 +31,10 @@ class Provider {
       BlocProvider<HomeAdminBloc>(
         create: (context) =>
             sl<HomeAdminBloc>()..add(const FetchHomeAdminReports()),
+      ),
+      BlocProvider<NotificationHistoryBloc>(
+        create: (context) =>
+            sl<NotificationHistoryBloc>()..add(NotificationHistoryOpened()),
       ),
     ];
   }

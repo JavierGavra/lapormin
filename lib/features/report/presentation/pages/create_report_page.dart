@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/features/notification/presentation/widgets/dialog/ask_notification_dialog.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:page_transition/page_transition.dart';
 
@@ -36,7 +37,7 @@ class _CreateReportPageState extends State<CreateReportPage> {
 
   late final List<Widget> _steps;
 
-  void _listener(BuildContext context, CreateReportState state) {
+  void _listener(BuildContext context, CreateReportState state) async {
     debugPrint("Current Step: ${state.currentStep}, Status: ${state.status}");
     if (state.status == CreateReportStatus.next) {
       _pageController.nextPage(
@@ -54,18 +55,21 @@ class _CreateReportPageState extends State<CreateReportPage> {
         curve: Curves.ease,
       );
     } else if (state.status == CreateReportStatus.success) {
-      context.pushTransition(
-        type: PageTransitionType.bottomToTop,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeOutCubic,
-        child: SuccessPage(
-          title: 'Laporan Telah Dibuat',
-          description: 'Terimakasih sudah berkontribusi',
-          onBack: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          },
-        ),
-      );
+      await AskNotificationDialog.show(context);
+      if (context.mounted) {
+        context.pushTransition(
+          type: PageTransitionType.bottomToTop,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutCubic,
+          child: SuccessPage(
+            title: 'Laporan Telah Dibuat',
+            description: 'Terimakasih sudah berkontribusi',
+            onBack: () {
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            },
+          ),
+        );
+      }
     } else if (state.status == CreateReportStatus.failure) {
       showSnackBar(
         context,
