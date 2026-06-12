@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/constants/user_role_enum.dart';
 import 'package:lapormin/core/route/navigate.dart';
+import 'package:lapormin/core/utils/debouncer/debouncer.dart';
+import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
 import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
+import 'package:lapormin/features/report/presentation/widgets/report_list/report_filter_bottom_sheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
 import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
@@ -35,6 +38,7 @@ class AdminReportListDetailPage extends StatefulWidget {
 
 class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
   bool _isStyle1 = true;
+  final Debouncer _debouncer = Debouncer(milliseconds: 500);
 
   @override
   void initState() {
@@ -42,18 +46,49 @@ class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
     _fetchReports();
   }
 
+  @override
+  void dispose() {
+    _debouncer.dispose();
+    super.dispose();
+  }
+
   void _fetchReports() {
+    final presetFilter = ReportFilterParams(
+      categories: widget.filterCategory != null ? [widget.filterCategory!] : [],
+      statuses: widget.filterStatus != null ? [widget.filterStatus!] : [],
+    );
+
     context.read<AdminReportsBloc>().add(
-      FetchAdminReports(
-        status: widget.filterStatus,
-        category: widget.filterCategory,
-      ),
+      FetchAdminReports(presetFilter: presetFilter),
     );
   }
 
   Future<void> _onRefresh() async {
     _fetchReports();
     await Future.delayed(const Duration(milliseconds: 800));
+  }
+
+  void _showFilterModal(BuildContext context, AdminReportsState state) async {
+    final bool shouldHideCategory = widget.filterCategory != null;
+    final bool shouldHideStatus = widget.filterStatus != null;
+
+    final ReportFilterParams? result =
+        await showModalBottomSheet<ReportFilterParams>(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => ReportFilterBottomSheet(
+            currentFilter: state.filter,
+            allowedStatuses: ReportStatus.values,
+            hideCategory: shouldHideCategory,
+            hideStatus: shouldHideStatus,
+          ),
+        );
+
+    if (!context.mounted) return;
+    if (result != null) {
+      context.read<AdminReportsBloc>().add(UpdateAdminFilter(result));
+    }
   }
 
   @override
@@ -80,9 +115,25 @@ class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: ReportSearchBar(
-                        onSearchTap: () => debugPrint("Cari laporan admin"),
-                        onFilterTap: () => debugPrint("Filter admin"),
+                      child: BlocBuilder<AdminReportsBloc, AdminReportsState>(
+                        builder: (context, state) {
+                          return ReportSearchBar(
+                            onChanged: (text) {
+                              _debouncer.run(() {
+                                final updatedFilter = ReportFilterParams(
+                                  keyword: text,
+                                  categories: state.filter.categories,
+                                  statuses: state.filter.statuses,
+                                );
+                                context.read<AdminReportsBloc>().add(
+                                  UpdateAdminFilter(updatedFilter),
+                                );
+                              });
+                            },
+                            onFilterTap: () => _showFilterModal(context, state),
+                            onSearchTap: () {},
+                          );
+                        },
                       ),
                     ),
                     const SizedBox(width: 12),

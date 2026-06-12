@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/utils/debouncer/debouncer.dart';
+import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
+import 'package:lapormin/features/report/presentation/widgets/report_list/report_filter_bottom_sheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import 'package:lapormin/core/constants/report_category_enum.dart';
+import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
 import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
@@ -23,11 +27,18 @@ class FieldOfficerReportListPage extends StatefulWidget {
 class _FieldOfficerReportListPageState
     extends State<FieldOfficerReportListPage> {
   bool _isStyle1 = true;
+  final Debouncer _debouncer = Debouncer(milliseconds: 500);
 
   @override
   void initState() {
     super.initState();
     _fetchReports();
+  }
+
+  @override
+  void dispose() {
+    _debouncer.dispose();
+    super.dispose();
   }
 
   void _fetchReports() {
@@ -39,6 +50,33 @@ class _FieldOfficerReportListPageState
   Future<void> _onRefresh() async {
     _fetchReports();
     await Future.delayed(const Duration(milliseconds: 800));
+  }
+
+  void _showFilterModal(
+    BuildContext context,
+    FieldOfficerReportsState state,
+  ) async {
+    final allowedStatuses = ReportStatus.values
+        .where((status) => status != ReportStatus.pending)
+        .toList();
+
+    final ReportFilterParams? result =
+        await showModalBottomSheet<ReportFilterParams>(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => ReportFilterBottomSheet(
+            currentFilter: state.filter,
+            allowedStatuses: allowedStatuses,
+          ),
+        );
+
+    if (!context.mounted) return;
+    if (result != null) {
+      context.read<FieldOfficerReportsBloc>().add(
+        UpdateFieldOfficerFilter(result),
+      );
+    }
   }
 
   @override
@@ -72,10 +110,32 @@ class _FieldOfficerReportListPageState
                 child: Row(
                   children: [
                     Expanded(
-                      child: ReportSearchBar(
-                        onSearchTap: () => debugPrint("Cari penugasan"),
-                        onFilterTap: () => debugPrint("Filter penugasan"),
-                      ),
+                      // 📍 3. Bungkus Search Bar dengan BlocBuilder
+                      child:
+                          BlocBuilder<
+                            FieldOfficerReportsBloc,
+                            FieldOfficerReportsState
+                          >(
+                            builder: (context, state) {
+                              return ReportSearchBar(
+                                onChanged: (text) {
+                                  _debouncer.run(() {
+                                    final updatedFilter = ReportFilterParams(
+                                      keyword: text,
+                                      categories: state.filter.categories,
+                                      statuses: state.filter.statuses,
+                                    );
+                                    context.read<FieldOfficerReportsBloc>().add(
+                                      UpdateFieldOfficerFilter(updatedFilter),
+                                    );
+                                  });
+                                },
+                                onFilterTap: () =>
+                                    _showFilterModal(context, state),
+                                onSearchTap: () {},
+                              );
+                            },
+                          ),
                     ),
                     const SizedBox(width: 8),
                     ReportLayoutSwitch(

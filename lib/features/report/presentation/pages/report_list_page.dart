@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/route/navigate.dart';
+import 'package:lapormin/core/utils/debouncer/debouncer.dart';
+import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
+import 'package:lapormin/features/report/presentation/widgets/report_list/report_filter_bottom_sheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
 import 'package:lapormin/core/widgets/report_card/report_card.dart';
@@ -24,10 +28,42 @@ class ReportListPage extends StatefulWidget {
 
 class _ReportListPageState extends State<ReportListPage> {
   bool _isStyle1 = true;
+  final Debouncer _debouncer = Debouncer(milliseconds: 500);
 
   Future<void> _onRefresh() async {
     context.read<PublicReportsBloc>().add(const FetchPublicReports());
     await Future.delayed(const Duration(milliseconds: 800));
+  }
+
+  @override
+  void dispose() {
+    _debouncer.dispose();
+    super.dispose();
+  }
+
+  void _showFilterModal(BuildContext context, PublicReportsState state) async {
+    final publicStatuses = [
+      ReportStatus.fieldCheck,
+      ReportStatus.verified,
+      ReportStatus.action,
+      ReportStatus.done,
+    ];
+
+    final ReportFilterParams? result =
+        await showModalBottomSheet<ReportFilterParams>(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => ReportFilterBottomSheet(
+            currentFilter: state.filter,
+            allowedStatuses: publicStatuses,
+          ),
+        );
+
+    if (!context.mounted) return;
+    if (result != null) {
+      context.read<PublicReportsBloc>().add(UpdatePublicFilter(result));
+    }
   }
 
   @override
@@ -66,14 +102,28 @@ class _ReportListPageState extends State<ReportListPage> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: ReportSearchBar(
-                          onSearchTap: () {
-                            debugPrint("Buka halaman cari");
-                          },
-                          onFilterTap: () {
-                            debugPrint("Buka Modal Filter pencarian");
-                          },
-                        ),
+                        child:
+                            BlocBuilder<PublicReportsBloc, PublicReportsState>(
+                              builder: (context, state) {
+                                return ReportSearchBar(
+                                  onChanged: (text) {
+                                    _debouncer.run(() {
+                                      final updatedFilter = ReportFilterParams(
+                                        keyword: text,
+                                        categories: state.filter.categories,
+                                        statuses: state.filter.statuses,
+                                      );
+                                      context.read<PublicReportsBloc>().add(
+                                        UpdatePublicFilter(updatedFilter),
+                                      );
+                                    });
+                                  },
+                                  onFilterTap: () =>
+                                      _showFilterModal(context, state),
+                                  onSearchTap: () {},
+                                );
+                              },
+                            ),
                       ),
                       const SizedBox(width: 12),
                       ReportLayoutSwitch(

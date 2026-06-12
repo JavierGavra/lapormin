@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/card/information_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/services.dart';
 import 'package:lapormin/core/widgets/success/success_page.dart';
 import 'package:lapormin/features/field_officer/presentation/bloc/add_field_officer/add_field_officer_bloc.dart';
 import 'package:lapormin/features/field_officer/presentation/bloc/add_field_officer/add_field_officer_event.dart';
@@ -328,31 +329,59 @@ class _AddFieldOfficerPageState extends State<AddFieldOfficerPage> {
   }
 
   Widget _buildPasswordBox(String password) {
-    final color = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: color.surfaceContainer,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.outlineVariant),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Password',
-            style: AppTextStyle.s14(fontWeight: FontWeight.w600),
+    return Builder(
+      builder: (activeContext) {
+        final color = Theme.of(activeContext).colorScheme;
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: color.surfaceContainer,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: color.outlineVariant),
           ),
-          const SizedBox(width: 12),
-          Container(width: 1, height: 20, color: color.surfaceContainerHighest),
-          const SizedBox(width: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Password',
+                style: AppTextStyle.s14(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                width: 1,
+                height: 20,
+                color: color.surfaceContainerHighest,
+              ),
+              const SizedBox(width: 12),
 
-          Text(password, style: AppTextStyle.s14(fontWeight: FontWeight.w400)),
+              Text(
+                password,
+                style: AppTextStyle.s14(fontWeight: FontWeight.w400),
+              ),
 
-          const SizedBox(width: 8),
-          Icon(Icons.content_copy, size: 18, color: color.onSurfaceVariant),
-        ],
-      ),
+              const SizedBox(width: 8),
+
+              GestureDetector(
+                onTap: () async {
+                  await Clipboard.setData(ClipboardData(text: password));
+
+                  if (activeContext.mounted) {
+                    ScaffoldMessenger.of(activeContext).showSnackBar(
+                      SnackBar(
+                        content: const Text('Password berhasil disalin!'),
+                        backgroundColor: color.primary,
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                },
+                child: Icon(Icons.content_copy, size: 20, color: color.primary),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

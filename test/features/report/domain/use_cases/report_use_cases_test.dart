@@ -38,7 +38,7 @@ void main() async {
   print(supabase.auth.currentUser!.role);
 
   final adminReports = await getAdminReportsResult(
-    ReportFilterParams(category: null, status: null, keyword: null),
+    const ReportFilterParams(), // Otomatis menganggap tanpa filter (kosong)
   );
   adminReports.fold(
     (failure) => print("Error fetching admin reports: $failure"),

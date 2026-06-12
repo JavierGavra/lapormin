@@ -17,7 +17,6 @@ class AdminReportListPage extends StatefulWidget {
 }
 
 class _AdminReportListPageState extends State<AdminReportListPage> {
-  // 📍 FUNGSI REFRESH SEMENTARA
   Future<void> _onRefresh() async {
     // TODO: naruh event BLoC Statistik di sini
     // Contoh: context.read<AdminStatisticBloc>().add(FetchStatistics());

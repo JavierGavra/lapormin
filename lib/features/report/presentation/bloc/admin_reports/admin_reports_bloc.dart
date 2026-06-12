@@ -1,7 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:lapormin/core/constants/report_category_enum.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/features/report/domain/entities/report_summary.dart';
 import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
 import 'package:lapormin/features/report/domain/use_cases/get_admin_reports.dart';
@@ -16,6 +14,7 @@ class AdminReportsBloc extends Bloc<AdminReportsEvent, AdminReportsState> {
     : _getAdminReports = getAdminReports,
       super(const AdminReportsState()) {
     on<FetchAdminReports>(_onFetchAdminReports);
+    on<UpdateAdminFilter>(_onUpdateAdminFilter);
   }
 
   Future<void> _onFetchAdminReports(
@@ -24,13 +23,13 @@ class AdminReportsBloc extends Bloc<AdminReportsEvent, AdminReportsState> {
   ) async {
     emit(state.copyWith(status: AdminReportsStatus.loading));
 
-    final params = ReportFilterParams(
-      category: event.category,
-      status: event.status,
-      keyword: event.keyword,
-    );
+    final activeFilter = event.presetFilter ?? state.filter;
 
-    final result = await _getAdminReports(params);
+    if (event.presetFilter != null) {
+      emit(state.copyWith(filter: activeFilter));
+    }
+
+    final result = await _getAdminReports(activeFilter);
 
     result.fold(
       (failure) => emit(
@@ -43,5 +42,13 @@ class AdminReportsBloc extends Bloc<AdminReportsEvent, AdminReportsState> {
         state.copyWith(status: AdminReportsStatus.success, reports: reports),
       ),
     );
+  }
+
+  void _onUpdateAdminFilter(
+    UpdateAdminFilter event,
+    Emitter<AdminReportsState> emit,
+  ) {
+    emit(state.copyWith(filter: event.newFilter));
+    add(const FetchAdminReports());
   }
 }

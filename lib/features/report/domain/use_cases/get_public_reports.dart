@@ -15,7 +15,7 @@ class GetPublicReports
 
   @override
   Future<Either<Failure, List<ReportSummary>>> call(ReportFilterParams params) {
-    if (params.status == ReportStatus.pending) {
+    if (params.statuses.contains(ReportStatus.pending)) {
       return Future.value(
         Left(ValidationFailure("Anda tidak memiliki akses untuk fitur ini.")),
       );

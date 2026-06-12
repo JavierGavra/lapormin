@@ -1,7 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:lapormin/core/constants/report_category_enum.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/features/report/domain/entities/report_summary.dart';
 import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
 import 'package:lapormin/features/report/domain/use_cases/get_public_reports.dart';
@@ -16,6 +14,7 @@ class PublicReportsBloc extends Bloc<PublicReportsEvent, PublicReportsState> {
     : _getPublicReports = getPublicReports,
       super(const PublicReportsState()) {
     on<FetchPublicReports>(_onFetchPublicReports);
+    on<UpdatePublicFilter>(_onUpdatePublicFilter);
   }
 
   Future<void> _onFetchPublicReports(
@@ -24,13 +23,7 @@ class PublicReportsBloc extends Bloc<PublicReportsEvent, PublicReportsState> {
   ) async {
     emit(state.copyWith(status: PublicReportsStatus.loading));
 
-    final params = ReportFilterParams(
-      category: event.category,
-      status: event.status,
-      keyword: event.keyword,
-    );
-
-    final result = await _getPublicReports(params);
+    final result = await _getPublicReports(state.filter);
 
     result.fold(
       (failure) => emit(
@@ -43,5 +36,13 @@ class PublicReportsBloc extends Bloc<PublicReportsEvent, PublicReportsState> {
         state.copyWith(status: PublicReportsStatus.success, reports: reports),
       ),
     );
+  }
+
+  void _onUpdatePublicFilter(
+    UpdatePublicFilter event,
+    Emitter<PublicReportsState> emit,
+  ) {
+    emit(state.copyWith(filter: event.newFilter));
+    add(const FetchPublicReports());
   }
 }
