@@ -107,7 +107,7 @@ class _EvidencesPickerState extends State<EvidencesPicker> {
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
-      spacing: 24,
+      spacing: widget._isFieldOfficer ? 12 : 24,
       children: [
         (widget._isFieldOfficer)
             ? EvidencesUploadButton.fieldOfficer(

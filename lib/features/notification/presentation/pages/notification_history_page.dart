@@ -6,12 +6,25 @@ import '../../../../core/widgets/button/app_back_button.dart';
 import '../bloc/notification_history/notification_history_bloc.dart';
 import '../widgets/card/notification_card.dart';
 
-class NotificationHistoryPage extends StatelessWidget {
+class NotificationHistoryPage extends StatefulWidget {
   const NotificationHistoryPage({super.key});
+
+  @override
+  State<NotificationHistoryPage> createState() =>
+      _NotificationHistoryPageState();
+}
+
+class _NotificationHistoryPageState extends State<NotificationHistoryPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<NotificationHistoryBloc>().add(NotificationHistoryOpened());
+  }
 
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 16,

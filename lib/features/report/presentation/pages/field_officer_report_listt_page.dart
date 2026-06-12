@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/constants/user_role_enum.dart';
+import 'package:lapormin/core/route/navigate.dart';
 import 'package:lapormin/core/utils/debouncer/debouncer.dart';
 import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
+import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_list/report_filter_bottom_sheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -234,7 +237,15 @@ class _FieldOfficerReportListPageState
           categoryIcon: categoryEnum.icon,
           categoryColor: categoryEnum.getColor(context).containerColor,
           isVideo: report.evidence.endsWith('.mp4'),
-          onTap: () => debugPrint("Detail Penugasan diklik: ${report.id}"),
+          onTap: () {
+            Navigate.push(
+              context,
+              InternalReportDetailPage(
+                id: report.id,
+                role: UserRole.fieldOfficer,
+              ),
+            );
+          },
         );
       },
     );
@@ -260,7 +271,15 @@ class _FieldOfficerReportListPageState
           timeAgo: timeAgoText,
           status: report.status,
           deadlineDate: report.dueAction,
-          onTap: () => debugPrint("Detail Penugasan diklik: ${report.id}"),
+          onTap: () {
+            Navigate.push(
+              context,
+              InternalReportDetailPage(
+                id: report.id,
+                role: UserRole.fieldOfficer,
+              ),
+            );
+          },
         );
       },
     );

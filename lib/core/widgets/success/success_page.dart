@@ -12,6 +12,7 @@ class SuccessPage extends StatefulWidget {
   final String description;
   final void Function()? onBack;
   final Widget? extraWidget;
+  final bool autoBack;
 
   const SuccessPage({
     super.key,
@@ -19,6 +20,7 @@ class SuccessPage extends StatefulWidget {
     required this.title,
     required this.description,
     this.extraWidget,
+    this.autoBack = true,
   });
 
   @override
@@ -32,7 +34,7 @@ class _SuccessScreenState extends State<SuccessPage> {
   @override
   void initState() {
     super.initState();
-    _startCountdown();
+    if (widget.autoBack) _startCountdown();
   }
 
   void _startCountdown() {
@@ -114,7 +116,9 @@ class _SuccessScreenState extends State<SuccessPage> {
                 valueListenable: _countdown,
                 builder: (context, value, child) {
                   return AppFilledButton(
-                    text: "Kembali Dalam $value Detik",
+                    text: widget.autoBack
+                        ? "Kembali Dalam $value Detik"
+                        : "Kembali",
                     onPressed: () {
                       _timer?.cancel();
                       widget.onBack?.call();

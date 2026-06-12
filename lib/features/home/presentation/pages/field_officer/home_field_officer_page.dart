@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/constants/user_role_enum.dart';
 import 'package:lapormin/core/route/navigate.dart';
 import 'package:lapormin/features/notification/presentation/pages/notification_history_page.dart';
+import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
@@ -232,8 +234,13 @@ class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
                           deadlineDate: report.dueAction,
 
                           onTap: () {
-                            debugPrint("Buka Detail Penugasan: ${report.id}");
-                            // TODO: Navigasi ke detail
+                            Navigate.push(
+                              context,
+                              InternalReportDetailPage(
+                                id: report.id,
+                                role: UserRole.fieldOfficer,
+                              ),
+                            );
                           },
                         );
                       },
