@@ -8,12 +8,14 @@ sealed class FieldOfficerReportsEvent extends Equatable {
 }
 
 final class FetchFieldOfficerReports extends FieldOfficerReportsEvent {
-  final ReportCategory? category;
-  final ReportStatus? status;
-  final String? keyword;
+  const FetchFieldOfficerReports();
+}
 
-  const FetchFieldOfficerReports({this.category, this.status, this.keyword});
+final class UpdateFieldOfficerFilter extends FieldOfficerReportsEvent {
+  final ReportFilterParams newFilter;
+
+  const UpdateFieldOfficerFilter(this.newFilter);
 
   @override
-  List<Object?> get props => [category, status, keyword];
+  List<Object?> get props => [newFilter];
 }

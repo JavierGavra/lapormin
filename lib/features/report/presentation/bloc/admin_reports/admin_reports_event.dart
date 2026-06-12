@@ -8,12 +8,19 @@ sealed class AdminReportsEvent extends Equatable {
 }
 
 final class FetchAdminReports extends AdminReportsEvent {
-  final ReportCategory? category;
-  final ReportStatus? status;
-  final String? keyword;
+  final ReportFilterParams? presetFilter;
 
-  const FetchAdminReports({this.category, this.status, this.keyword});
+  const FetchAdminReports({this.presetFilter});
 
   @override
-  List<Object?> get props => [category, status, keyword];
+  List<Object?> get props => [presetFilter];
+}
+
+final class UpdateAdminFilter extends AdminReportsEvent {
+  final ReportFilterParams newFilter;
+
+  const UpdateAdminFilter(this.newFilter);
+
+  @override
+  List<Object?> get props => [newFilter];
 }

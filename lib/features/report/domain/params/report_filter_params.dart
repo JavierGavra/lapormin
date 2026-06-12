@@ -1,15 +1,14 @@
-import 'package:equatable/equatable.dart';
+import 'package:lapormin/core/constants/report_category_enum.dart';
+import 'package:lapormin/core/constants/report_status_enum.dart';
 
-import '../../../../core/constants/report_category_enum.dart';
-import '../../../../core/constants/report_status_enum.dart';
-
-class ReportFilterParams extends Equatable {
-  final ReportCategory? category;
-  final ReportStatus? status;
+class ReportFilterParams {
   final String? keyword;
+  final List<ReportCategory> categories;
+  final List<ReportStatus> statuses;
 
-  const ReportFilterParams({this.category, this.status, this.keyword});
-
-  @override
-  List<Object?> get props => [category, status, keyword];
+  const ReportFilterParams({
+    this.keyword,
+    this.categories = const [],
+    this.statuses = const [],
+  });
 }

@@ -83,7 +83,7 @@ class _MyReportListPageState extends State<MyReportListPage> {
 
                   if (state.reports.isEmpty) {
                     return const CustomScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
+                      physics: AlwaysScrollableScrollPhysics(),
                       slivers: [
                         SliverFillRemaining(
                           child: Center(

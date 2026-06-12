@@ -1,7 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:lapormin/core/constants/report_category_enum.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/features/report/domain/entities/report_summary.dart';
 import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
 import 'package:lapormin/features/report/domain/use_cases/get_field_officer_reports.dart';
@@ -18,6 +16,7 @@ class FieldOfficerReportsBloc
   }) : _getFieldOfficerReports = getFieldOfficerReports,
        super(const FieldOfficerReportsState()) {
     on<FetchFieldOfficerReports>(_onFetchFieldOfficerReports);
+    on<UpdateFieldOfficerFilter>(_onUpdateFieldOfficerFilter);
   }
 
   Future<void> _onFetchFieldOfficerReports(
@@ -26,14 +25,8 @@ class FieldOfficerReportsBloc
   ) async {
     emit(state.copyWith(status: FieldOfficerReportsStatus.loading));
 
-    final params = ReportFilterParams(
-      category: event.category,
-      status: event.status,
-      keyword: event.keyword,
-    );
-
     try {
-      final result = await _getFieldOfficerReports(params);
+      final result = await _getFieldOfficerReports(state.filter);
 
       result.fold(
         (failure) => emit(
@@ -57,5 +50,13 @@ class FieldOfficerReportsBloc
         ),
       );
     }
+  }
+
+  void _onUpdateFieldOfficerFilter(
+    UpdateFieldOfficerFilter event,
+    Emitter<FieldOfficerReportsState> emit,
+  ) {
+    emit(state.copyWith(filter: event.newFilter));
+    add(const FetchFieldOfficerReports());
   }
 }

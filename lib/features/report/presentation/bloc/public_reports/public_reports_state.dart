@@ -6,25 +6,29 @@ final class PublicReportsState extends Equatable {
   final PublicReportsStatus status;
   final List<ReportSummary> reports;
   final String? errorMessage;
+  final ReportFilterParams filter;
 
   const PublicReportsState({
     this.status = PublicReportsStatus.initial,
     this.reports = const [],
     this.errorMessage,
+    this.filter = const ReportFilterParams(),
   });
 
   PublicReportsState copyWith({
     PublicReportsStatus? status,
     List<ReportSummary>? reports,
     String? errorMessage,
+    ReportFilterParams? filter,
   }) {
     return PublicReportsState(
       status: status ?? this.status,
       reports: reports ?? this.reports,
       errorMessage: errorMessage ?? this.errorMessage,
+      filter: filter ?? this.filter,
     );
   }
 
   @override
-  List<Object?> get props => [status, reports, errorMessage];
+  List<Object?> get props => [status, reports, errorMessage, filter];
 }

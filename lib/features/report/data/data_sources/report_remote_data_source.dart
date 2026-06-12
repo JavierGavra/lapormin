@@ -45,12 +45,14 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
   ) {
     var filteredQuery = query;
 
-    if (filter.category != null) {
-      filteredQuery = filteredQuery.eq('category', filter.category!.dbValue);
+    if (filter.categories.isNotEmpty) {
+      final categoryDbValues = filter.categories.map((e) => e.dbValue).toList();
+      filteredQuery = filteredQuery.inFilter('category', categoryDbValues);
     }
 
-    if (filter.status != null) {
-      filteredQuery = filteredQuery.eq('status', filter.status!.dbValue);
+    if (filter.statuses.isNotEmpty) {
+      final statusDbValues = filter.statuses.map((e) => e.dbValue).toList();
+      filteredQuery = filteredQuery.inFilter('status', statusDbValues);
     }
 
     if (filter.keyword != null && filter.keyword!.isNotEmpty) {
