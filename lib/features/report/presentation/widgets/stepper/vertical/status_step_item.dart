@@ -80,31 +80,18 @@ class StatusStepItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 16,
-        children: [
-          _buildIndicatorColumn(context),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 24),
-              child: _buildContent(context),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIndicatorColumn(BuildContext context) {
     final color = Theme.of(context).colorScheme;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+
+    return Stack(
       children: [
-        _buildBubble(color),
         if (!isLast)
-          Expanded(
+          Positioned(
+            top:
+                48, // Mulai tepat di bawah bubble (karena tinggi bubble adalah 48)
+            bottom:
+                0, // Tarik garis merenggang otomatis sampai batas paling bawah konten
+            left:
+                23, // (Lebar bubble 48 / 2) - (Tebal garis 2 / 2) = 23 (Tepat di tengah)
             child: Container(
               width: 2,
               margin: const EdgeInsets.symmetric(vertical: 2),
@@ -115,6 +102,19 @@ class StatusStepItem extends StatelessWidget {
                   : color.surfaceContainerHighest,
             ),
           ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 16,
+          children: [
+            _buildBubble(color),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: _buildContent(context),
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

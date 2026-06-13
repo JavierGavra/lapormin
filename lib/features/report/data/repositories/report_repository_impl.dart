@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
+import 'package:lapormin/features/report/domain/entities/final_report.dart';
+import 'package:lapormin/features/report/domain/use_cases/submit_field_check.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
 import '../../../../core/error/failures.dart';
@@ -21,7 +23,11 @@ class ReportRepositoryImpl implements ReportRepository {
   Future<Either<Failure, bool>> submitReport(SubmitReportParams params) async {
     try {
       final reportId = await remoteDataSource.insertReport(params);
-      await remoteDataSource.insertReportEvidences(reportId, params.evidences);
+      await remoteDataSource.insertReportEvidences(
+        reportId,
+        params.evidences,
+        EvidenceType.report,
+      );
       return Right(true);
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
@@ -166,5 +172,30 @@ class ReportRepositoryImpl implements ReportRepository {
     } catch (e) {
       return Left(ServerFailure());
     }
+  }
+
+  @override
+  Future<Either<Failure, bool>> submitFieldCheck(
+    SubmitFieldCheckParams params,
+  ) async {
+    try {
+      await remoteDataSource.updateFieldCheck(params);
+      await remoteDataSource.insertReportEvidences(
+        params.fieldCheckId,
+        params.evidences,
+        EvidenceType.fieldCheck,
+      );
+      return Right(true);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> submitFinalReport(FinalReport finalReport) {
+    // TODO: implement submitFinalReport
+    throw UnimplementedError();
   }
 }

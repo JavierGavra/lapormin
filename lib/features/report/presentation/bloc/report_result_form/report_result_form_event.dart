@@ -7,17 +7,30 @@ sealed class ReportResultFormEvent extends Equatable {
   List<Object> get props => [];
 }
 
-final class ReportResultFormSubmitted extends ReportResultFormEvent {
-  final String reportId;
+final class ReportResultFormFieldCheckSubmitted extends ReportResultFormEvent {
+  final String fieldCheckId;
   final String description;
   final List<String> evidences;
 
-  const ReportResultFormSubmitted({
-    required this.reportId,
+  const ReportResultFormFieldCheckSubmitted({
+    required this.fieldCheckId,
     required this.description,
     required this.evidences,
   });
 
   @override
-  List<Object> get props => [reportId, description, evidences];
+  List<Object> get props => [fieldCheckId, description, evidences];
+}
+
+final class ReportResultFormFinalReportSubmitted extends ReportResultFormEvent {
+  final String description;
+  final List<String> evidences;
+
+  const ReportResultFormFinalReportSubmitted({
+    required this.description,
+    required this.evidences,
+  });
+
+  @override
+  List<Object> get props => [description, evidences];
 }

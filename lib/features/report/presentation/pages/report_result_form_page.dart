@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/route/navigate.dart';
+import 'package:lapormin/injection.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
@@ -19,15 +20,15 @@ import '../widgets/picker/evidences_picker/evidences_picker.dart';
 enum ReportResultFormType { fieldCheck, action }
 
 class ReportResultFormPage extends StatefulWidget {
-  final String reportId;
+  final String? fieldCheckId;
   final String reportTitle;
   final ReportResultFormType type;
 
   const ReportResultFormPage({
     super.key,
-    required this.reportId,
     required this.type,
     required this.reportTitle,
+    this.fieldCheckId,
   });
 
   @override
@@ -85,13 +86,17 @@ class _ReportResultFormPageState extends State<ReportResultFormPage> {
       return;
     }
 
-    context.read<ReportResultFormBloc>().add(
-      ReportResultFormSubmitted(
-        reportId: widget.reportId,
+    context.read<ReportResultFormBloc>().add(switch (widget.type) {
+      ReportResultFormType.fieldCheck => ReportResultFormFieldCheckSubmitted(
+        fieldCheckId: widget.fieldCheckId!,
         description: _descriptionController.text,
         evidences: _evidences,
       ),
-    );
+      ReportResultFormType.action => ReportResultFormFinalReportSubmitted(
+        description: _descriptionController.text,
+        evidences: _evidences,
+      ),
+    });
   }
 
   @override
@@ -104,7 +109,7 @@ class _ReportResultFormPageState extends State<ReportResultFormPage> {
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
     return BlocProvider(
-      create: (context) => ReportResultFormBloc(),
+      create: (context) => sl<ReportResultFormBloc>(),
       child: BlocListener<ReportResultFormBloc, ReportResultFormState>(
         listener: _listener,
         child: Scaffold(

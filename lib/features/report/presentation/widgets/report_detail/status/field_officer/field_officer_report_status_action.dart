@@ -11,7 +11,11 @@ class FieldOfficerReportStatusAction extends StatelessWidget {
   final bool enabled;
   const FieldOfficerReportStatusAction({super.key, required this.enabled});
 
-  void _onSubmitPressed(BuildContext context, Report report) async {
+  void _onSubmitPressed(
+    BuildContext context,
+    Report report,
+    String? fieldCheckId,
+  ) async {
     final isSubmitSuccess = await Navigate.push<bool?>(
       context,
       ReportResultFormPage(
@@ -19,7 +23,7 @@ class FieldOfficerReportStatusAction extends StatelessWidget {
             ? ReportResultFormType.fieldCheck
             : ReportResultFormType.action,
         reportTitle: report.title,
-        reportId: report.id,
+        fieldCheckId: fieldCheckId,
       ),
     );
     if (isSubmitSuccess == true && context.mounted) {
@@ -50,7 +54,11 @@ class FieldOfficerReportStatusAction extends StatelessWidget {
               case ReportStatus.fieldCheck:
                 return AppFilledButton(
                   onPressed: enabled
-                      ? () => _onSubmitPressed(context, report)
+                      ? () => _onSubmitPressed(
+                          context,
+                          report,
+                          state.reportAggregate!.fieldCheck?.id,
+                        )
                       : null,
                   text: enabled ? "Buat Hasil Inspeksi" : "Menunggu Verifikasi",
                   prefixIcon: enabled ? Icons.description_outlined : null,
@@ -64,7 +72,7 @@ class FieldOfficerReportStatusAction extends StatelessWidget {
               case ReportStatus.action:
                 return AppFilledButton(
                   onPressed: enabled
-                      ? () => _onSubmitPressed(context, report)
+                      ? () => _onSubmitPressed(context, report, null)
                       : null,
                   text: enabled ? "Buat Laporan Akhir" : "Menunggu Validasi",
                   prefixIcon: enabled ? Icons.description_outlined : null,

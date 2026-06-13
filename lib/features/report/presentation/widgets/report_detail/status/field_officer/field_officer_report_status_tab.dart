@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/widgets/card/information_card.dart';
+import 'package:lapormin/features/report/domain/entities/field_check.dart';
 import 'package:lapormin/features/report/presentation/bloc/internal_report_detail/internal_report_detail_bloc.dart';
 import 'package:lapormin/features/report/presentation/widgets/card/field_check_card.dart';
 import 'package:lapormin/features/report/presentation/widgets/card/final_report_card.dart';
@@ -21,6 +22,22 @@ class FieldOfficerReportStatusTab extends StatefulWidget {
 
 class _FieldOfficerReportStatusTabState
     extends State<FieldOfficerReportStatusTab> {
+  bool _actionEnabled(InternalReportDetailState state) {
+    final report = state.reportAggregate!.report;
+    final fieldCheck = state.reportAggregate!.fieldCheck!;
+
+    if (report.status == ReportStatus.fieldCheck) {
+      return fieldCheck.description == null;
+    }
+
+    final finalReport = state.reportAggregate!.finalReport;
+    if (report.status == ReportStatus.action) {
+      return finalReport == null;
+    }
+
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -57,11 +74,8 @@ class _FieldOfficerReportStatusTabState
                         dueDate: report.dueDate,
                       ),
 
-                      if (report.status == ReportStatus.fieldCheck)
-                        _buildFieldOfficerInfoCard(),
-
-                      if (fieldCheck != null && fieldCheck.description != null)
-                        FieldCheckCard(fieldCheck: fieldCheck),
+                      if (fieldCheck != null)
+                        ..._buildFieldCheckStatus(fieldCheck),
 
                       if (report.status == ReportStatus.rejected)
                         _buildRejectedInfoCard(),
@@ -73,11 +87,21 @@ class _FieldOfficerReportStatusTabState
                 ),
               ),
             ),
-            bottomNavigationBar: FieldOfficerReportStatusAction(enabled: true),
+            bottomNavigationBar: FieldOfficerReportStatusAction(
+              enabled: _actionEnabled(state),
+            ),
           );
         },
       ),
     );
+  }
+
+  List<Widget> _buildFieldCheckStatus(FieldCheck fieldCheck) {
+    return [
+      if (fieldCheck.description == null) _buildFieldOfficerInfoCard(),
+      if (fieldCheck.description != null)
+        FieldCheckCard(fieldCheck: fieldCheck),
+    ];
   }
 
   Widget _buildFieldOfficerInfoCard() {

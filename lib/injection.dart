@@ -12,7 +12,9 @@ import 'package:lapormin/features/report/domain/use_cases/assign_field_officer.d
 import 'package:lapormin/features/report/domain/use_cases/completing_report.dart';
 import 'package:lapormin/features/report/domain/use_cases/provide_action.dart';
 import 'package:lapormin/features/report/domain/use_cases/reject_report.dart';
+import 'package:lapormin/features/report/domain/use_cases/submit_field_check.dart';
 import 'package:lapormin/features/report/domain/use_cases/verify_report.dart';
+import 'package:lapormin/features/report/presentation/bloc/report_result_form/report_result_form_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'features/auth/data/data_sources/auth_local_data_source.dart';
@@ -153,6 +155,7 @@ void _initReportFeature() {
   sl.registerFactory(() => PublicReportsBloc(getPublicReports: sl()));
   sl.registerFactory(() => MyReportsBloc(getUserReports: sl()));
   sl.registerFactory(() => AdminReportsBloc(getAdminReports: sl()));
+  sl.registerFactory(() => ReportResultFormBloc(submitFieldCheck: sl()));
   sl.registerFactory(
     () => FieldOfficerReportsBloc(getFieldOfficerReports: sl()),
   );
@@ -180,6 +183,7 @@ void _initReportFeature() {
   sl.registerLazySingleton(() => RejectReport(sl()));
   sl.registerLazySingleton(() => ProvideAction(sl()));
   sl.registerLazySingleton(() => CompletingReport(sl()));
+  sl.registerLazySingleton(() => SubmitFieldCheck(sl()));
 
   // Repository
   sl.registerLazySingleton<ReportRepository>(
