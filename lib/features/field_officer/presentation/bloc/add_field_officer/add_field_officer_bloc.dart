@@ -25,9 +25,11 @@ class AddFieldOfficerBloc
       final generatedPassword = 'LaporMin!$randomDigits';
 
       final result = await addFieldOfficerUseCase(
-        event.name,
-        formattedPhone,
-        generatedPassword,
+        AddFieldOfficerParams(
+          name: event.name,
+          phone: formattedPhone,
+          password: generatedPassword,
+        ),
       );
 
       result.fold(

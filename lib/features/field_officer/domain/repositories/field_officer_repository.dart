@@ -4,7 +4,7 @@ import '../entities/field_officer.dart'; // 📍 KTP untuk ngebaca list FieldOff
 
 abstract class FieldOfficerRepository {
   // 📍 MENU LAMA: Fungsi untuk narik daftar petugas (JANGAN DIHAPUS)
-  Future<List<FieldOfficer>> getFieldOfficers();
+  Future<Either<Failure, List<FieldOfficer>>> getFieldOfficers();
 
   // 📍 MENU BARU: Fungsi untuk nambah petugas
   Future<Either<Failure, void>> addFieldOfficer(

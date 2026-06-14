@@ -1,17 +1,35 @@
 import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
 import 'package:lapormin/core/error/failures.dart';
+import 'package:lapormin/core/use_case/usecase.dart';
 import '../repositories/field_officer_repository.dart';
 
-class AddFieldOfficer {
+class AddFieldOfficer implements UseCase<void, AddFieldOfficerParams> {
   final FieldOfficerRepository repository;
 
   AddFieldOfficer(this.repository);
 
-  Future<Either<Failure, void>> call(
-    String name,
-    String phone,
-    String password,
-  ) async {
-    return await repository.addFieldOfficer(name, phone, password);
+  @override
+  Future<Either<Failure, void>> call(AddFieldOfficerParams params) {
+    return repository.addFieldOfficer(
+      params.name,
+      params.phone,
+      params.password,
+    );
   }
+}
+
+class AddFieldOfficerParams extends Equatable {
+  final String name;
+  final String phone;
+  final String password;
+
+  const AddFieldOfficerParams({
+    required this.name,
+    required this.phone,
+    required this.password,
+  });
+
+  @override
+  List<Object?> get props => [name, phone, password];
 }
