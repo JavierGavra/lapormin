@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
-import 'package:lapormin/features/report/domain/entities/final_report.dart';
-import 'package:lapormin/features/report/domain/use_cases/submit_field_check.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
 import '../../../../core/error/failures.dart';
@@ -11,6 +9,8 @@ import '../../domain/entities/report_aggregate.dart';
 import '../../domain/entities/report_summary.dart';
 import '../../domain/params/report_filter_params.dart';
 import '../../domain/repositories/report_repository.dart';
+import '../../domain/use_cases/submit_field_check.dart';
+import '../../domain/use_cases/submit_final_report.dart';
 import '../../domain/use_cases/submit_report.dart';
 import '../data_sources/report_remote_data_source.dart';
 
@@ -194,8 +194,21 @@ class ReportRepositoryImpl implements ReportRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> submitFinalReport(FinalReport finalReport) {
-    // TODO: implement submitFinalReport
-    throw UnimplementedError();
+  Future<Either<Failure, bool>> submitFinalReport(
+    SubmitFinalReportParams params,
+  ) async {
+    try {
+      final id = await remoteDataSource.insertFinalReport(params);
+      await remoteDataSource.insertReportEvidences(
+        id,
+        params.evidences,
+        EvidenceType.finalReport,
+      );
+      return Right(true);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
   }
 }

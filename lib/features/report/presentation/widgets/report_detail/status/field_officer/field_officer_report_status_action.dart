@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
-import 'package:lapormin/core/route/navigate.dart';
-import 'package:lapormin/core/widgets/button/app_filled_button.dart';
-import 'package:lapormin/features/report/domain/entities/report.dart';
-import 'package:lapormin/features/report/presentation/bloc/internal_report_detail/internal_report_detail_bloc.dart';
-import 'package:lapormin/features/report/presentation/pages/report_result_form_page.dart';
+
+import '../../../../../../../core/constants/report_status_enum.dart';
+import '../../../../../../../core/route/navigate.dart';
+import '../../../../../../../core/widgets/button/app_filled_button.dart';
+import '../../../../../domain/entities/report.dart';
+import '../../../../bloc/internal_report_detail/internal_report_detail_bloc.dart';
+import '../../../../pages/report_result_form_page.dart';
 
 class FieldOfficerReportStatusAction extends StatelessWidget {
   final bool enabled;
@@ -23,6 +24,7 @@ class FieldOfficerReportStatusAction extends StatelessWidget {
             ? ReportResultFormType.fieldCheck
             : ReportResultFormType.action,
         reportTitle: report.title,
+        reportId: report.id,
         fieldCheckId: fieldCheckId,
       ),
     );

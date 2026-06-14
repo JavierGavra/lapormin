@@ -2,12 +2,13 @@ import 'dart:io';
 
 import 'package:flutter/rendering.dart';
 import 'package:intl/intl.dart';
-import 'package:lapormin/features/report/domain/use_cases/submit_field_check.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../domain/params/report_filter_params.dart';
+import '../../domain/use_cases/submit_field_check.dart';
+import '../../domain/use_cases/submit_final_report.dart';
 import '../../domain/use_cases/submit_report.dart';
 import '../models/report_aggregate_model.dart';
 import '../models/report_model.dart';
@@ -64,6 +65,7 @@ abstract interface class ReportRemoteDataSource {
   Future<bool> assignFieldOfficer(String reportId, String fieldOfficerId);
   Future<bool> provideAction(String id, DateTime? dueAction);
   Future<bool> updateFieldCheck(SubmitFieldCheckParams params);
+  Future<String> insertFinalReport(SubmitFinalReportParams params);
 }
 
 class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
@@ -460,6 +462,29 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
           );
 
       return true;
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<String> insertFinalReport(SubmitFinalReportParams params) async {
+    try {
+      final response = await supabase
+          .from('final_report')
+          .insert({
+            'report_id': params.reportId,
+            'description': params.description,
+          })
+          .select('id')
+          .single()
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => throw const TimeoutException(),
+          );
+
+      return response['id'];
     } catch (e) {
       debugPrint('$e');
       rethrow;

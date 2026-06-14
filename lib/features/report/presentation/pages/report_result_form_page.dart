@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/core/route/navigate.dart';
-import 'package:lapormin/injection.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
+import '../../../../core/route/navigate.dart';
 import '../../../../core/utils/text_style/app_text_style.dart';
 import '../../../../core/utils/validator/input_validator.dart';
 import '../../../../core/widgets/button/app_back_button.dart';
@@ -13,6 +12,7 @@ import '../../../../core/widgets/loading/fullscreen_loading_overlay.dart';
 import '../../../../core/widgets/snackbar/custom_snackbar.dart';
 import '../../../../core/widgets/success/success_page.dart';
 import '../../../../core/widgets/text_field/app_text_field.dart';
+import '../../../../injection.dart';
 import '../bloc/report_result_form/report_result_form_bloc.dart';
 import '../widgets/chip/custom_chip.dart';
 import '../widgets/picker/evidences_picker/evidences_picker.dart';
@@ -21,6 +21,7 @@ enum ReportResultFormType { fieldCheck, action }
 
 class ReportResultFormPage extends StatefulWidget {
   final String? fieldCheckId;
+  final String reportId;
   final String reportTitle;
   final ReportResultFormType type;
 
@@ -28,6 +29,7 @@ class ReportResultFormPage extends StatefulWidget {
     super.key,
     required this.type,
     required this.reportTitle,
+    required this.reportId,
     this.fieldCheckId,
   });
 
@@ -93,6 +95,7 @@ class _ReportResultFormPageState extends State<ReportResultFormPage> {
         evidences: _evidences,
       ),
       ReportResultFormType.action => ReportResultFormFinalReportSubmitted(
+        reportId: widget.reportId,
         description: _descriptionController.text,
         evidences: _evidences,
       ),

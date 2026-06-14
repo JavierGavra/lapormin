@@ -23,14 +23,16 @@ final class ReportResultFormFieldCheckSubmitted extends ReportResultFormEvent {
 }
 
 final class ReportResultFormFinalReportSubmitted extends ReportResultFormEvent {
+  final String reportId;
   final String description;
   final List<String> evidences;
 
   const ReportResultFormFinalReportSubmitted({
+    required this.reportId,
     required this.description,
     required this.evidences,
   });
 
   @override
-  List<Object> get props => [description, evidences];
+  List<Object> get props => [reportId, description, evidences];
 }
