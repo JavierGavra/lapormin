@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lapormin/core/utils/phone_number/phone_number_format.dart';
+import 'package:lapormin/core/widgets/loading/shimmer_widget.dart';
 
 import '../../../../../core/utils/text_style/app_text_style.dart';
 import '../../../domain/entities/field_check.dart';
@@ -105,28 +106,33 @@ class FieldCheckCard extends StatelessWidget {
         return Wrap(
           spacing: gap,
           runSpacing: gap,
-          children:
-              [
-                "assets/images/cards/banjir.png",
-                "assets/images/cards/kriminal.png",
-              ].map((evidence) {
-                return SizedBox(
-                  width: itemWidth,
-                  height: itemWidth,
-                  child: Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: color.primaryContainer,
-                        borderRadius: BorderRadius.circular(12),
-                        image: DecorationImage(
-                          image: AssetImage(evidence),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+          children: fieldCheck.evidences.map((evidence) {
+            return SizedBox(
+              width: itemWidth,
+              height: itemWidth,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  evidence,
+                  fit: BoxFit.cover,
+                  frameBuilder:
+                      (context, child, frame, wasSynchronouslyLoaded) {
+                        if (wasSynchronouslyLoaded || frame != null) {
+                          return child;
+                        }
+                        return ShimmerWidget();
+                      },
+                  errorBuilder: (context, error, stack) => Container(
+                    color: color.surfaceContainerHighest,
+                    child: Icon(
+                      Icons.broken_image_rounded,
+                      color: color.outline,
                     ),
                   ),
-                );
-              }).toList(),
+                ),
+              ),
+            );
+          }).toList(),
         );
       },
     );

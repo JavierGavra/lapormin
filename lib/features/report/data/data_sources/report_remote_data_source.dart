@@ -7,14 +7,49 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/constants/report_status_enum.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../domain/params/report_filter_params.dart';
+import '../../domain/use_cases/submit_field_check.dart';
+import '../../domain/use_cases/submit_final_report.dart';
 import '../../domain/use_cases/submit_report.dart';
 import '../models/report_aggregate_model.dart';
 import '../models/report_model.dart';
 import '../models/report_summary_model.dart';
 
+// Enum untuk jenis evidence
+enum EvidenceType {
+  report(
+    folder: 'report_evidences',
+    table: 'report_evidence',
+    idField: 'report_id',
+  ),
+  fieldCheck(
+    folder: 'field_check_evidences',
+    table: 'field_check_evidence',
+    idField: 'field_check_id',
+  ),
+  finalReport(
+    folder: 'final_report_evidences',
+    table: 'final_report_evidence',
+    idField: 'final_report_id',
+  );
+
+  final String folder;
+  final String table;
+  final String idField;
+
+  const EvidenceType({
+    required this.folder,
+    required this.table,
+    required this.idField,
+  });
+}
+
 abstract interface class ReportRemoteDataSource {
   Future<String> insertReport(SubmitReportParams params);
-  Future<bool> insertReportEvidences(String reportId, List<String> evidences);
+  Future<bool> insertReportEvidences(
+    String referenceId,
+    List<String> evidences,
+    EvidenceType type,
+  );
   Future<List<ReportSummaryModel>> fetchUserReports();
   Future<List<ReportSummaryModel>> fetchPublicReports(
     ReportFilterParams filter,
@@ -29,6 +64,8 @@ abstract interface class ReportRemoteDataSource {
   Future<ReportModel> updateReportStatus(String id, ReportStatus status);
   Future<bool> assignFieldOfficer(String reportId, String fieldOfficerId);
   Future<bool> provideAction(String id, DateTime? dueAction);
+  Future<bool> updateFieldCheck(SubmitFieldCheckParams params);
+  Future<String> insertFinalReport(SubmitFinalReportParams params);
 }
 
 class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
@@ -68,6 +105,16 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
     return supabase.storage.from('reports').getPublicUrl(media);
   }
 
+  List<String> _resolveEvidenceUrls(dynamic evidences) {
+    final list = evidences as List?;
+    if (list == null || list.isEmpty) return [];
+
+    return list.map((evidence) {
+      final mediaPath = evidence['media'] as String;
+      return supabase.storage.from('reports').getPublicUrl(mediaPath);
+    }).toList();
+  }
+
   @override
   Future<String> insertReport(SubmitReportParams params) async {
     try {
@@ -99,34 +146,29 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
 
   @override
   Future<bool> insertReportEvidences(
-    String reportId,
+    String referenceId,
     List<String> evidences,
+    EvidenceType type,
   ) async {
     try {
-      final List<Map<String, dynamic>> evidenceDataToInsert = [];
-
       const String bucketName = 'reports';
-      const String folderName = 'report_evidences';
 
-      await Future.wait(
+      final List<Map<String, dynamic>> evidenceDataToInsert = await Future.wait(
         evidences.map((localPath) async {
           final file = File(localPath);
 
           final extension = localPath.split('.').last;
           final fileName = '${localPath.hashCode}.$extension';
-          final storageFilePath = '$folderName/$reportId/$fileName';
+          final storageFilePath = '${type.folder}/$referenceId/$fileName';
 
           await supabase.storage.from(bucketName).upload(storageFilePath, file);
 
-          evidenceDataToInsert.add({
-            'report_id': reportId,
-            'media': storageFilePath,
-          });
+          return {type.idField: referenceId, 'media': storageFilePath};
         }),
       );
 
       if (evidenceDataToInsert.isNotEmpty) {
-        await supabase.from('report_evidence').insert(evidenceDataToInsert);
+        await supabase.from(type.table).insert(evidenceDataToInsert);
       }
 
       return true;
@@ -283,16 +325,7 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
 
       final rawData = response;
 
-      if (rawData['evidences'] != null) {
-        final List<dynamic> rawEvidences = rawData['evidences'];
-
-        final List<String> imageUrls = rawEvidences.map((evidence) {
-          final mediaPath = evidence['media'] as String;
-          return supabase.storage.from('reports').getPublicUrl(mediaPath);
-        }).toList();
-
-        rawData['evidences'] = imageUrls;
-      }
+      rawData['evidences'] = _resolveEvidenceUrls(rawData['evidences']);
 
       return ReportModel.fromMap(rawData);
     } catch (e) {
@@ -307,22 +340,24 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
       final response = await supabase
           .from('report')
           .select('''
+            *,
+            evidences: report_evidence (media),
+            report_status_logs: report_status_log (
+              id, user_id, status, created_at
+            ),
+            field_check (
               *,
-              evidences: report_evidence (
-                media
-              ),
-              report_status_logs: report_status_log (
-                id, user_id, status, created_at
-              ),
-              field_check (
-                *,
-                ...users(
-                  field_officer_name: username,
-                  field_officer_phone: no_telp
-                )
-              ),
-              final_report (*)
-            ''')
+              evidences: field_check_evidence (media),
+              ...users(
+                field_officer_name: username,
+                field_officer_phone: no_telp
+              )
+            ),
+            final_report (
+              *,
+              evidences: final_report_evidence (media)
+            )
+          ''')
           .eq('id', id)
           .single()
           .timeout(
@@ -330,22 +365,30 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
             onTimeout: () => throw const TimeoutException(),
           );
 
-      final rawData = response;
+      final rawData = Map<String, dynamic>.from(response);
 
-      if (rawData['evidences'] != null) {
-        final List<dynamic> rawEvidences = rawData['evidences'];
+      // Resolve report evidences
+      rawData['evidences'] = _resolveEvidenceUrls(rawData['evidences']);
 
-        final List<String> imageUrls = rawEvidences.map((evidence) {
-          final mediaPath = evidence['media'] as String;
-          return supabase.storage.from('reports').getPublicUrl(mediaPath);
-        }).toList();
+      // Resolve field_check evidences
+      if (rawData['field_check'] != null) {
+        final fieldCheck = Map<String, dynamic>.from(rawData['field_check']);
+        fieldCheck['evidences'] = _resolveEvidenceUrls(fieldCheck['evidences']);
+        rawData['field_check'] = fieldCheck;
+      }
 
-        rawData['evidences'] = imageUrls;
+      // Resolve final_report evidences
+      if (rawData['final_report'] != null) {
+        final finalReport = Map<String, dynamic>.from(rawData['final_report']);
+        finalReport['evidences'] = _resolveEvidenceUrls(
+          finalReport['evidences'],
+        );
+        rawData['final_report'] = finalReport;
       }
 
       return ReportAggregateModel.fromMap(rawData);
     } catch (e) {
-      debugPrint("Error fetching report: $e");
+      debugPrint("Error fetching report aggregate: $e");
       rethrow;
     }
   }
@@ -400,6 +443,48 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
           .single();
 
       return true;
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> updateFieldCheck(SubmitFieldCheckParams params) async {
+    try {
+      await supabase
+          .from('field_check')
+          .update({'description': params.description})
+          .eq('id', params.fieldCheckId)
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => throw const TimeoutException(),
+          );
+
+      return true;
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<String> insertFinalReport(SubmitFinalReportParams params) async {
+    try {
+      final response = await supabase
+          .from('final_report')
+          .insert({
+            'report_id': params.reportId,
+            'description': params.description,
+          })
+          .select('id')
+          .single()
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => throw const TimeoutException(),
+          );
+
+      return response['id'];
     } catch (e) {
       debugPrint('$e');
       rethrow;

@@ -6,6 +6,8 @@ import '../entities/report.dart';
 import '../entities/report_aggregate.dart';
 import '../entities/report_summary.dart';
 import '../params/report_filter_params.dart';
+import '../use_cases/submit_field_check.dart';
+import '../use_cases/submit_final_report.dart';
 import '../use_cases/submit_report.dart';
 
 abstract interface class ReportRepository {
@@ -35,4 +37,8 @@ abstract interface class ReportRepository {
     required String reportId,
     required DateTime? dueAction,
   });
+  Future<Either<Failure, bool>> submitFieldCheck(SubmitFieldCheckParams params);
+  Future<Either<Failure, bool>> submitFinalReport(
+    SubmitFinalReportParams params,
+  );
 }
