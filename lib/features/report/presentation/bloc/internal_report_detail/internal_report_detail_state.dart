@@ -14,10 +14,14 @@ final class InternalReportDetailState extends Equatable {
   final ReportAggregate? reportAggregate;
   final String? errorMessage;
 
+  // Hanya digunakan pada Admin saat status "Pending"
+  final List<FieldOfficer>? fieldOfficers;
+
   const InternalReportDetailState({
     this.status = InternalReportDetailStatus.initial,
     this.reportStatus = ReportStatus.pending,
     this.reportAggregate,
+    this.fieldOfficers,
     this.errorMessage,
   });
 
@@ -34,12 +38,14 @@ final class InternalReportDetailState extends Equatable {
     InternalReportDetailStatus? status,
     ReportStatus? reportStatus,
     ReportAggregate? reportAggregate,
+    List<FieldOfficer>? fieldOfficers,
     String? errorMessage,
   }) {
     return InternalReportDetailState(
       status: status ?? this.status,
       reportStatus: reportStatus ?? this.reportStatus,
       reportAggregate: reportAggregate ?? this.reportAggregate,
+      fieldOfficers: fieldOfficers ?? this.fieldOfficers,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
@@ -49,6 +55,7 @@ final class InternalReportDetailState extends Equatable {
     status,
     reportStatus,
     reportAggregate,
+    fieldOfficers,
     errorMessage,
   ];
 }

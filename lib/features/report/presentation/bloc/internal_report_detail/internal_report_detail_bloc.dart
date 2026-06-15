@@ -1,6 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:lapormin/core/use_case/usecase.dart';
+import 'package:lapormin/features/field_officer/domain/entities/field_officer.dart';
+import 'package:lapormin/features/field_officer/domain/use_cases/get_field_officers.dart';
 
 import '../../../../../core/constants/report_status_enum.dart';
 import '../../../../../core/error/failures.dart';
@@ -24,6 +27,7 @@ class InternalReportDetailBloc
   final RejectReport _rejectReport;
   final ProvideAction _provideAction;
   final CompletingReport _completingReport;
+  final GetFieldOfficers _getFieldOfficers;
 
   InternalReportDetailBloc({
     required GetReportAggregate getReportAggregate,
@@ -32,12 +36,14 @@ class InternalReportDetailBloc
     required RejectReport rejectReport,
     required ProvideAction provideAction,
     required CompletingReport completingReport,
+    required GetFieldOfficers getFieldOfficers,
   }) : _getReportAggregate = getReportAggregate,
        _assignFieldOfficer = assignFieldOfficer,
        _verifyReport = verifyReport,
        _rejectReport = rejectReport,
        _provideAction = provideAction,
        _completingReport = completingReport,
+       _getFieldOfficers = getFieldOfficers,
        super(InternalReportDetailState()) {
     on<InternalReportDetailOpened>(_onInternalReportDetailOpened);
     on<FieldCheckRequested>(_onFieldCheckRequested);
@@ -103,18 +109,43 @@ class InternalReportDetailBloc
   ) async {
     emit(state.copyWith(status: InternalReportDetailStatus.loading));
 
-    final reportAggregate = await _getReportAggregate(
+    final reportAggregateResult = await _getReportAggregate(
       GetReportAggregateParams(id: event.id),
     );
 
-    reportAggregate.fold(
-      (failure) => _emitFailure(emit, failure.message!),
-      (reportAggregate) => emit(
-        state.copyWith(
-          status: InternalReportDetailStatus.success,
-          reportStatus: reportAggregate.report.status,
-          reportAggregate: reportAggregate,
-        ),
+    if (reportAggregateResult.isLeft()) {
+      _emitFailure(
+        emit,
+        reportAggregateResult.fold((failure) => failure.message!, (id) => ''),
+      );
+      return;
+    }
+
+    final reportAggregate = reportAggregateResult.getOrElse(
+      () => throw StateError(''),
+    );
+
+    // Fetch fieldOfficers hanya jika pending
+    List<FieldOfficer>? fieldOfficers;
+    if (reportAggregate.report.status == ReportStatus.pending) {
+      final officersResult = await _getFieldOfficers(NoParams());
+
+      if (officersResult.isLeft()) {
+        return _emitFailure(
+          emit,
+          officersResult.fold((f) => f.message!, (_) => ''),
+        );
+      }
+
+      fieldOfficers = officersResult.getOrElse(() => []);
+    }
+
+    return emit(
+      state.copyWith(
+        status: InternalReportDetailStatus.success,
+        reportStatus: reportAggregate.report.status,
+        reportAggregate: reportAggregate,
+        fieldOfficers: fieldOfficers,
       ),
     );
   }

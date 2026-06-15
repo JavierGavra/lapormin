@@ -170,6 +170,7 @@ void _initReportFeature() {
       rejectReport: sl(),
       provideAction: sl(),
       completingReport: sl(),
+      getFieldOfficers: sl(),
     ),
   );
 
