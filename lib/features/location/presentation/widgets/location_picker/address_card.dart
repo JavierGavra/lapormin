@@ -38,7 +38,6 @@ class AddressCard extends StatelessWidget {
             );
           }
 
-          // Success
           return Text(
             state.status == LocationPickerStatus.failure
                 ? state.errorMessage!

@@ -28,8 +28,7 @@ class _NotificationHistoryPageState extends State<NotificationHistoryPage> {
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 16,
-        leadingWidth: 24 + 40, // (Padding kiri) + (Lebar tombol)
-        elevation: 1,
+        leadingWidth: 24 + 40,
         shadowColor: Colors.black.withValues(alpha: 0.25),
         surfaceTintColor: Colors.transparent,
         backgroundColor: color.surfaceContainerLowest,
