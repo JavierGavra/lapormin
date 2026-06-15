@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
-import 'package:lapormin/core/utils/text_style/app_text_style.dart';
-import 'package:lapormin/core/widgets/card/information_card.dart';
-import 'package:lapormin/features/report/presentation/bloc/internal_report_detail/internal_report_detail_bloc.dart';
-import 'package:lapormin/features/report/presentation/widgets/card/field_check_card.dart';
-import 'package:lapormin/features/report/presentation/widgets/card/final_report_card.dart';
-import 'package:lapormin/features/report/presentation/widgets/input/due_action_field.dart';
-import 'package:lapormin/features/report/presentation/widgets/loading/admin_report_status_tab_shimmer.dart';
-import 'package:lapormin/features/report/presentation/widgets/report_detail/status/admin/admin_report_status_action.dart';
-import 'package:lapormin/features/report/presentation/widgets/stepper/horizontal/horizontal_report_status_stepper.dart';
+
+import '../../../../../../../core/constants/report_status_enum.dart';
+import '../../../../../../../core/utils/phone_number/phone_number_format.dart';
+import '../../../../../../../core/utils/text_style/app_text_style.dart';
+import '../../../../../../../core/widgets/card/information_card.dart';
+import '../../../../../../field_officer/domain/entities/field_officer.dart';
+import '../../../../bloc/internal_report_detail/internal_report_detail_bloc.dart';
+import '../../../card/field_check_card.dart';
+import '../../../card/final_report_card.dart';
+import '../../../input/due_action_field.dart';
+import '../../../loading/admin_report_status_tab_shimmer.dart';
+import '../../../stepper/horizontal/horizontal_report_status_stepper.dart';
+import 'admin_report_status_action.dart';
 
 class AdminReportStatusTab extends StatefulWidget {
   final String id;
@@ -21,7 +24,13 @@ class AdminReportStatusTab extends StatefulWidget {
 }
 
 class _AdminReportStatusTabState extends State<AdminReportStatusTab> {
-  final ValueNotifier<dynamic> _input = ValueNotifier<dynamic>(null);
+  final _fieldOfficer = ValueNotifier<FieldOfficer?>(null);
+  final _input = ValueNotifier<dynamic>(null);
+
+  void _onFieldOfficerRemoved() {
+    _fieldOfficer.value = null;
+    _input.value = null;
+  }
 
   bool _actionEnabled(InternalReportDetailState state, dynamic value) {
     final report = state.reportAggregate!.report;
@@ -79,10 +88,18 @@ class _AdminReportStatusTabState extends State<AdminReportStatusTab> {
                         dueDate: report.dueDate,
                       ),
 
-                      if (report.status == ReportStatus.pending) ...[
-                        _buildFieldOfficerDropdown(),
-                        _buildPendingInfoCard(),
-                      ],
+                      if (report.status == ReportStatus.pending)
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _buildFieldOfficerDropdown(
+                              state.fieldOfficers ?? [],
+                            ),
+                            const SizedBox(height: 16),
+                            _buildFieldOfficerCard(),
+                            _buildPendingInfoCard(),
+                          ],
+                        ),
 
                       if (fieldCheck != null)
                         FieldCheckCard(fieldCheck: fieldCheck),
@@ -119,23 +136,106 @@ class _AdminReportStatusTabState extends State<AdminReportStatusTab> {
     );
   }
 
-  Widget _buildFieldOfficerDropdown() {
-    return DropdownButtonFormField<String>(
-      items: [
-        DropdownMenuItem(
-          value: "9d599319-9303-4e06-a649-5e9c396eca74",
-          child: Text("Rusdi Nasution"),
-        ),
-      ],
-      onChanged: (value) {
-        _input.value = value;
+  Widget _buildFieldOfficerDropdown(List<FieldOfficer> fieldOfficers) {
+    return ValueListenableBuilder(
+      valueListenable: _fieldOfficer,
+      builder: (context, value, child) {
+        return DropdownButtonFormField<FieldOfficer>(
+          initialValue: value,
+          items: fieldOfficers.map((officer) {
+            return DropdownMenuItem(value: officer, child: Text(officer.name));
+          }).toList(),
+          onChanged: (value) {
+            _input.value = value?.id;
+            _fieldOfficer.value = value;
+          },
+          decoration: InputDecoration(
+            labelText: "Pilih Petugas",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            floatingLabelBehavior: FloatingLabelBehavior.never,
+            hintStyle: AppTextStyle.s14(),
+          ),
+        );
       },
-      decoration: InputDecoration(
-        labelText: "Pilih Petugas",
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        floatingLabelBehavior: FloatingLabelBehavior.never,
-        hintStyle: AppTextStyle.s14(),
-      ),
+    );
+  }
+
+  Widget _buildFieldOfficerCard() {
+    return ValueListenableBuilder(
+      valueListenable: _fieldOfficer,
+      builder: (context, officer, _) {
+        final color = Theme.of(context).colorScheme;
+
+        if (officer == null) return SizedBox.shrink();
+
+        return Container(
+          padding: const EdgeInsets.all(16),
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: color.primaryContainer,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: color.primary),
+          ),
+          child: Row(
+            spacing: 12,
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: color.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    officer.initial,
+                    style: AppTextStyle.s16(
+                      fontWeight: FontWeight.w600,
+                      color: color.onPrimary,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 2,
+                  children: [
+                    Text(
+                      officer.name,
+                      style: AppTextStyle.s14(
+                        fontWeight: FontWeight.w600,
+                        color: color.onPrimaryContainer,
+                      ),
+                    ),
+                    Text(
+                      PhoneNumberFormat.formatted(officer.phone),
+                      style: AppTextStyle.s12(color: color.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: _onFieldOfficerRemoved,
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: color.surface,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.close_rounded,
+                    size: 16,
+                    color: color.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
