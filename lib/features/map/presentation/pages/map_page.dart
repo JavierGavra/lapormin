@@ -232,14 +232,13 @@ class _MapPageState extends State<MapPage> {
 }
 
 class _LegendItem extends StatelessWidget {
-  final Color color; // Warna dinamis per kategori
+  final Color color;
   final String label;
 
   const _LegendItem({required this.color, required this.label});
 
   @override
   Widget build(BuildContext context) {
-    // 📍 UBAH NAMA VARIABEL BIAR NGGAK BENTROK
     final themeColors = Theme.of(context).colorScheme;
 
     return Row(

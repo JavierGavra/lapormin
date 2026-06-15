@@ -65,7 +65,6 @@ class _ReportFilterBottomSheetState extends State<ReportFilterBottomSheet> {
           ),
           const SizedBox(height: 24),
 
-          // 📍 2. Sembunyikan Kategori jika disuruh PM
           if (!widget.hideCategory) ...[
             Text(
               'Kategori',
@@ -80,12 +79,31 @@ class _ReportFilterBottomSheetState extends State<ReportFilterBottomSheet> {
               runSpacing: 8,
               children: ReportCategory.values.map((cat) {
                 final isSelected = _tempCategories.contains(cat);
+                final catColor = cat.getColor(context);
+
                 return FilterChip(
                   label: Text(cat.label),
                   selected: isSelected,
-                  selectedColor: color.primaryContainer,
-                  checkmarkColor: color.onPrimaryContainer,
-                  backgroundColor: color.surfaceContainerLow,
+                  selectedColor: catColor.containerColor,
+                  checkmarkColor: catColor.onContainerColor,
+                  labelStyle: TextStyle(
+                    color: isSelected
+                        ? catColor.onContainerColor
+                        : catColor.mainColor,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
+                  backgroundColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(
+                      color: isSelected
+                          ? Colors.transparent
+                          : catColor.mainColor,
+                    ),
+                  ),
+                  showCheckmark: isSelected,
                   onSelected: (bool selected) {
                     setState(() {
                       if (selected) {
@@ -100,8 +118,6 @@ class _ReportFilterBottomSheetState extends State<ReportFilterBottomSheet> {
             ),
             const SizedBox(height: 24),
           ],
-
-          // 📍 3. Sembunyikan Status jika disuruh PM
           if (!widget.hideStatus) ...[
             Text(
               'Status Laporan',
@@ -116,12 +132,29 @@ class _ReportFilterBottomSheetState extends State<ReportFilterBottomSheet> {
               runSpacing: 8,
               children: widget.allowedStatuses.map((stat) {
                 final isSelected = _tempStatuses.contains(stat);
+                final statColor = stat.getColor(context);
+
                 return FilterChip(
                   label: Text(stat.label),
                   selected: isSelected,
-                  selectedColor: color.primaryContainer,
-                  checkmarkColor: color.onPrimaryContainer,
-                  backgroundColor: color.surfaceContainerLow,
+                  selectedColor: statColor.containerColor,
+                  checkmarkColor: statColor.mainColor,
+                  labelStyle: TextStyle(
+                    color: statColor.mainColor,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
+                  backgroundColor: Colors.transparent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(
+                      color: isSelected
+                          ? Colors.transparent
+                          : statColor.mainColor,
+                    ),
+                  ),
+                  showCheckmark: isSelected,
                   onSelected: (bool selected) {
                     setState(() {
                       if (selected) {

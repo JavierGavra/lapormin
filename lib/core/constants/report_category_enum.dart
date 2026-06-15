@@ -17,7 +17,6 @@ enum ReportCategory {
 
   const ReportCategory(this.dbValue, this.label, this.icon);
 
-  // Fungsi pengelompokan warna (Hanya panggil Theme 1 kali!)
   CategoryColors getColor(BuildContext context) {
     final color = Theme.of(context).colorScheme;
 
