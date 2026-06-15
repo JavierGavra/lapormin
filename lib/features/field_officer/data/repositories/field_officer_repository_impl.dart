@@ -10,12 +10,12 @@ class FieldOfficerRepositoryImpl implements FieldOfficerRepository {
   FieldOfficerRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<List<FieldOfficer>> getFieldOfficers() async {
+  Future<Either<Failure, List<FieldOfficer>>> getFieldOfficers() async {
     try {
       final models = await remoteDataSource.getFieldOfficers();
-      return models;
+      return Right(models);
     } catch (e) {
-      rethrow;
+      return Left(ServerFailure(e.toString()));
     }
   }
 

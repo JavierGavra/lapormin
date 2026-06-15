@@ -29,7 +29,9 @@ class InternalReportDetailPage extends StatefulWidget {
       _InternalReportDetailPageState();
 }
 
-class _InternalReportDetailPageState extends State<InternalReportDetailPage> {
+class _InternalReportDetailPageState extends State<InternalReportDetailPage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   bool _isOverlayLoadingOpen = false;
 
   void _listener(BuildContext context, InternalReportDetailState state) {
@@ -53,25 +55,33 @@ class _InternalReportDetailPageState extends State<InternalReportDetailPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) {
         return sl<InternalReportDetailBloc>()
           ..add(InternalReportDetailOpened(widget.id));
       },
-      child: DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          body:
-              BlocListener<InternalReportDetailBloc, InternalReportDetailState>(
-                listener: _listener,
-                child: NestedScrollView(
-                  headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                    _buildAppBar(context, innerBoxIsScrolled),
-                  ],
-                  body: _buildTabBarView(),
-                ),
-              ),
+      child: Scaffold(
+        body: BlocListener<InternalReportDetailBloc, InternalReportDetailState>(
+          listener: _listener,
+          child: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              _buildAppBar(context, innerBoxIsScrolled),
+            ],
+            body: _buildTabBarView(),
+          ),
         ),
       ),
     );
@@ -112,6 +122,7 @@ class _InternalReportDetailPageState extends State<InternalReportDetailPage> {
             ]
           : null,
       bottom: TabBar(
+        controller: _tabController,
         labelStyle: AppTextStyle.s14(fontWeight: FontWeight.w600),
         unselectedLabelStyle: AppTextStyle.s14(fontWeight: FontWeight.w500),
         labelColor: color.primary,
@@ -130,10 +141,11 @@ class _InternalReportDetailPageState extends State<InternalReportDetailPage> {
     final statusTab = switch (widget.role) {
       UserRole.informant => InformantReportStatusTab(id: widget.id),
       UserRole.admin => AdminReportStatusTab(id: widget.id),
-      UserRole.fieldOfficer => FieldOfficerReportStatusTab(),
+      UserRole.fieldOfficer => FieldOfficerReportStatusTab(id: widget.id),
     };
 
     return TabBarView(
+      controller: _tabController,
       children: [
         ReportInfoTab(id: widget.id),
         statusTab,

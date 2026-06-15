@@ -9,6 +9,8 @@ import '../../domain/entities/report_aggregate.dart';
 import '../../domain/entities/report_summary.dart';
 import '../../domain/params/report_filter_params.dart';
 import '../../domain/repositories/report_repository.dart';
+import '../../domain/use_cases/submit_field_check.dart';
+import '../../domain/use_cases/submit_final_report.dart';
 import '../../domain/use_cases/submit_report.dart';
 import '../data_sources/report_remote_data_source.dart';
 
@@ -21,7 +23,11 @@ class ReportRepositoryImpl implements ReportRepository {
   Future<Either<Failure, bool>> submitReport(SubmitReportParams params) async {
     try {
       final reportId = await remoteDataSource.insertReport(params);
-      await remoteDataSource.insertReportEvidences(reportId, params.evidences);
+      await remoteDataSource.insertReportEvidences(
+        reportId,
+        params.evidences,
+        EvidenceType.report,
+      );
       return Right(true);
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
@@ -160,6 +166,44 @@ class ReportRepositoryImpl implements ReportRepository {
 
       await remoteDataSource.updateReportStatus(reportId, ReportStatus.action);
 
+      return Right(true);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> submitFieldCheck(
+    SubmitFieldCheckParams params,
+  ) async {
+    try {
+      await remoteDataSource.updateFieldCheck(params);
+      await remoteDataSource.insertReportEvidences(
+        params.fieldCheckId,
+        params.evidences,
+        EvidenceType.fieldCheck,
+      );
+      return Right(true);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> submitFinalReport(
+    SubmitFinalReportParams params,
+  ) async {
+    try {
+      final id = await remoteDataSource.insertFinalReport(params);
+      await remoteDataSource.insertReportEvidences(
+        id,
+        params.evidences,
+        EvidenceType.finalReport,
+      );
       return Right(true);
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));

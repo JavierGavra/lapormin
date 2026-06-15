@@ -41,6 +41,7 @@ class AdminReportStatusAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
     return SafeArea(
       top: false,
       child: Container(
@@ -69,7 +70,7 @@ class AdminReportStatusAction extends StatelessWidget {
                             ? () => _onRejectedPressed(context)
                             : null,
                         text: "Tolak",
-                        foregroundColor: Colors.red,
+                        foregroundColor: color.tertiary,
                         prefixIcon: Icons.cancel_outlined,
                       ),
                     ),

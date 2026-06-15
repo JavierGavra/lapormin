@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/use_case/usecase.dart';
 import '../../../domain/use_cases/get_field_officers.dart';
 import 'field_officer_event.dart';
 import 'field_officer_state.dart';
@@ -17,19 +18,18 @@ class FieldOfficerBloc extends Bloc<FieldOfficerEvent, FieldOfficerState> {
   ) async {
     emit(state.copyWith(status: FieldOfficerStatus.loading));
 
-    try {
-      final officers = await getFieldOfficers.execute();
+    final officers = await getFieldOfficers(NoParams());
 
-      emit(
-        state.copyWith(status: FieldOfficerStatus.success, officers: officers),
-      );
-    } catch (e) {
-      emit(
+    officers.fold(
+      (failure) => emit(
         state.copyWith(
           status: FieldOfficerStatus.failure,
-          errorMessage: e.toString(),
+          errorMessage: failure.toString(),
         ),
-      );
-    }
+      ),
+      (officers) => emit(
+        state.copyWith(status: FieldOfficerStatus.success, officers: officers),
+      ),
+    );
   }
 }
