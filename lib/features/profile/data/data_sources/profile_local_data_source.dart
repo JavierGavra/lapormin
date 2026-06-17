@@ -6,6 +6,7 @@ import '../models/profile_model.dart';
 
 abstract interface class ProfileLocalDataSource {
   Future<ProfileModel> getProfile();
+  String getUsername();
 }
 
 class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
@@ -33,6 +34,16 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
     } catch (e) {
       debugPrint("$e");
       throw CacheException("Failed to load profile from local storage: $e");
+    }
+  }
+
+  @override
+  String getUsername() {
+    try {
+      return localDataPersistance.getUsername ?? "User";
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
     }
   }
 }
