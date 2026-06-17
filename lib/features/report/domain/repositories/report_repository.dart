@@ -41,4 +41,5 @@ abstract interface class ReportRepository {
   Future<Either<Failure, bool>> submitFinalReport(
     SubmitFinalReportParams params,
   );
+  Future<Either<Failure, int>> getUserReportAmount();
 }

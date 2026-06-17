@@ -51,7 +51,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, bool>> logout() async {
     try {
-      final userId = await localDataSource.getUserId();
+      final userId = localDataSource.getUserId();
       await remoteDataSource.removeDeviceToken(userId);
       bool result = await remoteDataSource.postLogout();
 
