@@ -6,6 +6,7 @@ import '../models/profile_model.dart';
 
 abstract interface class ProfileLocalDataSource {
   Future<ProfileModel> getProfile();
+  Future<void> setPhotoProfile(String photoProfile);
   String getUsername();
 }
 
@@ -41,6 +42,16 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
   String getUsername() {
     try {
       return localDataPersistance.getUsername ?? "User";
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> setPhotoProfile(String photoProfile) {
+    try {
+      return localDataPersistance.setPhotoProfile(photoProfile);
     } catch (e) {
       debugPrint("$e");
       rethrow;

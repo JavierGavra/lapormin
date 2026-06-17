@@ -1,6 +1,13 @@
 part of 'profile_bloc.dart';
 
-enum ProfileStatus { initial, loading, success, failure }
+enum ProfileStatus {
+  initial,
+  loading,
+  avatarLoading,
+  avatarSuccess,
+  success,
+  failure,
+}
 
 final class ProfileState extends Equatable {
   final ProfileStatus status;
@@ -13,7 +20,8 @@ final class ProfileState extends Equatable {
     this.errorMessage,
   });
 
-  bool get isSuccess => status == ProfileStatus.success;
+  bool get isSuccess =>
+      status == ProfileStatus.success || status == ProfileStatus.avatarSuccess;
 
   ProfileState copyWith({
     ProfileStatus? status,

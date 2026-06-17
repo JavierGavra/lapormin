@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:lapormin/features/profile/domain/use_cases/upload_photo_profile.dart';
 import 'package:lapormin/features/report/domain/use_cases/get_user_report_amount.dart';
 
 import '../../../../../core/use_case/usecase.dart';
@@ -11,20 +14,24 @@ part 'profile_event.dart';
 part 'profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
+  final UploadPhotoProfile _uploadProfilePhoto;
   final GetUserReportAmount _getUserReportAmount;
   final GetProfile _getProfile;
   final Logout _logout;
 
   ProfileBloc({
+    required UploadPhotoProfile uploadProfilePhoto,
     required GetUserReportAmount getUserReportAmount,
     required GetProfile getProfile,
     required Logout logout,
-  }) : _getUserReportAmount = getUserReportAmount,
+  }) : _uploadProfilePhoto = uploadProfilePhoto,
+       _getUserReportAmount = getUserReportAmount,
        _logout = logout,
        _getProfile = getProfile,
        super(ProfileState()) {
     on<ProfileOpenned>(_onProfileOpenned);
     on<ProfileLogoutRequested>(_onProfileLogoutRequested);
+    on<ProfilePhotoUpdateRequested>(_onProfilePhotoUpdateRequested);
   }
 
   void _emitFailure(Emitter<ProfileState> emit, String message) {
@@ -69,6 +76,30 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     result.fold(
       (failure) => emit(state.copyWith(status: ProfileStatus.failure)),
       (success) => emit(state.copyWith(status: ProfileStatus.success)),
+    );
+  }
+
+  Future<void> _onProfilePhotoUpdateRequested(
+    ProfilePhotoUpdateRequested event,
+    Emitter<ProfileState> emit,
+  ) async {
+    emit(state.copyWith(status: ProfileStatus.avatarLoading));
+
+    final result = await _uploadProfilePhoto(
+      UploadPhotoProfileParams(
+        imageFile: event.imageFile,
+        extension: event.extension,
+      ),
+    );
+
+    result.fold(
+      (failure) => _emitFailure(emit, failure.message!),
+      (newImageUrl) => emit(
+        state.copyWith(
+          status: ProfileStatus.avatarSuccess,
+          profile: state.profile?.copyWith(photoProfile: newImageUrl),
+        ),
+      ),
     );
   }
 }
