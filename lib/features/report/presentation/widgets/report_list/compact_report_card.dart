@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/core/widgets/chip/report_status_chip.dart';
 
 class CompactReportCard extends StatelessWidget {
   final String title;
@@ -46,53 +47,16 @@ class CompactReportCard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  spacing: 8,
                   children: [
                     Expanded(
                       child: Text(
                         title,
-                        style: AppTextStyle.s14(
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Plus Jakarta Sans',
-                          color: color.onSurface,
-                        ),
-                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
+                        style: AppTextStyle.s14(fontWeight: FontWeight.w600),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 2,
-                      ),
-                      decoration: ShapeDecoration(
-                        color: status.color.withValues(alpha: 0.15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 10,
-                            height: 10,
-                            decoration: ShapeDecoration(
-                              color: status.color,
-                              shape: const OvalBorder(),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            status.label,
-                            style: AppTextStyle.s12(
-                              fontWeight: FontWeight.w500,
-                              color: status.color,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    ReportStatusChip(status),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -107,15 +71,10 @@ class CompactReportCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         location,
-                        style: AppTextStyle.s12(
-                          color: color.secondary,
-                          fontFamily: 'Plus Jakarta Sans',
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyle.s12(color: color.secondary),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 8),
                     Icon(
                       Icons.access_time,
                       size: 16,
@@ -124,10 +83,7 @@ class CompactReportCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       timeAgo,
-                      style: AppTextStyle.s12(
-                        color: color.onSurfaceVariant,
-                        fontFamily: 'Plus Jakarta Sans',
-                      ),
+                      style: AppTextStyle.s12(color: color.onSurfaceVariant),
                     ),
                   ],
                 ),

@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
-import 'package:lapormin/core/utils/text_style/app_text_style.dart';
-import 'package:lapormin/features/report/domain/entities/report.dart';
-import 'package:lapormin/features/report/presentation/widgets/chip/custom_chip.dart';
-import 'package:lapormin/features/report/presentation/widgets/loading/report_info_tab_shimmer.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../../../../core/constants/report_status_enum.dart';
+import '../../../../../../core/widgets/chip/due_action_chip.dart';
 import '../../../../../home/presentation/widgets/location_banner/app_location_banner.dart';
 import '../../../bloc/internal_report_detail/internal_report_detail_bloc.dart';
+import '../../loading/report_info_tab_shimmer.dart';
 import 'grid_report_info_evidences.dart';
 import 'report_info_description.dart';
 import 'report_info_header.dart';
@@ -23,7 +20,6 @@ class ReportInfoTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
     return RefreshIndicator(
       onRefresh: () async {
         context.read<InternalReportDetailBloc>().add(
@@ -57,8 +53,10 @@ class ReportInfoTab extends StatelessWidget {
                       createdAt: report.createdAt,
                       category: report.category,
                     ),
+
                     if (report.status == ReportStatus.action)
-                      _buildDueChip(color, report),
+                      DueActionChip(report.dueDate),
+
                     LocationBanner(location: report.address, isSmall: true),
                     ReportInfoDescription(description: report.description),
                     GridReportInfoEvidences(evidences: report.evidences),
@@ -72,24 +70,6 @@ class ReportInfoTab extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildDueChip(ColorScheme color, Report report) {
-    return CustomChip(
-      vertical: 4,
-      backgroundColor: color.error,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 4,
-        children: [
-          Icon(Icons.calendar_month_outlined, size: 16, color: color.onError),
-          Text(
-            "Tenggat : ${report.dueDate != null ? DateFormat('dd MMMM yyyy', 'id_ID').format(report.dueDate!) : "Tidak ada batas waktu"}",
-            style: AppTextStyle.s12(color: color.onError),
-          ),
-        ],
       ),
     );
   }

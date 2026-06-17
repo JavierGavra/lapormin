@@ -6,7 +6,7 @@ import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
 import 'package:lapormin/features/home/presentation/widgets/home_greeting/home_greeting.dart';
 import 'package:lapormin/features/home/presentation/widgets/category_card/category_card.dart';
-import 'package:lapormin/core/widgets/report_card/report_card.dart';
+import 'package:lapormin/core/widgets/card/report_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/hero_button/hero_button.dart';
 import 'package:lapormin/features/notification/presentation/pages/notification_history_page.dart';
 import 'package:lapormin/features/report/presentation/pages/create_report_page.dart';
@@ -14,7 +14,7 @@ import 'package:lapormin/features/report/presentation/pages/public_report_detail
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
-import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
+import 'package:lapormin/core/widgets/loading/report_card_shimmer.dart';
 
 class HomePage extends StatefulWidget {
   final VoidCallback? onSeeAllTapped;
@@ -214,7 +214,7 @@ class _HomePageState extends State<HomePage> {
                           const SizedBox(height: 16),
                       itemBuilder: (context, index) {
                         final report = displayReports[index];
-                        final categoryEnum = ReportCategory.fromString(
+                        final category = ReportCategory.fromString(
                           report.category,
                         );
 
@@ -230,10 +230,7 @@ class _HomePageState extends State<HomePage> {
                           location: report.shortAdddress,
                           timeAgo: timeAgoText,
                           status: report.status,
-                          categoryIcon: categoryEnum.icon,
-                          categoryColor: categoryEnum
-                              .getColor(context)
-                              .containerColor,
+                          category: category,
                           deadlineDate: report.dueAction,
                           isVideo: report.evidence.endsWith('.mp4'),
                           onTap: () {
