@@ -67,49 +67,74 @@ class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
                       const SizedBox(height: 24),
                       const LocationBanner(location: 'Semarang'),
                       const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AdminQuickInfoCard(
-                              iconData: Icons.content_paste_search_outlined,
-                              title: "Inspeksi",
-                              count: "1", // TODO: Dinamis dari API nanti
-                              backgroundColor: Colors.white,
-                              iconBackgroundColor: color.warningContainer,
-                              iconColor: color.onWarningContainer,
-                              textColor: color.warning,
-                              titleColor: color.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: AdminQuickInfoCard(
-                              iconData: Icons.build_outlined,
-                              title: "Tindakan",
-                              count: "1", // TODO: Dinamis dari API nanti
-                              backgroundColor: Colors.white,
-                              iconBackgroundColor: color.tertiaryContainer,
-                              iconColor: color.onTertiaryContainer,
-                              textColor: color.tertiary,
-                              titleColor: color.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: AdminQuickInfoCard(
-                              iconData: Icons.assignment_outlined,
-                              title: "Penugasan",
-                              count: "2", // TODO: Dinamis dari API nanti
-                              backgroundColor: color.primary,
-                              iconBackgroundColor: Colors.white,
-                              iconColor: color.primary,
-                              textColor: color.onPrimary,
-                              titleColor: color.surfaceContainerHigh,
-                              isLargeText: true,
-                            ),
-                          ),
-                        ],
+
+                      BlocBuilder<
+                        FieldOfficerReportsBloc,
+                        FieldOfficerReportsState
+                      >(
+                        builder: (context, state) {
+                          final stats = state.statistics;
+                          final isLoading =
+                              state.status ==
+                                  FieldOfficerReportsStatus.loading ||
+                              state.status == FieldOfficerReportsStatus.initial;
+
+                          final inspeksiCount = isLoading
+                              ? "..."
+                              : (stats?.inspeksi.toString() ?? "0");
+                          final tindakanCount = isLoading
+                              ? "..."
+                              : (stats?.tindakan.toString() ?? "0");
+                          final penugasanCount = isLoading
+                              ? "..."
+                              : (stats?.penugasan.toString() ?? "0");
+
+                          return Row(
+                            children: [
+                              Expanded(
+                                child: AdminQuickInfoCard(
+                                  iconData: Icons.content_paste_search_outlined,
+                                  title: "Inspeksi",
+                                  count: inspeksiCount,
+                                  backgroundColor: Colors.white,
+                                  iconBackgroundColor: color.warningContainer,
+                                  iconColor: color.onWarningContainer,
+                                  textColor: color.warning,
+                                  titleColor: color.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: AdminQuickInfoCard(
+                                  iconData: Icons.build_outlined,
+                                  title: "Tindakan",
+                                  count: tindakanCount,
+                                  backgroundColor: Colors.white,
+                                  iconBackgroundColor: color.tertiaryContainer,
+                                  iconColor: color.onTertiaryContainer,
+                                  textColor: color.tertiary,
+                                  titleColor: color.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: AdminQuickInfoCard(
+                                  iconData: Icons.assignment_outlined,
+                                  title: "Penugasan",
+                                  count: penugasanCount,
+                                  backgroundColor: color.primary,
+                                  iconBackgroundColor: Colors.white,
+                                  iconColor: color.primary,
+                                  textColor: color.onPrimary,
+                                  titleColor: color.surfaceContainerHigh,
+                                  isLargeText: true,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
+
                       const SizedBox(height: 24),
                       Container(
                         height: 2,

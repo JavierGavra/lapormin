@@ -67,66 +67,97 @@ class _HomeAdminPageState extends State<HomeAdminPage> {
                       const LocationBanner(location: 'Semarang'),
                       const SizedBox(height: 24),
 
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AdminQuickInfoCard(
-                              iconData: Icons.pending_actions,
-                              title: "Menunggu Verifikasi",
-                              count: "12", // TODO: Nanti hubungkan ke API
-                              backgroundColor: color.surface,
-                              iconBackgroundColor: color.primaryContainer,
-                              iconColor: color.onPrimaryContainer,
-                              textColor: color.primary,
-                              titleColor: color.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: AdminQuickInfoCard(
-                              iconData: Icons.cached,
-                              title: "Sedang Diproses",
-                              count: "5", // TODO: Nanti hubungkan ke API
-                              backgroundColor: color.surface,
-                              iconBackgroundColor: color.tertiaryContainer,
-                              iconColor: color.onTertiaryContainer,
-                              textColor: color.tertiary,
-                              titleColor: color.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
+                      BlocBuilder<HomeAdminBloc, HomeAdminState>(
+                        builder: (context, state) {
+                          final stats = state.statistics;
+                          final isLoading =
+                              state.status == HomeAdminStatus.loading ||
+                              state.status == HomeAdminStatus.initial;
+
+                          final pendingCount = isLoading
+                              ? "..."
+                              : (stats?.pending.toString() ?? "0");
+                          final processingCount = isLoading
+                              ? "..."
+                              : (stats?.processing.toString() ?? "0");
+                          final doneCount = isLoading
+                              ? "..."
+                              : (stats?.done.toString() ?? "0");
+                          final totalCount = isLoading
+                              ? "..."
+                              : (stats?.total.toString() ?? "0");
+
+                          return Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: AdminQuickInfoCard(
+                                      iconData: Icons.pending_actions,
+                                      title: "Menunggu Verifikasi",
+                                      count: pendingCount,
+                                      backgroundColor: color.surface,
+                                      iconBackgroundColor:
+                                          color.primaryContainer,
+                                      iconColor: color.onPrimaryContainer,
+                                      textColor: color.primary,
+                                      titleColor: color.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: AdminQuickInfoCard(
+                                      iconData: Icons.cached,
+                                      title: "Sedang Diproses",
+                                      count: processingCount,
+                                      backgroundColor: color.surface,
+                                      iconBackgroundColor:
+                                          color.tertiaryContainer,
+                                      iconColor: color.onTertiaryContainer,
+                                      textColor: color.tertiary,
+                                      titleColor: color.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: AdminQuickInfoCard(
+                                      iconData: Icons.task_alt,
+                                      title: "Laporan Selesai",
+                                      count: doneCount,
+                                      backgroundColor: color.surface,
+                                      iconBackgroundColor:
+                                          color.successContainer,
+                                      iconColor: color.onSuccessContainer,
+                                      textColor: color.success,
+                                      titleColor: color.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: AdminQuickInfoCard(
+                                      iconData: Icons.description_outlined,
+                                      title: "Total Laporan",
+                                      count: totalCount,
+                                      backgroundColor: color.primary,
+                                      iconBackgroundColor:
+                                          color.surfaceContainerLowest,
+                                      iconColor: color.primary,
+                                      textColor: color.onPrimary,
+                                      titleColor: color.surfaceContainerHigh,
+                                      isLargeText: true,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: AdminQuickInfoCard(
-                              iconData: Icons.task_alt,
-                              title: "Laporan Selesai",
-                              count: "3", // TODO: Nanti hubungkan ke API
-                              backgroundColor: color.surface,
-                              iconBackgroundColor: color.successContainer,
-                              iconColor: color.onSuccessContainer,
-                              textColor: color.success,
-                              titleColor: color.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: AdminQuickInfoCard(
-                              iconData: Icons.description_outlined,
-                              title: "Total Laporan",
-                              count: "20", // TODO: Nanti hubungkan ke API
-                              backgroundColor: color.primary,
-                              iconBackgroundColor: color.surfaceContainerLowest,
-                              iconColor: color.primary,
-                              textColor: color.onPrimary,
-                              titleColor: color.surfaceContainerHigh,
-                              isLargeText: true,
-                            ),
-                          ),
-                        ],
-                      ),
+
                       const SizedBox(height: 24),
 
                       Container(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
+import 'package:lapormin/features/report/domain/entities/report_statistics.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
 import '../../../../core/constants/user_role_enum.dart';
@@ -16,6 +17,7 @@ import '../../domain/use_cases/submit_field_check.dart';
 import '../../domain/use_cases/submit_final_report.dart';
 import '../../domain/use_cases/submit_report.dart';
 import '../data_sources/report_remote_data_source.dart';
+import '../../domain/entities/field_officer_statistics.dart';
 
 class ReportRepositoryImpl implements ReportRepository {
   final ReportRemoteDataSource remoteDataSource;
@@ -220,6 +222,31 @@ class ReportRepositoryImpl implements ReportRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, ReportStatistics>> getAdminReportStatistics() async {
+    try {
+      final data = await remoteDataSource.fetchAdminReportStatistics();
+      return Right(data);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, FieldOfficerStatistics>>
+  getFieldOfficerReportStatistics() async {
+    try {
+      final data = await remoteDataSource.fetchFieldOfficerReportStatistics();
+      return Right(data);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+      
   @override
   Future<Either<Failure, int>> getUserReportAmount() async {
     try {

@@ -49,7 +49,9 @@ import 'features/report/data/data_sources/report_remote_data_source.dart';
 import 'features/report/data/repositories/report_repository_impl.dart';
 import 'features/report/domain/repositories/report_repository.dart';
 import 'features/report/domain/use_cases/get_admin_reports.dart';
+import 'features/report/domain/use_cases/get_admin_report_statistics.dart';
 import 'features/report/domain/use_cases/get_field_officer_reports.dart';
+import 'features/report/domain/use_cases/get_field_officer_report_statistics.dart';
 import 'features/report/domain/use_cases/get_public_reports.dart';
 import 'features/report/domain/use_cases/get_report.dart';
 import 'features/report/domain/use_cases/get_report_aggregate.dart';
@@ -88,7 +90,6 @@ Future<void> initializeServiceLocator() async {
   _initNotificationFeature();
 
   // External
-  // final database = await DatabaseHelper.instance.database;
   final sharedPreferences = await SharedPreferences.getInstance();
   final internetConnectionChecker = InternetConnectionChecker();
   final supabase = Supabase.instance.client;
@@ -167,9 +168,14 @@ void _initReportFeature() {
   sl.registerFactory(
     () => ReportResultFormBloc(submitFieldCheck: sl(), submitFinalReport: sl()),
   );
+
   sl.registerFactory(
-    () => FieldOfficerReportsBloc(getFieldOfficerReports: sl()),
+    () => FieldOfficerReportsBloc(
+      getFieldOfficerReports: sl(),
+      getFieldOfficerReportStatistics: sl(),
+    ),
   );
+
   sl.registerFactory(
     () => InternalReportDetailBloc(
       getReportAggregate: sl(),
@@ -197,6 +203,8 @@ void _initReportFeature() {
   sl.registerLazySingleton(() => CompletingReport(sl()));
   sl.registerLazySingleton(() => SubmitFieldCheck(sl()));
   sl.registerLazySingleton(() => SubmitFinalReport(sl()));
+  sl.registerLazySingleton(() => GetAdminReportStatistics(sl()));
+  sl.registerLazySingleton(() => GetFieldOfficerReportStatistics(sl()));
   sl.registerLazySingleton(() => GetUserReportAmount(sl()));
 
   // Repository
@@ -254,7 +262,9 @@ void _initMapFeature() {
 
 void _initHomeAdminFeature() {
   // BLoC
-  sl.registerFactory(() => HomeAdminBloc(getAdminReports: sl()));
+  sl.registerFactory(
+    () => HomeAdminBloc(getAdminReports: sl(), getAdminReportStatistics: sl()),
+  );
 }
 
 void _initFieldOfficerFeature() {
