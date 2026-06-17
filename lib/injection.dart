@@ -11,6 +11,7 @@ import 'package:lapormin/features/notification/domain/repositories/notification_
 import 'package:lapormin/features/notification/domain/use_cases/get_notification_history.dart';
 import 'package:lapormin/features/notification/presentation/bloc/notification_history/notification_history_bloc.dart';
 import 'package:lapormin/features/notification/presentation/bloc/notification_permission/notification_permission_bloc.dart';
+import 'package:lapormin/features/profile/domain/use_cases/get_username.dart';
 import 'package:lapormin/features/report/domain/use_cases/assign_field_officer.dart';
 import 'package:lapormin/features/report/domain/use_cases/completing_report.dart';
 import 'package:lapormin/features/report/domain/use_cases/get_user_report_amount.dart';
@@ -162,7 +163,6 @@ void _initLocationFeature() {
 void _initReportFeature() {
   sl.registerFactory(() => CreateReportBloc(submitReport: sl()));
   sl.registerFactory(() => PublicReportDetailBloc(getReport: sl()));
-  sl.registerFactory(() => PublicReportsBloc(getPublicReports: sl()));
   sl.registerFactory(() => MyReportsBloc(getUserReports: sl()));
   sl.registerFactory(() => AdminReportsBloc(getAdminReports: sl()));
   sl.registerFactory(
@@ -170,9 +170,18 @@ void _initReportFeature() {
   );
 
   sl.registerFactory(
+    () => PublicReportsBloc(
+      getPublicReports: sl(),
+      getCurrentLocation: sl(),
+      getUsername: sl(),
+    ),
+  );
+
+  sl.registerFactory(
     () => FieldOfficerReportsBloc(
       getFieldOfficerReports: sl(),
       getFieldOfficerReportStatistics: sl(),
+      getCurrentLocation: sl(),
     ),
   );
 
@@ -230,6 +239,7 @@ void _initProfileFeature() {
 
   // Use Cases
   sl.registerLazySingleton(() => GetProfile(sl()));
+  sl.registerLazySingleton(() => GetUsername(sl()));
 
   // Repository
   sl.registerLazySingleton<ProfileRepository>(
@@ -261,9 +271,12 @@ void _initMapFeature() {
 }
 
 void _initHomeAdminFeature() {
-  // BLoC
   sl.registerFactory(
-    () => HomeAdminBloc(getAdminReports: sl(), getAdminReportStatistics: sl()),
+    () => HomeAdminBloc(
+      getAdminReports: sl(),
+      getAdminReportStatistics: sl(),
+      getCurrentLocation: sl(),
+    ),
   );
 }
 

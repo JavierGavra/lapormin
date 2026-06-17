@@ -65,9 +65,19 @@ class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
                     children: [
                       const FieldOfficerHomeGreeting(),
                       const SizedBox(height: 24),
-                      const LocationBanner(location: 'Semarang'),
-                      const SizedBox(height: 24),
 
+                      BlocBuilder<
+                        FieldOfficerReportsBloc,
+                        FieldOfficerReportsState
+                      >(
+                        builder: (context, state) {
+                          final displayLocation =
+                              state.location ?? "Mencari lokasi...";
+                          return LocationBanner(location: displayLocation);
+                        },
+                      ),
+
+                      const SizedBox(height: 24),
                       BlocBuilder<
                         FieldOfficerReportsBloc,
                         FieldOfficerReportsState

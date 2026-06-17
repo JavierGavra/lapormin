@@ -64,9 +64,16 @@ class _HomeAdminPageState extends State<HomeAdminPage> {
                     children: [
                       const AdminHomeGreeting(),
                       const SizedBox(height: 24),
-                      const LocationBanner(location: 'Semarang'),
-                      const SizedBox(height: 24),
 
+                      BlocBuilder<HomeAdminBloc, HomeAdminState>(
+                        builder: (context, state) {
+                          final displayLocation =
+                              state.location ?? "Mencari lokasi...";
+                          return LocationBanner(location: displayLocation);
+                        },
+                      ),
+
+                      const SizedBox(height: 24),
                       BlocBuilder<HomeAdminBloc, HomeAdminState>(
                         builder: (context, state) {
                           final stats = state.statistics;

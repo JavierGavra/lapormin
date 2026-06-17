@@ -22,4 +22,15 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(CacheFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, String>> getUsername() async {
+    try {
+      return Right(localDataSource.getUsername());
+    } on CacheException catch (e) {
+      return Left(CacheFailure(e.message));
+    } catch (e) {
+      return Left(CacheFailure(e.toString()));
+    }
+  }
 }

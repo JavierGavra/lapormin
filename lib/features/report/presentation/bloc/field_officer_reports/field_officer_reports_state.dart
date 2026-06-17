@@ -8,6 +8,7 @@ final class FieldOfficerReportsState extends Equatable {
   final String? errorMessage;
   final ReportFilterParams filter;
   final FieldOfficerStatistics? statistics;
+  final String? location;
 
   const FieldOfficerReportsState({
     this.status = FieldOfficerReportsStatus.initial,
@@ -15,6 +16,7 @@ final class FieldOfficerReportsState extends Equatable {
     this.errorMessage,
     this.filter = const ReportFilterParams(),
     this.statistics,
+    this.location,
   });
 
   FieldOfficerReportsState copyWith({
@@ -23,6 +25,7 @@ final class FieldOfficerReportsState extends Equatable {
     String? errorMessage,
     ReportFilterParams? filter,
     FieldOfficerStatistics? statistics,
+    String? location,
   }) {
     return FieldOfficerReportsState(
       status: status ?? this.status,
@@ -30,6 +33,7 @@ final class FieldOfficerReportsState extends Equatable {
       errorMessage: errorMessage ?? this.errorMessage,
       filter: filter ?? this.filter,
       statistics: statistics ?? this.statistics,
+      location: location ?? this.location,
     );
   }
 
@@ -40,5 +44,6 @@ final class FieldOfficerReportsState extends Equatable {
     errorMessage,
     filter,
     statistics,
+    location,
   ];
 }

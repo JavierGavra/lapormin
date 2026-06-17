@@ -60,12 +60,19 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const HomeGreeting(
-                        userName:
-                            "Brooklyn Simmons", // TODO: Ganti dengan data user sebenarnya
-                        location:
-                            "Semarang", // TODO: Ganti dengan data lokasi user sebenarnya
+                      BlocBuilder<PublicReportsBloc, PublicReportsState>(
+                        builder: (context, state) {
+                          final displayUserName = state.username ?? "Warga...";
+                          final displayLocation =
+                              state.location ?? "Mencari lokasi...";
+
+                          return HomeGreeting(
+                            userName: displayUserName,
+                            location: displayLocation,
+                          );
+                        },
                       ),
+
                       const SizedBox(height: 24),
                       HeroButton(
                         label: "Buat Laporan",
