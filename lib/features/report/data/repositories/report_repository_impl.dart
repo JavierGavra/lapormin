@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
+import '../../../../core/constants/user_role_enum.dart';
+import '../../../../core/database/local_data_persistance.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/utils/network/network_info.dart';
 import '../../domain/entities/report.dart';
 import '../../domain/entities/report_aggregate.dart';
 import '../../domain/entities/report_summary.dart';
@@ -16,9 +19,14 @@ import '../data_sources/report_remote_data_source.dart';
 
 class ReportRepositoryImpl implements ReportRepository {
   final ReportRemoteDataSource remoteDataSource;
+  final LocalDataPersistance localDataPersistance;
+  final NetworkInfo networkInfo;
 
-  ReportRepositoryImpl({required this.remoteDataSource});
-
+  ReportRepositoryImpl({
+    required this.localDataPersistance,
+    required this.remoteDataSource,
+    required this.networkInfo,
+  });
   @override
   Future<Either<Failure, bool>> submitReport(SubmitReportParams params) async {
     try {
@@ -205,6 +213,30 @@ class ReportRepositoryImpl implements ReportRepository {
         EvidenceType.finalReport,
       );
       return Right(true);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, int>> getUserReportAmount() async {
+    try {
+      final role = UserRole.fromString(localDataPersistance.getRole ?? "");
+
+      if (await networkInfo.isConnected) {
+        final amount = await switch (role) {
+          UserRole.admin => remoteDataSource.getAdminReportAmount(),
+          UserRole.fieldOfficer =>
+            remoteDataSource.getFieldOfficerReportAmount(),
+          UserRole.informant => remoteDataSource.getInformantReportAmount(),
+        };
+
+        await localDataPersistance.setReportAmount(amount);
+      }
+
+      return Right(localDataPersistance.getReportAmount ?? 0);
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
     } catch (e) {

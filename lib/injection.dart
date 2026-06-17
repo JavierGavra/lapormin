@@ -1,5 +1,8 @@
 import 'package:get_it/get_it.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:lapormin/core/database/local_data_persistance.dart';
 import 'package:lapormin/core/services/push_notification/push_notification_service.dart';
+import 'package:lapormin/core/utils/network/network_info.dart';
 import 'package:lapormin/features/field_officer/domain/use_cases/add_field_officer.dart';
 import 'package:lapormin/features/field_officer/presentation/bloc/add_field_officer/add_field_officer_bloc.dart';
 import 'package:lapormin/features/notification/data/data_sources/notification_remote_data_source.dart';
@@ -10,6 +13,7 @@ import 'package:lapormin/features/notification/presentation/bloc/notification_hi
 import 'package:lapormin/features/notification/presentation/bloc/notification_permission/notification_permission_bloc.dart';
 import 'package:lapormin/features/report/domain/use_cases/assign_field_officer.dart';
 import 'package:lapormin/features/report/domain/use_cases/completing_report.dart';
+import 'package:lapormin/features/report/domain/use_cases/get_user_report_amount.dart';
 import 'package:lapormin/features/report/domain/use_cases/provide_action.dart';
 import 'package:lapormin/features/report/domain/use_cases/reject_report.dart';
 import 'package:lapormin/features/report/domain/use_cases/submit_field_check.dart';
@@ -86,11 +90,15 @@ Future<void> initializeServiceLocator() async {
   // External
   // final database = await DatabaseHelper.instance.database;
   final sharedPreferences = await SharedPreferences.getInstance();
+  final internetConnectionChecker = InternetConnectionChecker();
   final supabase = Supabase.instance.client;
 
   // sl.registerSingleton(database);
+  sl.registerLazySingleton(() => internetConnectionChecker);
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => supabase);
+  sl.registerLazySingleton(() => LocalDataPersistance(sl<SharedPreferences>()));
+  sl.registerLazySingleton(() => NetworkInfo(sl<InternetConnectionChecker>()));
 
   // Push Notification Service
   sl.registerLazySingleton(() => PushNotificationService());
@@ -115,7 +123,7 @@ void _initAuthFeature() {
   // Data Sources
   sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(
-      sharedPreferences: sl(),
+      localDataPersistance: sl(),
       pushNotificationService: sl(),
     ),
   );
@@ -189,10 +197,15 @@ void _initReportFeature() {
   sl.registerLazySingleton(() => CompletingReport(sl()));
   sl.registerLazySingleton(() => SubmitFieldCheck(sl()));
   sl.registerLazySingleton(() => SubmitFinalReport(sl()));
+  sl.registerLazySingleton(() => GetUserReportAmount(sl()));
 
   // Repository
   sl.registerLazySingleton<ReportRepository>(
-    () => ReportRepositoryImpl(remoteDataSource: sl()),
+    () => ReportRepositoryImpl(
+      localDataPersistance: sl(),
+      remoteDataSource: sl(),
+      networkInfo: sl(),
+    ),
   );
 
   // Data Sources
@@ -202,7 +215,10 @@ void _initReportFeature() {
 }
 
 void _initProfileFeature() {
-  sl.registerFactory(() => ProfileBloc(getProfile: sl(), logout: sl()));
+  sl.registerFactory(
+    () =>
+        ProfileBloc(getProfile: sl(), logout: sl(), getUserReportAmount: sl()),
+  );
 
   // Use Cases
   sl.registerLazySingleton(() => GetProfile(sl()));
@@ -214,7 +230,7 @@ void _initProfileFeature() {
 
   // Data Sources
   sl.registerLazySingleton<ProfileLocalDataSource>(
-    () => ProfileLocalDataSourceImpl(prefs: sl()),
+    () => ProfileLocalDataSourceImpl(localDataPersistance: sl()),
   );
 }
 

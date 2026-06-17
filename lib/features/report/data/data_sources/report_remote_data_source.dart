@@ -66,6 +66,9 @@ abstract interface class ReportRemoteDataSource {
   Future<bool> provideAction(String id, DateTime? dueAction);
   Future<bool> updateFieldCheck(SubmitFieldCheckParams params);
   Future<String> insertFinalReport(SubmitFinalReportParams params);
+  Future<int> getInformantReportAmount();
+  Future<int> getAdminReportAmount();
+  Future<int> getFieldOfficerReportAmount();
 }
 
 class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
@@ -487,6 +490,50 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
       return response['id'];
     } catch (e) {
       debugPrint('$e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<int> getAdminReportAmount() async {
+    try {
+      final response = await supabase.from('report').count(CountOption.exact);
+
+      return response;
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<int> getFieldOfficerReportAmount() async {
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      final response = await supabase
+          .from('field_check')
+          .count(CountOption.exact)
+          .eq('user_id', userId);
+
+      return response;
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<int> getInformantReportAmount() async {
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      final response = await supabase
+          .from('report')
+          .count(CountOption.exact)
+          .eq('user_id', userId);
+
+      return response;
+    } catch (e) {
+      debugPrint("$e");
       rethrow;
     }
   }
