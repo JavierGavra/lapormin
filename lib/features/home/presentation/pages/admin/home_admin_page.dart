@@ -47,7 +47,6 @@ class _HomeAdminPageState extends State<HomeAdminPage> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               AppSliverAppBar(
-                profileUrl: "assets/images/profiles/profile.png",
                 onNotificationTap: () {
                   Navigate.push(context, const NotificationHistoryPage());
                 },

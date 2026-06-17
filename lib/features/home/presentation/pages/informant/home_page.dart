@@ -45,7 +45,6 @@ class _HomePageState extends State<HomePage> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               AppSliverAppBar(
-                profileUrl: "assets/images/profiles/profile.jpg",
                 onNotificationTap: () {
                   Navigate.push(context, const NotificationHistoryPage());
                 },

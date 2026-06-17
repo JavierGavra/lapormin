@@ -71,7 +71,6 @@ class _FieldOfficerListPageState extends State<FieldOfficerListPage> {
             slivers: [
               AppSliverAppBar(
                 title: "Petugas Lapangan",
-                profileUrl: "assets/images/profiles/profile.png",
                 onNotificationTap: () {
                   debugPrint("Buka notifikasi");
                 },

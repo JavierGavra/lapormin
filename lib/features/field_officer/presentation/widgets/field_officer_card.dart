@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/utils/phone_number/phone_number_format.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/core/widgets/avatar/profile_avatar.dart';
 
 class FieldOfficerCard extends StatelessWidget {
   final String initial;
@@ -31,22 +32,7 @@ class FieldOfficerCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: color.primary,
-                shape: BoxShape.circle,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                initial,
-                style: AppTextStyle.s16(
-                  color: color.onPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
+            ProfileAvatar.small(username: name, photoProfile: null),
             const SizedBox(width: 12),
 
             Expanded(

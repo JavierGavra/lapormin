@@ -112,4 +112,25 @@ class AuthRepositoryImpl implements AuthRepository {
       }
     }
   }
+
+  @override
+  Future<Either<Failure, User>> getCurrentUser() async {
+    try {
+      final profile = localDataSource.getUserData();
+      return Right(
+        User(
+          id: profile.id,
+          username: profile.username,
+          phoneNumber: profile.phoneNumber,
+          createdAt: profile.createdAt,
+          role: profile.role,
+          photoProfile: profile.photoProfile,
+        ),
+      );
+    } on CacheException catch (e) {
+      return Left(CacheFailure(e.message));
+    } catch (e) {
+      return Left(CacheFailure(e.toString()));
+    }
+  }
 }

@@ -96,7 +96,6 @@ class _FieldOfficerReportListPageState
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             AppSliverAppBar(
-              profileUrl: "assets/images/profiles/profile.png",
               onNotificationTap: () {
                 debugPrint("Buka notifikasi petugas");
               },

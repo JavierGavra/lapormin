@@ -13,4 +13,5 @@ abstract interface class AuthRepository {
   Future<Either<Failure, bool>> verifyOtp(String phoneNumber, String otp);
   Future<Either<Failure, User>> login(String phoneNumber, String password);
   Future<Either<Failure, bool>> logout();
+  Future<Either<Failure, User>> getCurrentUser();
 }

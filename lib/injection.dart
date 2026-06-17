@@ -3,6 +3,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:lapormin/core/database/local_data_persistance.dart';
 import 'package:lapormin/core/services/push_notification/push_notification_service.dart';
 import 'package:lapormin/core/utils/network/network_info.dart';
+import 'package:lapormin/features/auth/domain/use_cases/get_current_user.dart';
 import 'package:lapormin/features/field_officer/domain/use_cases/add_field_officer.dart';
 import 'package:lapormin/features/field_officer/presentation/bloc/add_field_officer/add_field_officer_bloc.dart';
 import 'package:lapormin/features/notification/data/data_sources/notification_remote_data_source.dart';
@@ -107,7 +108,7 @@ Future<void> initializeServiceLocator() async {
 }
 
 void _initAuthFeature() {
-  sl.registerFactory(() => AuthBloc(supabase: sl()));
+  sl.registerFactory(() => AuthBloc(supabase: sl(), getCurrentUser: sl()));
   sl.registerFactory(() => LoginBloc(login: sl()));
   sl.registerFactory(() => RegisterBloc(sendOtp: sl(), verifyOtp: sl()));
 
@@ -116,6 +117,7 @@ void _initAuthFeature() {
   sl.registerLazySingleton(() => Logout(sl()));
   sl.registerLazySingleton(() => SendOtp(sl()));
   sl.registerLazySingleton(() => VerifyOtp(sl()));
+  sl.registerLazySingleton(() => GetCurrentUser(sl()));
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(
