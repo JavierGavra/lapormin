@@ -15,6 +15,22 @@ class Profile extends Equatable {
     required this.createdAt,
   });
 
+  Profile copyWith({
+    int? reportAmount,
+    String? username,
+    String? phoneNumber,
+    String? photoProfile,
+    DateTime? createdAt,
+  }) {
+    return Profile(
+      reportAmount: reportAmount ?? this.reportAmount,
+      username: username ?? this.username,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      photoProfile: photoProfile ?? this.photoProfile,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
   @override
   List<Object?> get props => [
     reportAmount,

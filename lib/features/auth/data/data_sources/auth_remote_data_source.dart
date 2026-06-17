@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/core/error/exceptions.dart';
-import 'package:lapormin/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../core/error/exceptions.dart';
+import '../models/user_model.dart';
 
 abstract interface class AuthRemoteDataSource {
   Future<bool> isPhoneExist(String phoneNumber);
