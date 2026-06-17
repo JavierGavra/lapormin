@@ -8,13 +8,13 @@ import '../../../../core/utils/text_style/app_text_style.dart';
 import '../../../../core/utils/validator/input_validator.dart';
 import '../../../../core/widgets/button/app_back_button.dart';
 import '../../../../core/widgets/button/app_filled_button.dart';
+import '../../../../core/widgets/chip/report_status_chip.dart';
 import '../../../../core/widgets/loading/fullscreen_loading_overlay.dart';
 import '../../../../core/widgets/snackbar/custom_snackbar.dart';
 import '../../../../core/widgets/success/success_page.dart';
 import '../../../../core/widgets/text_field/app_text_field.dart';
 import '../../../../injection.dart';
 import '../bloc/report_result_form/report_result_form_bloc.dart';
-import '../widgets/chip/custom_chip.dart';
 import '../widgets/picker/evidences_picker/evidences_picker.dart';
 
 enum ReportResultFormType { fieldCheck, action }
@@ -180,29 +180,7 @@ class _ReportResultFormPageState extends State<ReportResultFormPage> {
       ReportResultFormType.action => ReportStatus.action,
     };
 
-    return CustomChip(
-      backgroundColor: status
-          .getColor(context)
-          .containerColor
-          .withValues(alpha: 0.5),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        spacing: 4,
-        children: [
-          CircleAvatar(
-            radius: 5,
-            backgroundColor: status.getColor(context).mainColor,
-          ),
-          Text(
-            status.label,
-            style: AppTextStyle.s12(
-              fontWeight: FontWeight.w500,
-              color: status.getColor(context).mainColor,
-            ),
-          ),
-        ],
-      ),
-    );
+    return ReportStatusChip(status);
   }
 
   Widget _buildReportTitle(BuildContext context) {

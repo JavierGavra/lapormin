@@ -8,11 +8,11 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
-import 'package:lapormin/core/widgets/report_card/report_card.dart';
-import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
+import 'package:lapormin/core/widgets/card/report_card.dart';
+import 'package:lapormin/core/widgets/loading/report_card_shimmer.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/features/home/presentation/widgets/location_banner/app_location_banner.dart';
-import 'package:lapormin/core/widgets/quick_info_card/quick_info_card.dart';
+import 'package:lapormin/core/widgets/card/quick_info_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/field_officer_home_greeting/field_officer_home_greeting.dart';
 import 'package:lapormin/features/report/presentation/bloc/field_officer_reports/field_officer_reports_bloc.dart';
 
@@ -210,7 +210,7 @@ class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
                           const SizedBox(height: 16),
                       itemBuilder: (context, index) {
                         final report = displayReports[index];
-                        final categoryEnum = ReportCategory.fromString(
+                        final category = ReportCategory.fromString(
                           report.category,
                         );
 
@@ -226,10 +226,7 @@ class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
                           location: report.shortAdddress,
                           timeAgo: timeAgoText,
                           status: report.status,
-                          categoryIcon: categoryEnum.icon,
-                          categoryColor: categoryEnum
-                              .getColor(context)
-                              .containerColor,
+                          category: category,
                           isVideo: report.evidence.endsWith('.mp4'),
                           deadlineDate: report.dueAction,
 

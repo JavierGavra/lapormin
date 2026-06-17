@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
-import 'package:lapormin/core/utils/text_style/app_text_style.dart';
-import 'package:lapormin/core/widgets/loading/shimmer_widget.dart';
+
+import '../../constants/report_category_enum.dart';
+import '../../constants/report_status_enum.dart';
+import '../../utils/text_style/app_text_style.dart';
+import '../chip/due_action_chip.dart';
+import '../chip/report_category_icon_chip.dart';
+import '../chip/report_status_chip.dart';
+import '../loading/shimmer_widget.dart';
 
 class ReportCard extends StatelessWidget {
   final String imageUrl;
@@ -10,8 +14,7 @@ class ReportCard extends StatelessWidget {
   final String location;
   final String timeAgo;
   final ReportStatus status;
-  final IconData categoryIcon;
-  final Color categoryColor;
+  final ReportCategory category;
   final VoidCallback onTap;
   final bool isVideo;
   final DateTime? deadlineDate;
@@ -23,8 +26,7 @@ class ReportCard extends StatelessWidget {
     required this.location,
     required this.timeAgo,
     required this.status,
-    required this.categoryIcon,
-    required this.categoryColor,
+    required this.category,
     required this.onTap,
     this.isVideo = false,
     this.deadlineDate,
@@ -49,9 +51,8 @@ class ReportCard extends StatelessWidget {
             children: [
               Stack(
                 children: [
-                  SizedBox(
-                    height: 160,
-                    width: double.infinity,
+                  AspectRatio(
+                    aspectRatio: 16 / 9,
                     child: imageUrl.startsWith('http')
                         ? Image.network(
                             imageUrl,
@@ -98,30 +99,7 @@ class ReportCard extends StatelessWidget {
                   Positioned(
                     top: 12,
                     right: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: color.surface,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.circle, color: status.color, size: 16),
-                          const SizedBox(width: 6),
-                          Text(
-                            status.label,
-                            style: AppTextStyle.s12(
-                              fontWeight: FontWeight.w600,
-                              color: status.color,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: ReportStatusChip.solid(status),
                   ),
                 ],
               ),
@@ -129,6 +107,7 @@ class ReportCard extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 16,
                   children: [
                     Expanded(
                       child: Column(
@@ -136,19 +115,17 @@ class ReportCard extends StatelessWidget {
                         children: [
                           Text(
                             title,
-                            style: AppTextStyle.s15(
-                              fontWeight: FontWeight.w700,
-                              fontFamily: "Plus Jakarta Sans",
-                            ),
-                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
+                            style: AppTextStyle.s16(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 4),
                           Row(
                             children: [
                               Icon(
                                 Icons.location_on_outlined,
-                                size: 14,
+                                size: 16,
                                 color: color.secondary,
                               ),
                               const SizedBox(width: 4),
@@ -158,14 +135,12 @@ class ReportCard extends StatelessWidget {
                                   style: AppTextStyle.s12(
                                     color: color.secondary,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              const SizedBox(width: 16),
+                              const SizedBox(width: 8),
                               Icon(
                                 Icons.access_time,
-                                size: 14,
+                                size: 16,
                                 color: color.onSurfaceVariant,
                               ),
                               const SizedBox(width: 4),
@@ -179,55 +154,13 @@ class ReportCard extends StatelessWidget {
                           ),
                           if (status == ReportStatus.action &&
                               deadlineDate != null) ...[
-                            const SizedBox(height: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: ShapeDecoration(
-                                color: color.error,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(100),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.calendar_month_outlined,
-                                    color: color.onError,
-                                    size: 14,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Tenggat : ${DateFormat('d MMMM yyyy', 'id_ID').format(deadlineDate!)}',
-                                    style: AppTextStyle.s12(
-                                      color: color.onError,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            const SizedBox(height: 12),
+                            DueActionChip(deadlineDate),
                           ],
                         ],
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: categoryColor,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        categoryIcon,
-                        color: color.onSurfaceVariant,
-                        size: 20,
-                      ),
-                    ),
+                    ReportCategoryIconChip(category),
                   ],
                 ),
               ),

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class CustomChip extends StatelessWidget {
+class AppChip extends StatelessWidget {
   final double? horizontal;
   final double? vertical;
   final Color? backgroundColor;
   final Widget child;
 
-  const CustomChip({
+  const AppChip({
     super.key,
     required this.child,
     this.backgroundColor,

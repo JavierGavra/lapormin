@@ -7,9 +7,9 @@ import 'package:lapormin/features/report/domain/params/report_filter_params.dart
 import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_list/report_filter_bottom_sheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:lapormin/core/widgets/report_card/report_card.dart';
-import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
-import 'package:lapormin/core/widgets/report_card/compact_report_card_shimmer.dart';
+import 'package:lapormin/core/widgets/card/report_card.dart';
+import 'package:lapormin/core/widgets/loading/report_card_shimmer.dart';
+import 'package:lapormin/core/widgets/loading/compact_report_card_shimmer.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/features/report/presentation/widgets/admin_report/admin_sliver_app_bar.dart';
@@ -219,7 +219,7 @@ class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final report = reports[index];
-        final categoryEnum = ReportCategory.fromString(report.category);
+        final category = ReportCategory.fromString(report.category);
 
         timeago.setLocaleMessages('id', timeago.IdMessages());
         final timeAgoText = timeago.format(report.createdAt, locale: 'id');
@@ -230,8 +230,7 @@ class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
           location: report.shortAdddress,
           timeAgo: timeAgoText,
           status: report.status,
-          categoryIcon: categoryEnum.icon,
-          categoryColor: categoryEnum.getColor(context).containerColor,
+          category: category,
           deadlineDate: report.dueAction,
           isVideo: report.evidence.endsWith('.mp4'),
           onTap: () {

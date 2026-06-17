@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lapormin/core/widgets/chip/report_status_chip.dart';
 
 import '../../../../../../core/constants/report_status_enum.dart';
 import '../../../../../../core/utils/text_style/app_text_style.dart';
-import '../../chip/custom_chip.dart';
 
 class _StepConfig {
   final IconData icon;
@@ -73,8 +73,6 @@ class HorizontalReportStatusStepper extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
-    final statusColor = currentStatus.getColor(context);
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -82,23 +80,7 @@ class HorizontalReportStatusStepper extends StatelessWidget {
           "Status Saat Ini",
           style: AppTextStyle.s14(fontWeight: FontWeight.w600),
         ),
-        CustomChip(
-          backgroundColor: statusColor.containerColor.withValues(alpha: 0.5),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            spacing: 4,
-            children: [
-              Icon(Icons.circle, size: 10, color: statusColor.mainColor),
-              Text(
-                currentStatus.label,
-                style: AppTextStyle.s12(
-                  fontWeight: FontWeight.w500,
-                  color: statusColor.mainColor,
-                ),
-              ),
-            ],
-          ),
-        ),
+        ReportStatusChip(currentStatus),
       ],
     );
   }

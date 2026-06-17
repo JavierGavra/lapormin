@@ -11,8 +11,8 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
-import 'package:lapormin/core/widgets/report_card/report_card.dart';
-import 'package:lapormin/core/widgets/report_card/report_card_shimmer.dart';
+import 'package:lapormin/core/widgets/card/report_card.dart';
+import 'package:lapormin/core/widgets/loading/report_card_shimmer.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_list/compact_report_card.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_list/report_search_bar.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_list/report_layout_switch.dart';
@@ -221,7 +221,7 @@ class _FieldOfficerReportListPageState
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final report = reports[index];
-        final categoryEnum = ReportCategory.fromString(report.category);
+        final category = ReportCategory.fromString(report.category);
 
         timeago.setLocaleMessages('id', timeago.IdMessages());
         final timeAgoText = timeago.format(report.createdAt, locale: 'id');
@@ -233,8 +233,7 @@ class _FieldOfficerReportListPageState
           timeAgo: timeAgoText,
           status: report.status,
           deadlineDate: report.dueAction,
-          categoryIcon: categoryEnum.icon,
-          categoryColor: categoryEnum.getColor(context).containerColor,
+          category: category,
           isVideo: report.evidence.endsWith('.mp4'),
           onTap: () {
             Navigate.push(

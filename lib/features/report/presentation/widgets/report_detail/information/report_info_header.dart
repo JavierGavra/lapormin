@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/core/widgets/chip/report_category_icon_chip.dart';
 
 class ReportInfoHeader extends StatelessWidget {
   final String title;
@@ -31,19 +32,7 @@ class ReportInfoHeader extends StatelessWidget {
                 style: AppTextStyle.s24(fontWeight: FontWeight.w700),
               ),
             ),
-            Container(
-              height: 32,
-              width: 32,
-              decoration: BoxDecoration(
-                color: category.getColor(context).containerColor,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Icon(
-                category.icon,
-                size: 18,
-                color: category.getColor(context).onContainerColor,
-              ),
-            ),
+            ReportCategoryIconChip(category),
           ],
         ),
 
