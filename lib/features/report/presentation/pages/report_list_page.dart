@@ -90,7 +90,6 @@ class _ReportListPageState extends State<ReportListPage> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               AppSliverAppBar(
-                profileUrl: "assets/images/profiles/profile.png",
                 onNotificationTap: () {
                   debugPrint("Buka Notifikasi Laporan");
                 },

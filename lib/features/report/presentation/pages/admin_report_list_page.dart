@@ -40,7 +40,6 @@ class _AdminReportListPageState extends State<AdminReportListPage> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               AppSliverAppBar(
-                profileUrl: "assets/images/profiles/profile.png",
                 onNotificationTap: () {
                   debugPrint("Buka Notifikasi Admin");
                 },

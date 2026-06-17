@@ -1,17 +1,24 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:lapormin/core/use_case/usecase.dart';
+import 'package:lapormin/features/auth/domain/entities/user.dart';
+import 'package:lapormin/features/auth/domain/use_cases/get_current_user.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 part 'auth_event.dart';
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final GetCurrentUser _getCurrentUser;
   final SupabaseClient _supabase;
 
-  AuthBloc({required SupabaseClient supabase})
-    : _supabase = supabase,
-      super(AuthState()) {
+  AuthBloc({
+    required GetCurrentUser getCurrentUser,
+    required SupabaseClient supabase,
+  }) : _getCurrentUser = getCurrentUser,
+       _supabase = supabase,
+       super(AuthState()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<_AuthLogoutRequested>(_onAuthLogoutRequested);
 
@@ -28,7 +35,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final session = _supabase.auth.currentSession;
 
       if (session != null) {
-        emit(AuthState(status: AuthStatus.authenticated));
+        final result = await _getCurrentUser(NoParams());
+        result.fold(
+          (failure) => emit(AuthState(status: AuthStatus.unauthenticated)),
+          (user) {
+            emit(AuthState(status: AuthStatus.authenticated, user: user));
+          },
+        );
       } else {
         emit(AuthState(status: AuthStatus.unauthenticated));
       }

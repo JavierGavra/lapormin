@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/core/database/local_data_persistance.dart';
-import 'package:lapormin/core/error/exceptions.dart';
-import 'package:lapormin/core/services/push_notification/push_notification_service.dart';
-import 'package:lapormin/features/auth/data/models/user_model.dart';
+
+import '../../../../core/constants/user_role_enum.dart';
+import '../../../../core/database/local_data_persistance.dart';
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/services/push_notification/push_notification_service.dart';
+import '../models/user_model.dart';
 
 abstract interface class AuthLocalDataSource {
   Future<bool> saveUserData(UserModel user);
   Future<bool> clearUserData();
   Future<String> getDeviceToken();
   String getUserId();
+  UserModel getUserData();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -70,6 +73,23 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       return userId;
     } else {
       throw const CacheException('User ID not found');
+    }
+  }
+
+  @override
+  UserModel getUserData() {
+    try {
+      return UserModel(
+        id: localDataPersistance.getUserId!,
+        username: localDataPersistance.getUsername!,
+        phoneNumber: localDataPersistance.getPhoneNumber!,
+        createdAt: DateTime.parse(localDataPersistance.getCreatedAt!),
+        role: UserRole.fromString(localDataPersistance.getRole!),
+        photoProfile: localDataPersistance.getPhotoProfile,
+      );
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
     }
   }
 }

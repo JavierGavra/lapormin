@@ -48,7 +48,6 @@ class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
               AppSliverAppBar(
-                profileUrl: "assets/images/profiles/profile.png",
                 onNotificationTap: () {
                   Navigate.push(context, const NotificationHistoryPage());
                 },
