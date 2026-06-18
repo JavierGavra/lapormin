@@ -8,6 +8,7 @@ abstract class ProfileRemoteDataSource {
   Future<String> upsertPhotoProfile(File imageFile, String extension);
   Future<void> changePassword(String oldPassword, String newPassword);
   Future<String> updateUsername(String newUsername);
+  Future<String> getPhotoProfile(String path);
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -72,6 +73,16 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
           .eq("id", userId);
 
       return newUsername;
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<String> getPhotoProfile(String path) async {
+    try {
+      return supabase.storage.from('avatars').getPublicUrl(path);
     } catch (e) {
       debugPrint('$e');
       rethrow;

@@ -21,7 +21,15 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, Profile>> getProfile() async {
     try {
-      final profile = await localDataSource.getProfile();
+      Profile profile = await localDataSource.getProfile();
+
+      if (profile.photoProfile != null) {
+        final imageUrl = await remoteDataSource.getPhotoProfile(
+          profile.photoProfile!,
+        );
+        profile = profile.copyWith(photoProfile: imageUrl);
+      }
+
       return Right(profile);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
