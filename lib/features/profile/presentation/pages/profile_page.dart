@@ -6,6 +6,7 @@ import 'package:lapormin/core/widgets/button/app_back_button.dart';
 import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lapormin/features/profile/presentation/bloc/profile/profile_bloc.dart';
+import 'package:lapormin/features/profile/presentation/pages/change_password_page.dart';
 import 'package:lapormin/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:lapormin/features/profile/presentation/widgets/profile_header.dart';
 import 'package:lapormin/features/profile/presentation/widgets/profile_info.dart';
@@ -102,7 +103,15 @@ class ProfilePage extends StatelessWidget {
                                   ProfileActionItem(
                                     icon: Icons.lock_person_outlined,
                                     label: 'Ganti Password',
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              const ChangePasswordPage(),
+                                        ),
+                                      );
+                                    },
                                   ),
                                 ],
                               ),

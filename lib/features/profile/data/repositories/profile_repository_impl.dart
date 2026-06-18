@@ -63,6 +63,20 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
+  Future<Either<Failure, void>> changePassword(
+    String oldPassword,
+    String newPassword,
+  ) async {
+    try {
+      await remoteDataSource.changePassword(oldPassword, newPassword);
+      return const Right(null);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+  
   Future<Either<Failure, String>> changeUsername(String newUsername) async {
     try {
       final result = await remoteDataSource.updateUsername(newUsername);

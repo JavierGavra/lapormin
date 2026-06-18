@@ -8,6 +8,10 @@ import '../entities/profile.dart';
 abstract interface class ProfileRepository {
   Future<Either<Failure, Profile>> getProfile();
   Future<Either<Failure, String>> getUsername();
+  Future<Either<Failure, void>> changePassword(
+    String oldPassword,
+    String newPassword,
+  );
   Future<Either<Failure, String>> uploadPhotoProfile({
     required File imageFile,
     required String extension,

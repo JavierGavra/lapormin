@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/error/exceptions.dart';
 
 abstract class ProfileRemoteDataSource {
   Future<String> upsertPhotoProfile(File imageFile, String extension);
+  Future<void> changePassword(String oldPassword, String newPassword);
   Future<String> updateUsername(String newUsername);
 }
 
@@ -22,12 +24,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
 
       final bytes = await imageFile.readAsBytes();
 
-      // Ambil daftar semua file yang ada di dalam folder userId
       final existingFiles = await supabase.storage
           .from('avatars')
           .list(path: userId);
 
-      // Jika ada file, hapus semuanya agar storage tetap bersih
       if (existingFiles.isNotEmpty) {
         final filesToDelete = existingFiles
             .map((f) => '$userId/${f.name}')
@@ -55,6 +55,14 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   }
 
   @override
+  Future<void> changePassword(String oldPassword, String newPassword) async {
+    try {
+      await supabase.auth.updateUser(UserAttributes(password: newPassword));
+    } catch (e) {
+      throw ServerException('Gagal mengubah password: ${e.toString()}');
+    }
+  }
+  
   Future<String> updateUsername(String newUsername) async {
     try {
       final userId = supabase.auth.currentUser!.id;
