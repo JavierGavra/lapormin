@@ -76,4 +76,17 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+  
+  Future<Either<Failure, String>> changeUsername(String newUsername) async {
+    try {
+      final result = await remoteDataSource.updateUsername(newUsername);
+      localDataSource.setUsername(result);
+
+      return Right(result);
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure('Gagal mengubah username'));
+    }
+  }
 }

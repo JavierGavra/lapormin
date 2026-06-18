@@ -16,4 +16,5 @@ abstract interface class ProfileRepository {
     required File imageFile,
     required String extension,
   });
+  Future<Either<Failure, String>> changeUsername(String newUsername);
 }

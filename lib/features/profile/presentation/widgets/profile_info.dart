@@ -109,6 +109,7 @@ class ProfileInfo extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.outline),
+        color: color.surfaceContainerLowest,
       ),
       child: Row(
         spacing: 12,

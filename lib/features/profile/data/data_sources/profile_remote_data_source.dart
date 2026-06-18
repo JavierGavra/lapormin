@@ -1,10 +1,13 @@
 import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/error/exceptions.dart';
 
 abstract class ProfileRemoteDataSource {
   Future<String> upsertPhotoProfile(File imageFile, String extension);
   Future<void> changePassword(String oldPassword, String newPassword);
+  Future<String> updateUsername(String newUsername);
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -57,6 +60,21 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       await supabase.auth.updateUser(UserAttributes(password: newPassword));
     } catch (e) {
       throw ServerException('Gagal mengubah password: ${e.toString()}');
+    }
+  }
+  
+  Future<String> updateUsername(String newUsername) async {
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      await supabase
+          .from("users")
+          .update({"username": newUsername})
+          .eq("id", userId);
+
+      return newUsername;
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
     }
   }
 }
