@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 abstract class ProfileRemoteDataSource {
   Future<String> upsertPhotoProfile(File imageFile, String extension);
+  Future<String> updateUsername(String newUsername);
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -49,6 +51,22 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       return supabase.storage.from('avatars').getPublicUrl(filePath);
     } catch (e) {
       throw Exception('Gagal mengunggah foto profil: $e');
+    }
+  }
+
+  @override
+  Future<String> updateUsername(String newUsername) async {
+    try {
+      final userId = supabase.auth.currentUser!.id;
+      await supabase
+          .from("users")
+          .update({"username": newUsername})
+          .eq("id", userId);
+
+      return newUsername;
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
     }
   }
 }
