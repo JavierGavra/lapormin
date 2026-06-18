@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/constants/user_role_enum.dart';
 import 'package:lapormin/core/route/navigate.dart';
+import 'package:lapormin/core/widgets/loading/shimmer_widget.dart';
 import 'package:lapormin/features/notification/presentation/pages/notification_history_page.dart';
 import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -78,6 +79,7 @@ class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
                       ),
 
                       const SizedBox(height: 24),
+
                       BlocBuilder<
                         FieldOfficerReportsBloc,
                         FieldOfficerReportsState
@@ -99,7 +101,7 @@ class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
                               ? "..."
                               : (stats?.penugasan.toString() ?? "0");
 
-                          return Row(
+                          Widget quickInfoContent = Row(
                             children: [
                               Expanded(
                                 child: AdminQuickInfoCard(
@@ -142,6 +144,38 @@ class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
                               ),
                             ],
                           );
+
+                          if (isLoading) {
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: ShimmerWidget(
+                                    height: 128,
+                                    width: double.infinity,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: ShimmerWidget(
+                                    height: 128,
+                                    width: double.infinity,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: ShimmerWidget(
+                                    height: 128,
+                                    width: double.infinity,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+
+                          return quickInfoContent;
                         },
                       ),
 

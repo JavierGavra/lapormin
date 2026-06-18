@@ -60,11 +60,16 @@ class _HomePageState extends State<HomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      BlocBuilder<PublicReportsBloc, PublicReportsState>(
-                        builder: (context, state) {
-                          final displayUserName = state.username ?? "Warga...";
+                      BlocSelector<
+                        PublicReportsBloc,
+                        PublicReportsState,
+                        (String?, String?)
+                      >(
+                        selector: (state) => (state.username, state.location),
+                        builder: (context, data) {
+                          final displayUserName = data.$1 ?? "Warga...";
                           final displayLocation =
-                              state.location ?? "Mencari lokasi...";
+                              data.$2 ?? "Mencari lokasi...";
 
                           return HomeGreeting(
                             userName: displayUserName,

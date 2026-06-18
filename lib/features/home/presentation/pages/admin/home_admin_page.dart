@@ -16,6 +16,9 @@ import 'package:lapormin/core/widgets/card/quick_info_card.dart';
 import 'package:lapormin/features/home/presentation/widgets/admin_home_greeting/admin_home_greeting.dart';
 import 'package:lapormin/features/home/presentation/bloc/home_admin/home_admin_bloc.dart';
 
+import '../../../../../core/widgets/loading/shimmer_widget.dart'
+    show ShimmerWidget;
+
 class HomeAdminPage extends StatefulWidget {
   final VoidCallback? onSeeAllTapped;
 
@@ -74,6 +77,7 @@ class _HomeAdminPageState extends State<HomeAdminPage> {
                       ),
 
                       const SizedBox(height: 24),
+
                       BlocBuilder<HomeAdminBloc, HomeAdminState>(
                         builder: (context, state) {
                           final stats = state.statistics;
@@ -94,7 +98,7 @@ class _HomeAdminPageState extends State<HomeAdminPage> {
                               ? "..."
                               : (stats?.total.toString() ?? "0");
 
-                          return Column(
+                          Widget quickInfoContent = Column(
                             children: [
                               Row(
                                 children: [
@@ -162,6 +166,54 @@ class _HomeAdminPageState extends State<HomeAdminPage> {
                               ),
                             ],
                           );
+
+                          if (isLoading) {
+                            return Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: ShimmerWidget(
+                                        height: 128,
+                                        width: double.infinity,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: ShimmerWidget(
+                                        height: 128,
+                                        width: double.infinity,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: ShimmerWidget(
+                                        height: 128,
+                                        width: double.infinity,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: ShimmerWidget(
+                                        height: 128,
+                                        width: double.infinity,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            );
+                          }
+
+                          return quickInfoContent;
                         },
                       ),
 
