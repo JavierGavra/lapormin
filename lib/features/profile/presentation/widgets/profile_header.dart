@@ -12,7 +12,7 @@ import '../../../../core/widgets/image/image_viewer_page.dart';
 import '../bloc/profile/profile_bloc.dart';
 
 class ProfileHeader extends StatefulWidget {
-  final String? photoProfile;
+  final File? photoProfile;
   final String username;
 
   const ProfileHeader({super.key, this.photoProfile, required this.username});
@@ -77,12 +77,12 @@ class _ProfileHeaderState extends State<ProfileHeader> {
               onTap: () {
                 Navigate.push(
                   context,
-                  ImageViewerPage.network(
+                  ImageViewerPage.file(
                     tag: 'profile_avatar',
                     title: "Foto Profil",
                     withDownload: true,
                     onEdit: () => _pickImage(context),
-                    urlImage: widget.photoProfile,
+                    file: widget.photoProfile,
                   ),
                 );
               },
@@ -92,7 +92,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                   alignment: Alignment.center,
                   children: [
                     ProfileAvatar.large(
-                      photoProfile: widget.photoProfile,
+                      photoProfile: widget.photoProfile?.path,
                       username: widget.username,
                     ),
 

@@ -8,10 +8,11 @@ import '../models/user_model.dart';
 
 abstract interface class AuthLocalDataSource {
   Future<bool> saveUserData(UserModel user);
+  Future<bool> savePhotoProfile(String url);
   Future<bool> clearUserData();
   Future<String> getDeviceToken();
   String getUserId();
-  UserModel getUserData();
+  Future<UserModel> getUserData();
 }
 
 class AuthLocalDataSourceImpl implements AuthLocalDataSource {
@@ -31,11 +32,6 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
       await localDataPersistance.setPhoneNumber(user.phoneNumber);
       await localDataPersistance.setCreatedAt(user.createdAt);
       await localDataPersistance.setRole(user.role.dbValue);
-
-      if (user.photoProfile != null) {
-        await localDataPersistance.setPhotoProfile(user.photoProfile!);
-      }
-
       return true;
     } catch (e) {
       debugPrint("$e");
@@ -77,7 +73,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   }
 
   @override
-  UserModel getUserData() {
+  Future<UserModel> getUserData() async {
     try {
       return UserModel(
         id: localDataPersistance.getUserId!,
@@ -85,8 +81,19 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
         phoneNumber: localDataPersistance.getPhoneNumber!,
         createdAt: DateTime.parse(localDataPersistance.getCreatedAt!),
         role: UserRole.fromString(localDataPersistance.getRole!),
-        photoProfile: localDataPersistance.getPhotoProfile,
+        photoProfile: await localDataPersistance.getPhotoProfile,
       );
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> savePhotoProfile(String url) async {
+    try {
+      await localDataPersistance.setPhotoProfile(url);
+      return true;
     } catch (e) {
       debugPrint("$e");
       rethrow;

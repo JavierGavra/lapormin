@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 import 'package:lapormin/core/constants/user_role_enum.dart';
 
@@ -5,7 +7,7 @@ class User extends Equatable {
   final String id;
   final String username;
   final String phoneNumber;
-  final String? photoProfile;
+  final File? photoProfile;
   final UserRole role;
   final DateTime createdAt;
 

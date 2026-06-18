@@ -16,7 +16,6 @@ class UserModel extends User {
       id: data['id'],
       username: data['username'],
       phoneNumber: data['no_telp'],
-      photoProfile: data['photo_profile'],
       role: switch (data['role']) {
         'admin' => UserRole.admin,
         'informant' => UserRole.informant,

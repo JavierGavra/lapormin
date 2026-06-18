@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
 
 class Profile extends Equatable {
   final int reportAmount;
   final String username;
   final String phoneNumber;
-  final String? photoProfile;
+  final File? photoProfile;
   final DateTime createdAt;
 
   const Profile({
@@ -19,7 +21,7 @@ class Profile extends Equatable {
     int? reportAmount,
     String? username,
     String? phoneNumber,
-    String? photoProfile,
+    File? photoProfile,
     DateTime? createdAt,
   }) {
     return Profile(
