@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../utils/text_style/app_text_style.dart';
@@ -48,6 +50,14 @@ class ProfileAvatar extends StatelessWidget {
     return words[0][0].toUpperCase();
   }
 
+  ImageProvider _buildImage(String path) {
+    if (path.startsWith('http') || path.startsWith('https')) {
+      return NetworkImage(path);
+    } else {
+      return FileImage(File(path));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
@@ -72,7 +82,7 @@ class ProfileAvatar extends StatelessWidget {
         radius: 60,
         backgroundColor: color.primary,
         backgroundImage: photoProfile != null
-            ? NetworkImage(photoProfile!)
+            ? _buildImage(photoProfile!)
             : null,
         child: photoProfile == null
             ? Text(
@@ -101,7 +111,7 @@ class ProfileAvatar extends StatelessWidget {
         radius: 42,
         backgroundColor: color.primary,
         backgroundImage: photoProfile != null
-            ? NetworkImage(photoProfile!)
+            ? _buildImage(photoProfile!)
             : null,
         child: photoProfile == null
             ? Text(
@@ -121,9 +131,7 @@ class ProfileAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: 20,
       backgroundColor: color.primary,
-      backgroundImage: photoProfile != null
-          ? NetworkImage(photoProfile!)
-          : null,
+      backgroundImage: photoProfile != null ? _buildImage(photoProfile!) : null,
       child: photoProfile == null
           ? Text(
               _initials,
@@ -141,9 +149,7 @@ class ProfileAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: 16,
       backgroundColor: color.primary,
-      backgroundImage: photoProfile != null
-          ? NetworkImage(photoProfile!)
-          : null,
+      backgroundImage: photoProfile != null ? _buildImage(photoProfile!) : null,
       child: photoProfile == null
           ? Text(
               _initials,

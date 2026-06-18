@@ -92,14 +92,17 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       ),
     );
 
-    result.fold(
-      (failure) => _emitFailure(emit, failure.message!),
-      (newImageUrl) => emit(
-        state.copyWith(
-          status: ProfileStatus.avatarSuccess,
-          profile: state.profile?.copyWith(photoProfile: newImageUrl),
+    await result.fold((failure) async => _emitFailure(emit, failure.message!), (
+      _,
+    ) async {
+      final profile = await _getProfile(NoParams());
+
+      profile.fold(
+        (failure) => _emitFailure(emit, failure.message!),
+        (profile) => emit(
+          state.copyWith(status: ProfileStatus.avatarSuccess, profile: profile),
         ),
-      ),
-    );
+      );
+    });
   }
 }

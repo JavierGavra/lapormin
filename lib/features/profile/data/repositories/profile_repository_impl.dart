@@ -22,14 +22,6 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<Either<Failure, Profile>> getProfile() async {
     try {
       Profile profile = await localDataSource.getProfile();
-
-      if (profile.photoProfile != null) {
-        final imageUrl = await remoteDataSource.getPhotoProfile(
-          profile.photoProfile!,
-        );
-        profile = profile.copyWith(photoProfile: imageUrl);
-      }
-
       return Right(profile);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
@@ -50,7 +42,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, String>> uploadPhotoProfile({
+  Future<Either<Failure, bool>> uploadPhotoProfile({
     required File imageFile,
     required String extension,
   }) async {
@@ -60,9 +52,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
         extension,
       );
 
-      localDataSource.setPhotoProfile(result);
+      await localDataSource.setPhotoProfile(result);
 
-      return Right(result);
+      return Right(true);
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
     } catch (e) {
@@ -84,12 +76,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
-  
+
+  @override
   Future<Either<Failure, String>> changeUsername(String newUsername) async {
     try {
       final result = await remoteDataSource.updateUsername(newUsername);
-      localDataSource.setUsername(result);
-
+      await localDataSource.setUsername(result);
       return Right(result);
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));

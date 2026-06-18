@@ -10,6 +10,7 @@ abstract interface class AuthRemoteDataSource {
   Future<bool> verifyOtp(String phoneNumber, String otp);
   Future<UserModel> postLogin(String phoneNumber, String password);
   Future<bool> postLogout();
+  Future<String?> fetchPhotoProfile();
   Future<bool> postDeviceToken(String userId, String token);
   Future<bool> removeDeviceToken(String userId);
 }
@@ -41,6 +42,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } on AuthException catch (e) {
       throw InvalidCredentialsException(e.message);
     } catch (e) {
+      debugPrint("$e");
       if (e is NetworkException) rethrow;
       throw ServerException();
     }
@@ -128,6 +130,26 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     } catch (e) {
       debugPrint("$e");
       rethrow;
+    }
+  }
+
+  @override
+  Future<String?> fetchPhotoProfile() async {
+    try {
+      final response = await supabase
+          .from('users')
+          .select('photo_profile')
+          .eq('id', supabase.auth.currentUser!.id)
+          .single();
+
+      final photoProfile = response['photo_profile'];
+
+      if (photoProfile == null) return null;
+
+      return supabase.storage.from('avatars').getPublicUrl(photoProfile);
+    } catch (e) {
+      debugPrint("$e");
+      throw const ServerException('Gagal mengambil foto profil.');
     }
   }
 }
