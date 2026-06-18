@@ -13,8 +13,10 @@ import 'package:lapormin/features/notification/domain/use_cases/get_notification
 import 'package:lapormin/features/notification/presentation/bloc/notification_history/notification_history_bloc.dart';
 import 'package:lapormin/features/notification/presentation/bloc/notification_permission/notification_permission_bloc.dart';
 import 'package:lapormin/features/profile/data/data_sources/profile_remote_data_source.dart';
+import 'package:lapormin/features/profile/domain/use_cases/change_username.dart';
 import 'package:lapormin/features/profile/domain/use_cases/get_username.dart';
 import 'package:lapormin/features/profile/domain/use_cases/upload_photo_profile.dart';
+import 'package:lapormin/features/profile/presentation/bloc/edit_profile/edit_profile_bloc.dart';
 import 'package:lapormin/features/report/domain/use_cases/assign_field_officer.dart';
 import 'package:lapormin/features/report/domain/use_cases/completing_report.dart';
 import 'package:lapormin/features/report/domain/use_cases/get_user_report_amount.dart';
@@ -244,11 +246,13 @@ void _initProfileFeature() {
       uploadProfilePhoto: sl(),
     ),
   );
+  sl.registerFactory(() => EditProfileBloc(changeUsername: sl()));
 
   // Use Cases
   sl.registerLazySingleton(() => GetProfile(sl()));
   sl.registerLazySingleton(() => GetUsername(sl()));
   sl.registerLazySingleton(() => UploadPhotoProfile(sl()));
+  sl.registerLazySingleton(() => ChangeUsername(sl()));
 
   // Repository
   sl.registerLazySingleton<ProfileRepository>(

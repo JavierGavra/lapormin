@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/route/navigate.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/button/app_back_button.dart';
 import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lapormin/features/profile/presentation/bloc/profile/profile_bloc.dart';
+import 'package:lapormin/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:lapormin/features/profile/presentation/widgets/profile_header.dart';
 import 'package:lapormin/features/profile/presentation/widgets/profile_info.dart';
 import 'package:lapormin/features/profile/presentation/widgets/profile_actions.dart';
@@ -13,6 +15,17 @@ import 'package:lapormin/injection.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+
+  void _onEditProfile(BuildContext context, String currentUsername) async {
+    final changed = await Navigate.push(
+      context,
+      EditProfilePage(currentUsername: currentUsername),
+    );
+
+    if (changed != null && context.mounted) {
+      context.read<ProfileBloc>().add(ProfileOpenned());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +93,11 @@ class ProfilePage extends StatelessWidget {
                                 items: [
                                   ProfileActionItem(
                                     icon: Icons.person_outline_rounded,
-                                    label: 'Edit Profile',
-                                    onTap: () {},
+                                    label: 'Edit Profil',
+                                    onTap: () => _onEditProfile(
+                                      context,
+                                      state.profile!.username,
+                                    ),
                                   ),
                                   ProfileActionItem(
                                     icon: Icons.lock_person_outlined,
