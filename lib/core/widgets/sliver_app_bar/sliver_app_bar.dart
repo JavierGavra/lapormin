@@ -44,7 +44,6 @@ class AppSliverAppBar extends StatelessWidget {
         const SizedBox(width: 4),
         BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            print("Auth State: ${state.status}");
             return GestureDetector(
               onTap: () => Navigate.push(context, const ProfilePage()),
               child: ProfileAvatar.verySmall(

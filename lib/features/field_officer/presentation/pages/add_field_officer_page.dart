@@ -268,6 +268,7 @@ class _AddFieldOfficerPageState extends State<AddFieldOfficerPage> {
                     title: 'Petugas Telah Di Daftarkan',
                     description: 'Silahkan login dengan akun baru!',
                     extraWidget: _buildPasswordBox(state.generatedPassword),
+                    autoBack: false,
                     onBack: () {
                       Navigator.pop(context);
                     },

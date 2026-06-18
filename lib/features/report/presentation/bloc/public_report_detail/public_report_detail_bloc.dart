@@ -33,7 +33,6 @@ class PublicReportDetailBloc
         ),
       ),
       (report) {
-        print(report.evidences);
         emit(
           state.copyWith(
             status: PublicReportDetailStatus.success,
