@@ -14,6 +14,7 @@ import 'package:lapormin/features/notification/presentation/bloc/notification_hi
 import 'package:lapormin/features/notification/presentation/bloc/notification_permission/notification_permission_bloc.dart';
 import 'package:lapormin/features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'package:lapormin/features/profile/domain/use_cases/change_password.dart';
+import 'package:lapormin/features/profile/domain/use_cases/change_username.dart';
 import 'package:lapormin/features/profile/domain/use_cases/get_username.dart';
 import 'package:lapormin/features/profile/domain/use_cases/upload_photo_profile.dart';
 import 'package:lapormin/features/profile/presentation/bloc/change_password/change_password_bloc.dart';
@@ -245,12 +246,9 @@ void _initProfileFeature() {
       logout: sl(),
       getUserReportAmount: sl(),
       uploadProfilePhoto: sl(),
-      // 📍 changePassword: sl(), <--- INI SUDAH DIHAPUS KARENA PINDAH TUGAS
     ),
   );
   sl.registerFactory(() => EditProfileBloc(changeUsername: sl()));
-
-  // 📍 Ini Divisi Keamanan yang baru kita buat
   sl.registerFactory(() => ChangePasswordBloc(changePasswordUseCase: sl()));
 
   // Use Cases
