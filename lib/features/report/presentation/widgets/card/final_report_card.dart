@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lapormin/core/route/navigate.dart';
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/core/widgets/image/image_viewer_page.dart';
 import 'package:lapormin/core/widgets/loading/shimmer_widget.dart';
 import 'package:lapormin/features/report/domain/entities/final_report.dart';
 
@@ -69,26 +71,42 @@ class FinalReportCard extends StatelessWidget {
           spacing: gap,
           runSpacing: gap,
           children: finalReport.evidences.map((evidence) {
-            return SizedBox(
-              width: itemWidth,
-              height: itemWidth,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  evidence,
-                  fit: BoxFit.cover,
-                  frameBuilder:
-                      (context, child, frame, wasSynchronouslyLoaded) {
-                        if (wasSynchronouslyLoaded || frame != null) {
-                          return child;
-                        }
-                        return ShimmerWidget();
-                      },
-                  errorBuilder: (context, error, stack) => Container(
-                    color: color.surfaceContainerHighest,
-                    child: Icon(
-                      Icons.broken_image_rounded,
-                      color: color.outline,
+            return Hero(
+              tag: evidence,
+              child: SizedBox(
+                width: itemWidth,
+                height: itemWidth,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigate.push(
+                        context,
+                        ImageViewerPage.network(
+                          tag: evidence,
+                          title: "Bukti Lapangan",
+                          withDownload: true,
+                          urlImage: evidence,
+                        ),
+                      );
+                    },
+                    child: Image.network(
+                      evidence,
+                      fit: BoxFit.cover,
+                      frameBuilder:
+                          (context, child, frame, wasSynchronouslyLoaded) {
+                            if (wasSynchronouslyLoaded || frame != null) {
+                              return child;
+                            }
+                            return ShimmerWidget();
+                          },
+                      errorBuilder: (context, error, stack) => Container(
+                        color: color.surfaceContainerHighest,
+                        child: Icon(
+                          Icons.broken_image_rounded,
+                          color: color.outline,
+                        ),
+                      ),
                     ),
                   ),
                 ),

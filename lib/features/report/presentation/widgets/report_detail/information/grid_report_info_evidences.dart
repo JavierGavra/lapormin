@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lapormin/core/route/navigate.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
+import 'package:lapormin/core/widgets/image/image_viewer_page.dart';
 import 'package:lapormin/core/widgets/loading/shimmer_widget.dart';
 
 class GridReportInfoEvidences extends StatelessWidget {
@@ -54,29 +56,50 @@ class GridReportInfoEvidences extends StatelessWidget {
                 spacing: gap,
                 runSpacing: gap,
                 children: evidences.map((evidence) {
-                  return SizedBox(
-                    width: itemWidth,
-                    height: itemWidth,
-                    // 1. Positioned.fill dihapus
-                    child: ClipRRect(
-                      // 2. Gunakan ClipRRect untuk border radius
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        evidence,
-                        fit: BoxFit.cover,
-                        // 3. Tambahkan handler dasar untuk best practice
-                        frameBuilder:
-                            (context, child, frame, wasSynchronouslyLoaded) {
-                              if (wasSynchronouslyLoaded || frame != null) {
-                                return child;
-                              }
-                              return ShimmerWidget();
-                            },
-                        errorBuilder: (context, error, stack) => Container(
-                          color: color.surfaceContainerHighest,
-                          child: Icon(
-                            Icons.broken_image_rounded,
-                            color: color.outline,
+                  return Hero(
+                    tag: evidence,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigate.push(
+                          context,
+                          ImageViewerPage.network(
+                            tag: evidence,
+                            title: "Bukti Lapangan",
+                            withDownload: true,
+                            urlImage: evidence,
+                          ),
+                        );
+                      },
+                      child: SizedBox(
+                        width: itemWidth,
+                        height: itemWidth,
+                        // 1. Positioned.fill dihapus
+                        child: ClipRRect(
+                          // 2. Gunakan ClipRRect untuk border radius
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            evidence,
+                            fit: BoxFit.cover,
+                            // 3. Tambahkan handler dasar untuk best practice
+                            frameBuilder:
+                                (
+                                  context,
+                                  child,
+                                  frame,
+                                  wasSynchronouslyLoaded,
+                                ) {
+                                  if (wasSynchronouslyLoaded || frame != null) {
+                                    return child;
+                                  }
+                                  return ShimmerWidget();
+                                },
+                            errorBuilder: (context, error, stack) => Container(
+                              color: color.surfaceContainerHighest,
+                              child: Icon(
+                                Icons.broken_image_rounded,
+                                color: color.outline,
+                              ),
+                            ),
                           ),
                         ),
                       ),

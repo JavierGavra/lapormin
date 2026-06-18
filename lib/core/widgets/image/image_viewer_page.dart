@@ -157,7 +157,7 @@ class _ImageViewerPageState extends State<ImageViewerPage>
             ),
         ],
       ),
-      body: (widget.urlImage == null)
+      body: (widget.urlImage == null && widget.file == null)
           ? SizedBox(
               width: double.maxFinite,
               height: double.maxFinite,
@@ -202,7 +202,34 @@ class _ImageViewerPageState extends State<ImageViewerPage>
                     tag: widget.tag,
                     child: widget.file != null
                         ? Image.file(widget.file!, fit: BoxFit.fitWidth)
-                        : Image.network(widget.urlImage!, fit: BoxFit.fitWidth),
+                        : Image.network(
+                            widget.urlImage!,
+                            fit: BoxFit.fitWidth,
+                            frameBuilder:
+                                (
+                                  context,
+                                  child,
+                                  frame,
+                                  wasSynchronouslyLoaded,
+                                ) {
+                                  if (wasSynchronouslyLoaded || frame != null) {
+                                    return child;
+                                  }
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                color: color.surfaceContainerHighest,
+                                child: Icon(
+                                  Icons.broken_image_rounded,
+                                  color: color.onSurfaceVariant,
+                                  size: 48,
+                                ),
+                              );
+                            },
+                          ),
                   ),
                 ),
               ),
