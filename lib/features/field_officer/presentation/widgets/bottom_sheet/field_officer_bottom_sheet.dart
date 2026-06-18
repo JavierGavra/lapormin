@@ -36,7 +36,7 @@ class FieldOfficerBottomSheet extends StatelessWidget {
               children: [
                 FieldOfficerBottomSheetHeader(
                   username: officer.name,
-                  photoProfile: null,
+                  photoProfile: officer.imageUrl,
                 ),
                 FieldOfficerBottomSheetInfo(
                   phoneNumber: officer.phone,

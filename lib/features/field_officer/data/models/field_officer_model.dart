@@ -7,6 +7,7 @@ class FieldOfficerModel extends FieldOfficer {
     required super.phone,
     required super.reportAmount,
     required super.createdAt,
+    required super.imageUrl,
   });
 
   factory FieldOfficerModel.fromJson(Map<String, dynamic> json) {
@@ -16,6 +17,7 @@ class FieldOfficerModel extends FieldOfficer {
       phone: json['no_telp'] as String? ?? '-',
       reportAmount: json['report_amount'] as int? ?? 0,
       createdAt: DateTime.parse(json['created_at'] as String),
+      imageUrl: json['photo_profile'],
     );
   }
 

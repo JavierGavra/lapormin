@@ -46,7 +46,6 @@ class _ImageViewerPageState extends State<ImageViewerPage>
   late AnimationController animationController;
   Animation<Matrix4>? animation;
 
-  // Indikator loading saat mengunduh gambar
   final _isDownloading = ValueNotifier<bool>(false);
 
   @override
@@ -69,7 +68,6 @@ class _ImageViewerPageState extends State<ImageViewerPage>
     super.dispose();
   }
 
-  // --- Fungsi Unduh Gambar ---
   Future<void> _downloadImage(BuildContext context) async {
     _isDownloading.value = true;
 

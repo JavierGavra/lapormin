@@ -8,6 +8,7 @@ class FieldOfficerCard extends StatelessWidget {
   final String name;
   final String phone;
   final VoidCallback onTap;
+  final String? imageUrl;
 
   const FieldOfficerCard({
     super.key,
@@ -15,6 +16,7 @@ class FieldOfficerCard extends StatelessWidget {
     required this.name,
     required this.phone,
     required this.onTap,
+    this.imageUrl,
   });
 
   @override
@@ -32,7 +34,7 @@ class FieldOfficerCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            ProfileAvatar.small(username: name, photoProfile: null),
+            ProfileAvatar.small(username: name, photoProfile: imageUrl),
             const SizedBox(width: 12),
 
             Expanded(

@@ -29,7 +29,19 @@ class FieldOfficerRemoteDataSourceImpl implements FieldOfficerRemoteDataSource {
           totalFieldChecks = rawData['field_check'][0]['count'] ?? 0;
         }
 
+        final photoPath = rawData['photo_profile'];
+        String? finalImageUrl;
+
+        if (photoPath != null && photoPath.toString().isNotEmpty) {
+          finalImageUrl = supabase.storage
+              .from('avatars')
+              .getPublicUrl(photoPath);
+        }
+
         rawData['report_amount'] = totalFieldChecks;
+
+        rawData['photo_profile'] = finalImageUrl;
+
         rawData.remove('field_check');
 
         return FieldOfficerModel.fromJson(rawData);

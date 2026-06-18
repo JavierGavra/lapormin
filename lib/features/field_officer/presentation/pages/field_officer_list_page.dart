@@ -132,6 +132,7 @@ class _FieldOfficerListPageState extends State<FieldOfficerListPage> {
                           initial: officer.initial,
                           name: officer.name,
                           phone: officer.phone,
+                          imageUrl: officer.imageUrl,
                           onTap: () {
                             FieldOfficerBottomSheet.show(context, officer);
                           },

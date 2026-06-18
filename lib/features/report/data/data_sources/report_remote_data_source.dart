@@ -547,7 +547,8 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
       throw ServerException("$e");
     }
   }
-  
+
+  @override
   Future<int> getAdminReportAmount() async {
     try {
       final response = await supabase.from('report').count(CountOption.exact);
@@ -592,7 +593,8 @@ class ReportRemoteDataSourceImpl implements ReportRemoteDataSource {
       throw ServerException("$e");
     }
   }
-      
+
+  @override
   Future<int> getFieldOfficerReportAmount() async {
     try {
       final userId = supabase.auth.currentUser!.id;
