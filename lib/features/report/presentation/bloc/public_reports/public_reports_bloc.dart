@@ -33,17 +33,18 @@ class PublicReportsBloc extends Bloc<PublicReportsEvent, PublicReportsState> {
   ) async {
     emit(state.copyWith(status: PublicReportsStatus.loading));
 
-    final locResult = await _getCurrentLocation(NoParams());
     final userResult = await _getUsername(NoParams());
-    final result = await _getPublicReports(state.filter);
-
-    String? locationAddress;
     String? userNameData;
+    userResult.fold((l) => null, (r) => userNameData = r);
+
+    emit(state.copyWith(username: userNameData));
+
+    final locResult = await _getCurrentLocation(NoParams());
+    String? locationAddress;
 
     locResult.fold((l) => null, (r) {
       final fullAddress = r.address;
       final parts = fullAddress.split(', ');
-
       locationAddress = parts.firstWhere(
         (part) =>
             part.toLowerCase().contains('kota') ||
@@ -51,24 +52,20 @@ class PublicReportsBloc extends Bloc<PublicReportsEvent, PublicReportsState> {
         orElse: () => parts.length > 1 ? parts[1] : parts.first,
       );
     });
-    userResult.fold((l) => null, (r) => userNameData = r);
+
+    emit(state.copyWith(location: locationAddress));
+
+    final result = await _getPublicReports(state.filter);
 
     result.fold(
       (failure) => emit(
         state.copyWith(
           status: PublicReportsStatus.failure,
           errorMessage: failure.message,
-          location: locationAddress,
-          username: userNameData,
         ),
       ),
       (reports) => emit(
-        state.copyWith(
-          status: PublicReportsStatus.success,
-          reports: reports,
-          location: locationAddress,
-          username: userNameData,
-        ),
+        state.copyWith(status: PublicReportsStatus.success, reports: reports),
       ),
     );
   }
