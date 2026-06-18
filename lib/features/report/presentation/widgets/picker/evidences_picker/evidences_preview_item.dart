@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:lapormin/core/route/navigate.dart';
+import 'package:lapormin/core/widgets/image/image_viewer_page.dart';
 import 'package:lapormin/core/widgets/loading/shimmer_widget.dart';
 import 'package:path/path.dart' as path;
 
@@ -38,16 +40,28 @@ class EvidencesPreviewItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               child: _isVideo
                   ? _buildVideoThumbnail(color)
-                  : Image.file(
-                      File(filePath),
-                      fit: BoxFit.cover,
-                      frameBuilder:
-                          (context, child, frame, wasSynchronouslyLoaded) {
-                            if (wasSynchronouslyLoaded || frame != null) {
-                              return child;
-                            }
-                            return ShimmerWidget();
-                          },
+                  : GestureDetector(
+                      onTap: () {
+                        Navigate.push(
+                          context,
+                          ImageViewerPage.file(
+                            tag: filePath,
+                            title: "Pratinjau Bukti",
+                            file: File(filePath),
+                          ),
+                        );
+                      },
+                      child: Image.file(
+                        File(filePath),
+                        fit: BoxFit.cover,
+                        frameBuilder:
+                            (context, child, frame, wasSynchronouslyLoaded) {
+                              if (wasSynchronouslyLoaded || frame != null) {
+                                return child;
+                              }
+                              return ShimmerWidget();
+                            },
+                      ),
                     ),
             ),
           ),

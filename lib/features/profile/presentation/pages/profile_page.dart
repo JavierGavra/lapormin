@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/button/app_back_button.dart';
 import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
+import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lapormin/features/profile/presentation/bloc/profile/profile_bloc.dart';
 import 'package:lapormin/features/profile/presentation/widgets/profile_header.dart';
 import 'package:lapormin/features/profile/presentation/widgets/profile_info.dart';
@@ -41,6 +42,14 @@ class ProfilePage extends StatelessWidget {
                       ),
                       BlocConsumer<ProfileBloc, ProfileState>(
                         listener: (context, state) {
+                          if (state.status == ProfileStatus.avatarSuccess) {
+                            context.read<AuthBloc>().add(AuthCheckRequested());
+                            showSnackBar(
+                              context,
+                              'Foto profil berhasil diubah!',
+                              type: SnackBarType.success,
+                            );
+                          }
                           if (state.status == ProfileStatus.failure) {
                             showSnackBar(
                               context,

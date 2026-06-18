@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:lapormin/core/route/navigate.dart';
+import 'package:lapormin/core/widgets/image/image_viewer_page.dart';
 import 'package:lapormin/core/widgets/loading/shimmer_widget.dart';
 
 class CarouselReportInfoEvidences extends StatefulWidget {
@@ -68,15 +70,32 @@ class _CarouselReportInfoEvidencesState
           padding: const EdgeInsets.symmetric(horizontal: 6),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.network(
-              widget.evidences[index],
-              fit: BoxFit.cover,
-              frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                if (wasSynchronouslyLoaded || frame != null) {
-                  return child;
-                }
-                return ShimmerWidget();
-              },
+            child: Hero(
+              tag: widget.evidences[index],
+              child: GestureDetector(
+                onTap: () {
+                  Navigate.push(
+                    context,
+                    ImageViewerPage.network(
+                      tag: widget.evidences[index],
+                      title: "Bukti Lapangan",
+                      withDownload: true,
+                      urlImage: widget.evidences[index],
+                    ),
+                  );
+                },
+                child: Image.network(
+                  widget.evidences[index],
+                  fit: BoxFit.cover,
+                  frameBuilder:
+                      (context, child, frame, wasSynchronouslyLoaded) {
+                        if (wasSynchronouslyLoaded || frame != null) {
+                          return child;
+                        }
+                        return ShimmerWidget();
+                      },
+                ),
+              ),
             ),
           ),
         ),
