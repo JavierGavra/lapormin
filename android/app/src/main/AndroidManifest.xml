@@ -6,9 +6,9 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     
     <application
-        android:label="lapormin"
+        android:label="LaporMin!"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/launcher_icon"
         android:enableOnBackInvokedCallback="true">
         <activity
             android:name=".MainActivity"

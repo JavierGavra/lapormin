@@ -13,6 +13,7 @@ class LoginHeader extends StatelessWidget {
         Container(
           height: 56,
           width: 56,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             color: color.primary,
@@ -30,6 +31,15 @@ class LoginHeader extends StatelessWidget {
                 color: color.shadow.withValues(alpha: 0.1),
               ),
             ],
+          ),
+          child: Text(
+            "L!",
+            style: TextStyle(
+              fontSize: 18,
+              fontFamily: "Plus Jakarta Sans",
+              fontWeight: FontWeight.w800,
+              color: color.onPrimary,
+            ),
           ),
         ),
         const SizedBox(height: 16),
