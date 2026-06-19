@@ -1,39 +1,16 @@
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:lapormin/core/database/local_data_persistance.dart';
-import 'package:lapormin/core/services/push_notification/push_notification_service.dart';
-import 'package:lapormin/core/utils/network/network_info.dart';
-import 'package:lapormin/features/auth/domain/use_cases/get_current_user.dart';
-import 'package:lapormin/features/field_officer/domain/use_cases/add_field_officer.dart';
-import 'package:lapormin/features/field_officer/presentation/bloc/add_field_officer/add_field_officer_bloc.dart';
-import 'package:lapormin/features/notification/data/data_sources/notification_remote_data_source.dart';
-import 'package:lapormin/features/notification/data/repositories/notification_repository_impl.dart';
-import 'package:lapormin/features/notification/domain/repositories/notification_repository.dart';
-import 'package:lapormin/features/notification/domain/use_cases/get_notification_history.dart';
-import 'package:lapormin/features/notification/presentation/bloc/notification_history/notification_history_bloc.dart';
-import 'package:lapormin/features/notification/presentation/bloc/notification_permission/notification_permission_bloc.dart';
-import 'package:lapormin/features/profile/data/data_sources/profile_remote_data_source.dart';
-import 'package:lapormin/features/profile/domain/use_cases/change_password.dart';
-import 'package:lapormin/features/profile/domain/use_cases/change_username.dart';
-import 'package:lapormin/features/profile/domain/use_cases/get_username.dart';
-import 'package:lapormin/features/profile/domain/use_cases/upload_photo_profile.dart';
-import 'package:lapormin/features/profile/presentation/bloc/change_password/change_password_bloc.dart';
-import 'package:lapormin/features/profile/presentation/bloc/edit_profile/edit_profile_bloc.dart';
-import 'package:lapormin/features/report/domain/use_cases/assign_field_officer.dart';
-import 'package:lapormin/features/report/domain/use_cases/completing_report.dart';
-import 'package:lapormin/features/report/domain/use_cases/get_user_report_amount.dart';
-import 'package:lapormin/features/report/domain/use_cases/provide_action.dart';
-import 'package:lapormin/features/report/domain/use_cases/reject_report.dart';
-import 'package:lapormin/features/report/domain/use_cases/submit_field_check.dart';
-import 'package:lapormin/features/report/domain/use_cases/submit_final_report.dart';
-import 'package:lapormin/features/report/domain/use_cases/verify_report.dart';
-import 'package:lapormin/features/report/presentation/bloc/report_result_form/report_result_form_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'core/database/local_data_persistance.dart';
+import 'core/services/push_notification/push_notification_service.dart';
+import 'core/utils/network/network_info.dart';
 import 'features/auth/data/data_sources/auth_local_data_source.dart';
 import 'features/auth/data/data_sources/auth_remote_data_source.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/domain/use_cases/get_current_user.dart';
 import 'features/auth/domain/use_cases/login.dart';
 import 'features/auth/domain/use_cases/logout.dart';
 import 'features/auth/domain/use_cases/send_otp.dart';
@@ -41,6 +18,14 @@ import 'features/auth/domain/use_cases/verify_otp.dart';
 import 'features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'features/auth/presentation/bloc/login/login_bloc.dart';
 import 'features/auth/presentation/bloc/register/register_bloc.dart';
+import 'features/field_officer/data/data_sources/field_officer_remote_data_source.dart';
+import 'features/field_officer/data/repositories/field_officer_repository_impl.dart';
+import 'features/field_officer/domain/repositories/field_officer_repository.dart';
+import 'features/field_officer/domain/use_cases/add_field_officer.dart';
+import 'features/field_officer/domain/use_cases/get_field_officers.dart';
+import 'features/field_officer/presentation/bloc/add_field_officer/add_field_officer_bloc.dart';
+import 'features/field_officer/presentation/bloc/field_officer/field_officer_bloc.dart';
+import 'features/home/presentation/bloc/home_admin/home_admin_bloc.dart';
 import 'features/location/data/data_sources/location_local_data_source.dart';
 import 'features/location/data/data_sources/location_remote_data_source.dart';
 import 'features/location/data/repositories/location_repository_impl.dart';
@@ -48,23 +33,53 @@ import 'features/location/domain/repositories/location_repository.dart';
 import 'features/location/domain/use_cases/get_address_from_coordinate.dart';
 import 'features/location/domain/use_cases/get_current_location.dart';
 import 'features/location/presentation/bloc/location_picker/location_picker_bloc.dart';
+import 'features/map/data/data_sources/map_remote_data_source.dart';
+import 'features/map/data/repositories/map_repository_impl.dart';
+import 'features/map/domain/repositories/map_repository.dart';
+import 'features/map/domain/use_cases/get_nearby_active_reports.dart';
+import 'features/map/presentation/bloc/map_bloc.dart';
+import 'features/notification/data/data_sources/notification_remote_data_source.dart';
+import 'features/notification/data/repositories/notification_repository_impl.dart';
+import 'features/notification/domain/repositories/notification_repository.dart';
+import 'features/notification/domain/use_cases/get_notification_history.dart';
+import 'features/notification/presentation/bloc/notification_history/notification_history_bloc.dart';
+import 'features/notification/presentation/bloc/notification_permission/notification_permission_bloc.dart';
 import 'features/profile/data/data_sources/profile_local_data_source.dart';
+import 'features/profile/data/data_sources/profile_remote_data_source.dart';
 import 'features/profile/data/repositories/profile_repository_impl.dart';
 import 'features/profile/domain/repositories/profile_repository.dart';
+import 'features/profile/domain/use_cases/change_password.dart';
+import 'features/profile/domain/use_cases/change_username.dart';
 import 'features/profile/domain/use_cases/get_profile.dart';
+import 'features/profile/domain/use_cases/get_username.dart';
+import 'features/profile/domain/use_cases/upload_photo_profile.dart';
+import 'features/profile/presentation/bloc/change_password/change_password_bloc.dart';
+import 'features/profile/presentation/bloc/edit_profile/edit_profile_bloc.dart';
 import 'features/profile/presentation/bloc/profile/profile_bloc.dart';
-import 'features/report/data/data_sources/report_remote_data_source.dart';
+import 'features/report/data/data_sources/remote/report_command_remote_data_source.dart';
+import 'features/report/data/data_sources/remote/report_evidence_remote_data_source.dart';
+import 'features/report/data/data_sources/remote/report_query_remote_data_source.dart';
+import 'features/report/data/data_sources/remote/report_remote_data_source_facade.dart';
+import 'features/report/data/data_sources/remote/report_statistic_remote_data_source.dart';
 import 'features/report/data/repositories/report_repository_impl.dart';
 import 'features/report/domain/repositories/report_repository.dart';
-import 'features/report/domain/use_cases/get_admin_reports.dart';
+import 'features/report/domain/use_cases/assign_field_officer.dart';
+import 'features/report/domain/use_cases/completing_report.dart';
 import 'features/report/domain/use_cases/get_admin_report_statistics.dart';
-import 'features/report/domain/use_cases/get_field_officer_reports.dart';
+import 'features/report/domain/use_cases/get_admin_reports.dart';
 import 'features/report/domain/use_cases/get_field_officer_report_statistics.dart';
+import 'features/report/domain/use_cases/get_field_officer_reports.dart';
 import 'features/report/domain/use_cases/get_public_reports.dart';
 import 'features/report/domain/use_cases/get_report.dart';
 import 'features/report/domain/use_cases/get_report_aggregate.dart';
+import 'features/report/domain/use_cases/get_user_report_amount.dart';
 import 'features/report/domain/use_cases/get_user_reports.dart';
+import 'features/report/domain/use_cases/provide_action.dart';
+import 'features/report/domain/use_cases/reject_report.dart';
+import 'features/report/domain/use_cases/submit_field_check.dart';
+import 'features/report/domain/use_cases/submit_final_report.dart';
 import 'features/report/domain/use_cases/submit_report.dart';
+import 'features/report/domain/use_cases/verify_report.dart';
 import 'features/report/presentation/bloc/admin_reports/admin_reports_bloc.dart';
 import 'features/report/presentation/bloc/create_report/create_report_bloc.dart';
 import 'features/report/presentation/bloc/field_officer_reports/field_officer_reports_bloc.dart';
@@ -72,17 +87,7 @@ import 'features/report/presentation/bloc/internal_report_detail/internal_report
 import 'features/report/presentation/bloc/my_reports/my_reports_bloc.dart';
 import 'features/report/presentation/bloc/public_report_detail/public_report_detail_bloc.dart';
 import 'features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
-import 'features/map/data/data_sources/map_remote_data_source.dart';
-import 'features/map/data/repositories/map_repository_impl.dart';
-import 'features/map/domain/repositories/map_repository.dart';
-import 'features/map/domain/use_cases/get_nearby_active_reports.dart';
-import 'features/map/presentation/bloc/map_bloc.dart';
-import 'features/home/presentation/bloc/home_admin/home_admin_bloc.dart';
-import 'features/field_officer/data/data_sources/field_officer_remote_data_source.dart';
-import 'features/field_officer/data/repositories/field_officer_repository_impl.dart';
-import 'features/field_officer/domain/repositories/field_officer_repository.dart';
-import 'features/field_officer/domain/use_cases/get_field_officers.dart';
-import 'features/field_officer/presentation/bloc/field_officer/field_officer_bloc.dart';
+import 'features/report/presentation/bloc/report_result_form/report_result_form_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -127,7 +132,7 @@ void _initAuthFeature() {
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(localDataSource: sl(), remoteDataSource: sl()),
+    () => AuthRepositoryImpl(local: sl(), remote: sl(), networkInfo: sl()),
   );
 
   // Data Sources
@@ -227,15 +232,34 @@ void _initReportFeature() {
   // Repository
   sl.registerLazySingleton<ReportRepository>(
     () => ReportRepositoryImpl(
-      localDataPersistance: sl(),
-      remoteDataSource: sl(),
+      remote: sl(),
+      localPersistance: sl(),
       networkInfo: sl(),
     ),
   );
 
+  // Facade
+  sl.registerLazySingleton<ReportRemoteDataSourceFacade>(
+    () => ReportRemoteDataSourceFacade(
+      query: sl(),
+      command: sl(),
+      evidence: sl(),
+      statistic: sl(),
+    ),
+  );
+
   // Data Sources
-  sl.registerLazySingleton<ReportRemoteDataSource>(
-    () => ReportRemoteDataSourceImpl(supabase: sl()),
+  sl.registerLazySingleton<ReportQueryRemoteDataSource>(
+    () => ReportQueryRemoteDataSourceImpl(supabase: sl()),
+  );
+  sl.registerLazySingleton<ReportCommandRemoteDataSource>(
+    () => ReportCommandRemoteDataSourceImpl(supabase: sl()),
+  );
+  sl.registerLazySingleton<ReportEvidenceRemoteDataSource>(
+    () => ReportEvidenceRemoteDataSourceImpl(supabase: sl()),
+  );
+  sl.registerLazySingleton<ReportStatisticRemoteDataSource>(
+    () => ReportStatisticRemoteDataSourceImpl(supabase: sl()),
   );
 }
 
@@ -260,7 +284,7 @@ void _initProfileFeature() {
 
   // Repository
   sl.registerLazySingleton<ProfileRepository>(
-    () => ProfileRepositoryImpl(localDataSource: sl(), remoteDataSource: sl()),
+    () => ProfileRepositoryImpl(local: sl(), remote: sl(), networkInfo: sl()),
   );
 
   // Data Sources
@@ -311,7 +335,7 @@ void _initFieldOfficerFeature() {
 
   // Repository
   sl.registerLazySingleton<FieldOfficerRepository>(
-    () => FieldOfficerRepositoryImpl(remoteDataSource: sl()),
+    () => FieldOfficerRepositoryImpl(remote: sl(), networkInfo: sl()),
   );
 
   // Data Sources
@@ -334,7 +358,7 @@ void _initNotificationFeature() {
 
   // Repository
   sl.registerLazySingleton<NotificationRepository>(
-    () => NotificationRepositoryImpl(remoteDataSource: sl()),
+    () => NotificationRepositoryImpl(remote: sl(), networkInfo: sl()),
   );
 
   // Data Sources

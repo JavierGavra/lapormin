@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
+import 'package:lapormin/core/utils/network/network_info.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
@@ -9,12 +10,14 @@ import '../data_sources/auth_local_data_source.dart';
 import '../data_sources/auth_remote_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthLocalDataSource localDataSource;
-  final AuthRemoteDataSource remoteDataSource;
+  final AuthLocalDataSource local;
+  final AuthRemoteDataSource remote;
+  final NetworkInfo networkInfo;
 
   AuthRepositoryImpl({
-    required this.localDataSource,
-    required this.remoteDataSource,
+    required this.local,
+    required this.remote,
+    required this.networkInfo,
   });
 
   @override
@@ -28,17 +31,19 @@ class AuthRepositoryImpl implements AuthRepository {
     String password,
   ) async {
     try {
-      final deviceToken = await localDataSource.getDeviceToken();
-      final response = await remoteDataSource.postLogin(phoneNumber, password);
-      final photoProfile = await remoteDataSource.fetchPhotoProfile();
+      if (!await networkInfo.isConnected) return const Left(NetworkFailure());
 
-      await remoteDataSource.postDeviceToken(response.id, deviceToken);
+      final deviceToken = await local.getDeviceToken();
+      final response = await remote.postLogin(phoneNumber, password);
+      final photoProfile = await remote.fetchPhotoProfile();
+
+      await remote.postDeviceToken(response.id, deviceToken);
 
       if (photoProfile != null) {
-        await localDataSource.savePhotoProfile(photoProfile);
+        await local.savePhotoProfile(photoProfile);
       }
 
-      await localDataSource.saveUserData(response);
+      await local.saveUserData(response);
       return Right(response);
     } catch (e) {
       if (kDebugMode) print(e);
@@ -57,11 +62,13 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, bool>> logout() async {
     try {
-      final userId = localDataSource.getUserId();
-      await remoteDataSource.removeDeviceToken(userId);
-      bool result = await remoteDataSource.postLogout();
+      if (!await networkInfo.isConnected) return const Left(NetworkFailure());
 
-      if (result) result = await localDataSource.clearUserData();
+      final userId = local.getUserId();
+      await remote.removeDeviceToken(userId);
+      bool result = await remote.postLogout();
+
+      if (result) result = await local.clearUserData();
 
       return Right(result);
     } catch (e) {
@@ -85,7 +92,9 @@ class AuthRepositoryImpl implements AuthRepository {
     String password,
   ) async {
     try {
-      await remoteDataSource.sendOtp(username, phoneNumber, password);
+      if (!await networkInfo.isConnected) return const Left(NetworkFailure());
+
+      await remote.sendOtp(username, phoneNumber, password);
       return Right(null);
     } catch (e) {
       if (kDebugMode) print(e);
@@ -105,7 +114,8 @@ class AuthRepositoryImpl implements AuthRepository {
     String otp,
   ) async {
     try {
-      final result = await remoteDataSource.verifyOtp(phoneNumber, otp);
+      if (!await networkInfo.isConnected) return const Left(NetworkFailure());
+      final result = await remote.verifyOtp(phoneNumber, otp);
       return Right(result);
     } catch (e) {
       if (kDebugMode) print("$e");
@@ -122,7 +132,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, User>> getCurrentUser() async {
     try {
-      final profile = await localDataSource.getUserData();
+      final profile = await local.getUserData();
       return Right(
         User(
           id: profile.id,

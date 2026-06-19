@@ -24,7 +24,7 @@ class FieldOfficerBloc extends Bloc<FieldOfficerEvent, FieldOfficerState> {
       (failure) => emit(
         state.copyWith(
           status: FieldOfficerStatus.failure,
-          errorMessage: failure.toString(),
+          errorMessage: failure.message,
         ),
       ),
       (officers) => emit(

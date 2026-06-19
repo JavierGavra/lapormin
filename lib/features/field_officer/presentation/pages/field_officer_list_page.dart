@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
+import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:lapormin/features/field_officer/presentation/widgets/bottom_sheet/field_officer_bottom_sheet.dart';
 import 'package:lapormin/features/field_officer/presentation/widgets/custom_add_fab.dart';
 import 'package:lapormin/features/field_officer/presentation/widgets/field_officer_card.dart';
@@ -63,8 +64,7 @@ class _FieldOfficerListPageState extends State<FieldOfficerListPage> {
 
       body: SafeArea(
         child: RefreshIndicator(
-          color: color.primary,
-          backgroundColor: color.surfaceContainerHighest,
+          edgeOffset: kToolbarHeight,
           onRefresh: _onRefresh,
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -76,10 +76,18 @@ class _FieldOfficerListPageState extends State<FieldOfficerListPage> {
                 },
               ),
 
-              BlocBuilder<FieldOfficerBloc, FieldOfficerState>(
+              BlocConsumer<FieldOfficerBloc, FieldOfficerState>(
+                listener: (context, state) {
+                  if (state.isFailure) {
+                    showSnackBar(
+                      context,
+                      state.errorMessage ?? "Terjadi kesalahan",
+                      type: SnackBarType.failure,
+                    );
+                  }
+                },
                 builder: (context, state) {
-                  if (state.status == FieldOfficerStatus.loading ||
-                      state.status == FieldOfficerStatus.initial) {
+                  if (!state.isSuccess) {
                     return SliverPadding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
@@ -91,17 +99,6 @@ class _FieldOfficerListPageState extends State<FieldOfficerListPage> {
                             const SizedBox(height: 12),
                         itemBuilder: (context, index) =>
                             const FieldOfficerCardShimmer(),
-                      ),
-                    );
-                  }
-
-                  if (state.status == FieldOfficerStatus.failure) {
-                    return SliverFillRemaining(
-                      child: Center(
-                        child: Text(
-                          state.errorMessage ?? "Gagal memuat data petugas.",
-                          style: TextStyle(color: color.error),
-                        ),
                       ),
                     );
                   }

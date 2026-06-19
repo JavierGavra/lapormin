@@ -3,6 +3,7 @@ import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/card/information_card.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
+import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:lapormin/core/widgets/success/success_page.dart';
 import 'package:lapormin/features/field_officer/presentation/bloc/add_field_officer/add_field_officer_bloc.dart';
 import 'package:lapormin/features/field_officer/presentation/bloc/add_field_officer/add_field_officer_event.dart';
@@ -276,12 +277,7 @@ class _AddFieldOfficerPageState extends State<AddFieldOfficerPage> {
                 ),
               );
             } else if (state is AddFieldOfficerFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              showSnackBar(context, state.message, type: SnackBarType.failure);
             }
           },
           builder: (context, state) {

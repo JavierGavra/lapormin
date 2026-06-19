@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -41,6 +43,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return UserModel.fromMap(userData);
     } on AuthException catch (e) {
       throw InvalidCredentialsException(e.message);
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       debugPrint("$e");
       if (e is NetworkException) rethrow;
@@ -55,6 +59,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return true;
     } on AuthException catch (e) {
       throw InvalidCredentialsException(e.message);
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       if (e is NetworkException) rethrow;
       throw const ServerException();
@@ -79,6 +85,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
     } on AuthException catch (e) {
       throw InvalidCredentialsException(e.message);
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       if (e is NetworkException) rethrow;
       throw const ServerException();
@@ -96,6 +104,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return true;
     } on AuthException catch (e) {
       throw e.message;
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       if (e is NetworkException) rethrow;
       throw const ServerException();
@@ -116,6 +126,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
           .eq('user_id', userId);
 
       return true;
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       debugPrint("$e");
       rethrow;
@@ -127,6 +139,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     try {
       await supabase.from('device_tokens').delete().eq('user_id', userId);
       return true;
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       debugPrint("$e");
       rethrow;
@@ -147,6 +161,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (photoProfile == null) return null;
 
       return supabase.storage.from('avatars').getPublicUrl(photoProfile);
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       debugPrint("$e");
       throw const ServerException('Gagal mengambil foto profil.');

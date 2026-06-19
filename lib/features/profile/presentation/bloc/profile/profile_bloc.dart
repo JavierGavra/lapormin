@@ -53,7 +53,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
         final reportAmount = await _getUserReportAmount(NoParams());
         reportAmount.fold(
-          (failure) => _emitFailure(emit, failure.message!),
+          (failure) => {}, // Do nothing
           (amount) => emit(
             state.copyWith(
               status: ProfileStatus.success,
@@ -74,7 +74,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final result = await _logout(NoParams());
 
     result.fold(
-      (failure) => emit(state.copyWith(status: ProfileStatus.failure)),
+      (failure) => emit(
+        state.copyWith(
+          status: ProfileStatus.failure,
+          errorMessage: failure.message!,
+        ),
+      ),
       (success) => emit(state.copyWith(status: ProfileStatus.success)),
     );
   }

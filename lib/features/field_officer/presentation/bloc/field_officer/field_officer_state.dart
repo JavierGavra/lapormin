@@ -14,6 +14,11 @@ class FieldOfficerState extends Equatable {
     this.errorMessage,
   });
 
+  bool get isInitial => status == FieldOfficerStatus.initial;
+  bool get isLoading => status == FieldOfficerStatus.loading;
+  bool get isSuccess => status == FieldOfficerStatus.success;
+  bool get isFailure => status == FieldOfficerStatus.failure;
+
   FieldOfficerState copyWith({
     FieldOfficerStatus? status,
     List<FieldOfficer>? officers,

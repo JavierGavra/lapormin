@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:lapormin/core/error/exceptions.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/field_officer_model.dart';
 
@@ -46,6 +49,8 @@ class FieldOfficerRemoteDataSourceImpl implements FieldOfficerRemoteDataSource {
 
         return FieldOfficerModel.fromJson(rawData);
       }).toList();
+    } on SocketException {
+      throw NetworkException();
     } catch (e) {
       throw Exception('Gagal menarik data petugas lapangan: $e');
     }
@@ -66,6 +71,8 @@ class FieldOfficerRemoteDataSourceImpl implements FieldOfficerRemoteDataSource {
       if (response.status != 200) {
         throw Exception('Gagal mendaftarkan petugas dari server.');
       }
+    } on SocketException {
+      throw NetworkException();
     } catch (e) {
       throw Exception('Terjadi kesalahan: $e');
     }

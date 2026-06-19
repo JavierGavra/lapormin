@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 
 import '../../../../core/utils/text_style/app_text_style.dart';
 import '../../../../core/widgets/button/app_back_button.dart';
@@ -56,7 +57,15 @@ class _NotificationHistoryPageState extends State<NotificationHistoryPage> {
           await Future.delayed(const Duration(seconds: 1));
         },
         child: BlocConsumer<NotificationHistoryBloc, NotificationHistoryState>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if (state.isFailure) {
+              showSnackBar(
+                context,
+                state.errorMessage ?? "Terjadi kesalahan",
+                type: SnackBarType.failure,
+              );
+            }
+          },
           builder: (context, state) {
             if (!state.isSuccess) {
               return const Center(child: CircularProgressIndicator());

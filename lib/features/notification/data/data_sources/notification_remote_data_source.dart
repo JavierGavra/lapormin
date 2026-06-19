@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -29,6 +31,8 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
           );
 
       return response.map((e) => NotificationHistoryModel.fromMap(e)).toList();
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       debugPrint('$e');
       rethrow;

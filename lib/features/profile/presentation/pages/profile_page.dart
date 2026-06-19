@@ -30,7 +30,7 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
+    // final color = Theme.of(context).colorScheme;
     return BlocProvider(
       create: (context) => sl<ProfileBloc>()..add(ProfileOpenned()),
       child: Scaffold(
@@ -117,7 +117,7 @@ class ProfilePage extends StatelessWidget {
                               ),
                               _buildLogoutButton(context),
                               const Spacer(),
-                              _buildVersionInfo(color),
+                              // _buildVersionInfo(color),
                             ],
                           );
                         },
@@ -194,13 +194,13 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildVersionInfo(ColorScheme color) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
-      child: Text(
-        'v1.0 - Build 2025.05.07',
-        style: AppTextStyle.s12(color: color.onSurfaceVariant),
-      ),
-    );
-  }
+  // Widget _buildVersionInfo(ColorScheme color) {
+  //   return Padding(
+  //     padding: const EdgeInsets.only(bottom: 24),
+  //     child: Text(
+  //       'v1.0 - Build 2025.05.07',
+  //       style: AppTextStyle.s12(color: color.onSurfaceVariant),
+  //     ),
+  //   );
+  // }
 }
