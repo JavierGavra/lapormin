@@ -44,6 +44,8 @@ dependencies:
   dio: ^5.9.2
   image_gallery_saver_plus: ^5.0.0
   image_cropper: ^12.2.1
+  flutter_image_compress: 2.4.0
+  path_provider: ^2.1.6
 
 dev_dependencies:
   flutter_test:

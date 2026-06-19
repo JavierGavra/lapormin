@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lapormin/core/utils/image/image_compressor_utils.dart'
+    show ImageCompressorUtils;
 
 import '../../../../core/route/navigate.dart';
 import '../../../../core/utils/text_style/app_text_style.dart';
@@ -25,7 +27,6 @@ class _ProfileHeaderState extends State<ProfileHeader> {
   Future<void> _pickImage(BuildContext context) async {
     final picker = ImagePicker();
 
-    // Pilih Gambar dari Galeri
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null && context.mounted) {
@@ -49,14 +50,18 @@ class _ProfileHeaderState extends State<ProfileHeader> {
         ],
       );
 
-      // Jika pengguna menekan butang 'Selesai' pada skrin crop
       if (croppedFile != null) {
-        final file = File(croppedFile.path);
-        final extension = croppedFile.path.split('.').last;
+        final originalFile = File(croppedFile.path);
+        final compressedFile = await ImageCompressorUtils.compressImage(
+          originalFile,
+        );
 
-        if (context.mounted) {
+        if (compressedFile != null && context.mounted) {
           context.read<ProfileBloc>().add(
-            ProfilePhotoUpdateRequested(imageFile: file, extension: extension),
+            ProfilePhotoUpdateRequested(
+              imageFile: compressedFile,
+              extension: 'webp',
+            ),
           );
           Navigate.pop(context);
         }
