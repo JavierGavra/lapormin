@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:lapormin/core/widgets/button/app_back_button.dart';
+import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:lapormin/core/widgets/success/success_page.dart';
 import 'package:lapormin/features/profile/presentation/bloc/change_password/change_password_bloc.dart';
 import 'package:lapormin/injection.dart';
@@ -205,13 +206,10 @@ class _ChangePasswordViewState extends State<_ChangePasswordView> {
                 ),
               );
             } else if (state.status == ChangePasswordStatus.failure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    state.errorMessage ?? 'Gagal mengganti password',
-                  ),
-                  backgroundColor: color.error,
-                ),
+              showSnackBar(
+                context,
+                state.errorMessage ?? "Terjadi kesalahan",
+                type: SnackBarType.failure,
               );
             }
           },

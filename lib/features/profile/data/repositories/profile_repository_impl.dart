@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
+import 'package:lapormin/core/utils/network/network_info.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
@@ -10,18 +11,20 @@ import '../data_sources/profile_local_data_source.dart';
 import '../data_sources/profile_remote_data_source.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
-  final ProfileLocalDataSource localDataSource;
-  final ProfileRemoteDataSource remoteDataSource;
+  final ProfileLocalDataSource local;
+  final ProfileRemoteDataSource remote;
+  final NetworkInfo networkInfo;
 
   const ProfileRepositoryImpl({
-    required this.localDataSource,
-    required this.remoteDataSource,
+    required this.local,
+    required this.remote,
+    required this.networkInfo,
   });
 
   @override
   Future<Either<Failure, Profile>> getProfile() async {
     try {
-      Profile profile = await localDataSource.getProfile();
+      Profile profile = await local.getProfile();
       return Right(profile);
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
@@ -33,7 +36,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, String>> getUsername() async {
     try {
-      return Right(localDataSource.getUsername());
+      return Right(local.getUsername());
     } on CacheException catch (e) {
       return Left(CacheFailure(e.message));
     } catch (e) {
@@ -47,14 +50,15 @@ class ProfileRepositoryImpl implements ProfileRepository {
     required String extension,
   }) async {
     try {
-      final result = await remoteDataSource.upsertPhotoProfile(
-        imageFile,
-        extension,
-      );
+      if (!await networkInfo.isConnected) return const Left(NetworkFailure());
 
-      await localDataSource.setPhotoProfile(result);
+      final result = await remote.upsertPhotoProfile(imageFile, extension);
+
+      await local.setPhotoProfile(result);
 
       return Right(true);
+    } on NetworkException {
+      return Left(NetworkFailure());
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
     } catch (e) {
@@ -68,8 +72,12 @@ class ProfileRepositoryImpl implements ProfileRepository {
     String newPassword,
   ) async {
     try {
-      await remoteDataSource.changePassword(oldPassword, newPassword);
+      if (!await networkInfo.isConnected) return const Left(NetworkFailure());
+
+      await remote.changePassword(oldPassword, newPassword);
       return const Right(null);
+    } on NetworkException {
+      return Left(NetworkFailure());
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
     } catch (e) {
@@ -80,9 +88,13 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, String>> changeUsername(String newUsername) async {
     try {
-      final result = await remoteDataSource.updateUsername(newUsername);
-      await localDataSource.setUsername(result);
+      if (!await networkInfo.isConnected) return const Left(NetworkFailure());
+
+      final result = await remote.updateUsername(newUsername);
+      await local.setUsername(result);
       return Right(result);
+    } on NetworkException {
+      return Left(NetworkFailure());
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
     } catch (e) {

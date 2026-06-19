@@ -51,6 +51,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
           .eq("id", userId);
 
       return supabase.storage.from('avatars').getPublicUrl(filePath);
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       throw Exception('Gagal mengunggah foto profil: $e');
     }
@@ -60,8 +62,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   Future<void> changePassword(String oldPassword, String newPassword) async {
     try {
       await supabase.auth.updateUser(UserAttributes(password: newPassword));
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
-      throw ServerException('Gagal mengubah password: ${e.toString()}');
+      rethrow;
     }
   }
 
@@ -75,6 +79,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
           .eq("id", userId);
 
       return newUsername;
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       debugPrint('$e');
       rethrow;
@@ -85,6 +91,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   Future<String> getPhotoProfile(String path) async {
     try {
       return supabase.storage.from('avatars').getPublicUrl(path);
+    } on SocketException {
+      throw const NetworkException();
     } catch (e) {
       debugPrint('$e');
       rethrow;

@@ -132,7 +132,7 @@ void _initAuthFeature() {
 
   // Repository
   sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(localDataSource: sl(), remoteDataSource: sl()),
+    () => AuthRepositoryImpl(local: sl(), remote: sl(), networkInfo: sl()),
   );
 
   // Data Sources
@@ -284,7 +284,7 @@ void _initProfileFeature() {
 
   // Repository
   sl.registerLazySingleton<ProfileRepository>(
-    () => ProfileRepositoryImpl(localDataSource: sl(), remoteDataSource: sl()),
+    () => ProfileRepositoryImpl(local: sl(), remote: sl(), networkInfo: sl()),
   );
 
   // Data Sources
@@ -358,7 +358,7 @@ void _initNotificationFeature() {
 
   // Repository
   sl.registerLazySingleton<NotificationRepository>(
-    () => NotificationRepositoryImpl(remoteDataSource: sl()),
+    () => NotificationRepositoryImpl(remote: sl(), networkInfo: sl()),
   );
 
   // Data Sources
