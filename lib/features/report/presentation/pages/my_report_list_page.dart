@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/constants/user_role_enum.dart';
 import 'package:lapormin/core/widgets/loading/compact_report_card_shimmer.dart';
+import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
@@ -47,10 +48,18 @@ class _MyReportListPageState extends State<MyReportListPage> {
               color: color.primary,
               backgroundColor: color.surfaceContainerHighest,
               onRefresh: _onRefresh,
-              child: BlocBuilder<MyReportsBloc, MyReportsState>(
+              child: BlocConsumer<MyReportsBloc, MyReportsState>(
+                listener: (context, state) {
+                  if (state.status == MyReportsStatus.failure) {
+                    showSnackBar(
+                      context,
+                      state.errorMessage ?? "Terjadi kesalahan",
+                      type: SnackBarType.failure,
+                    );
+                  }
+                },
                 builder: (context, state) {
-                  if (state.status == MyReportsStatus.loading ||
-                      state.status == MyReportsStatus.initial) {
+                  if (state.status != MyReportsStatus.success) {
                     return ListView.separated(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.symmetric(
@@ -62,22 +71,6 @@ class _MyReportListPageState extends State<MyReportListPage> {
                           const SizedBox(height: 12),
                       itemBuilder: (context, index) =>
                           const CompactReportCardShimmer(),
-                    );
-                  }
-
-                  if (state.status == MyReportsStatus.failure) {
-                    return CustomScrollView(
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      slivers: [
-                        SliverFillRemaining(
-                          child: Center(
-                            child: Text(
-                              state.errorMessage ?? "Gagal memuat laporanku",
-                              style: TextStyle(color: color.error),
-                            ),
-                          ),
-                        ),
-                      ],
                     );
                   }
 

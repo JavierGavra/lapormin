@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:page_transition/page_transition.dart';
 
 import '../../../../core/utils/text_style/app_text_style.dart';
@@ -24,6 +25,12 @@ Widget logoutDialog(BuildContext context) {
             type: PageTransitionType.fade,
             curve: Curves.easeInOut,
             child: const LoginPage(),
+          );
+        } else if (state.status == ProfileStatus.failure) {
+          showSnackBar(
+            context,
+            state.errorMessage ?? "Terjadi kesalahan",
+            type: SnackBarType.failure,
           );
         }
       },

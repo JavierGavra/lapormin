@@ -15,6 +15,7 @@ final class NotificationHistoryState extends Equatable {
 
   bool get isLoading => status == NotificationHistoryStatus.loading;
   bool get isSuccess => status == NotificationHistoryStatus.success;
+  bool get isFailure => status == NotificationHistoryStatus.failure;
 
   NotificationHistoryState copyWith({
     NotificationHistoryStatus? status,

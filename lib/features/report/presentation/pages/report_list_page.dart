@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/route/navigate.dart';
 import 'package:lapormin/core/utils/debouncer/debouncer.dart';
+import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_list/report_filter_bottom_sheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -82,114 +83,115 @@ class _ReportListPageState extends State<ReportListPage> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: SafeArea(
-        child: RefreshIndicator(
-          color: color.primary,
-          backgroundColor: color.surfaceContainerHighest,
-          onRefresh: _onRefresh,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-              AppSliverAppBar(
-                onNotificationTap: () {
-                  debugPrint("Buka Notifikasi Laporan");
-                },
-              ),
+        child: BlocListener<PublicReportsBloc, PublicReportsState>(
+          listener: (context, state) {
+            if (state.status == PublicReportsStatus.failure) {
+              showSnackBar(
+                context,
+                state.errorMessage ?? "Terjadi kesalahan",
+                type: SnackBarType.failure,
+              );
+            }
+          },
+          child: RefreshIndicator(
+            color: color.primary,
+            backgroundColor: color.surfaceContainerHighest,
+            onRefresh: _onRefresh,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                AppSliverAppBar(
+                  onNotificationTap: () {
+                    debugPrint("Buka Notifikasi Laporan");
+                  },
+                ),
 
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child:
-                            BlocBuilder<PublicReportsBloc, PublicReportsState>(
-                              builder: (context, state) {
-                                return ReportSearchBar(
-                                  onChanged: (text) {
-                                    _debouncer.run(() {
-                                      final updatedFilter = ReportFilterParams(
-                                        keyword: text,
-                                        categories: state.filter.categories,
-                                        statuses: state.filter.statuses,
-                                      );
-                                      context.read<PublicReportsBloc>().add(
-                                        UpdatePublicFilter(updatedFilter),
-                                      );
-                                    });
-                                  },
-                                  onFilterTap: () =>
-                                      _showFilterModal(context, state),
-                                  onSearchTap: () {},
-                                );
-                              },
-                            ),
-                      ),
-                      const SizedBox(width: 12),
-                      ReportLayoutSwitch(
-                        isStyle1: _isStyle1,
-                        onSwitch: (value) {
-                          setState(() {
-                            _isStyle1 = value;
-                          });
-                        },
-                      ),
-                    ],
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child:
+                              BlocBuilder<
+                                PublicReportsBloc,
+                                PublicReportsState
+                              >(
+                                builder: (context, state) {
+                                  return ReportSearchBar(
+                                    onChanged: (text) {
+                                      _debouncer.run(() {
+                                        final updatedFilter =
+                                            ReportFilterParams(
+                                              keyword: text,
+                                              categories:
+                                                  state.filter.categories,
+                                              statuses: state.filter.statuses,
+                                            );
+                                        context.read<PublicReportsBloc>().add(
+                                          UpdatePublicFilter(updatedFilter),
+                                        );
+                                      });
+                                    },
+                                    onFilterTap: () =>
+                                        _showFilterModal(context, state),
+                                    onSearchTap: () {},
+                                  );
+                                },
+                              ),
+                        ),
+                        const SizedBox(width: 12),
+                        ReportLayoutSwitch(
+                          isStyle1: _isStyle1,
+                          onSwitch: (value) {
+                            setState(() {
+                              _isStyle1 = value;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
 
-              BlocBuilder<PublicReportsBloc, PublicReportsState>(
-                builder: (context, state) {
-                  if (state.status == PublicReportsStatus.loading ||
-                      state.status == PublicReportsStatus.initial) {
-                    return SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      sliver: SliverList.builder(
-                        itemCount: 4,
-                        itemBuilder: (context, index) => const Padding(
-                          padding: EdgeInsets.only(bottom: 16.0),
-                          child: ReportCardShimmer(),
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (state.status == PublicReportsStatus.failure) {
-                    return SliverToBoxAdapter(
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24.0),
-                          child: Text(
-                            state.errorMessage ?? "Gagal memuat laporan",
-                            style: TextStyle(color: color.error),
+                BlocBuilder<PublicReportsBloc, PublicReportsState>(
+                  builder: (context, state) {
+                    if (state.status != PublicReportsStatus.success) {
+                      return SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        sliver: SliverList.builder(
+                          itemCount: 4,
+                          itemBuilder: (context, index) => const Padding(
+                            padding: EdgeInsets.only(bottom: 16.0),
+                            child: ReportCardShimmer(),
                           ),
                         ),
-                      ),
-                    );
-                  }
+                      );
+                    }
 
-                  if (state.reports.isEmpty) {
-                    return const SliverToBoxAdapter(
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(24.0),
-                          child: Text("Belum ada laporan sama sekali."),
+                    if (state.reports.isEmpty) {
+                      return const SliverToBoxAdapter(
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(24.0),
+                            child: Text("Belum ada laporan sama sekali."),
+                          ),
                         ),
-                      ),
+                      );
+                    }
+
+                    return SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      sliver: _isStyle1
+                          ? _buildStyle1SliverList(color, state.reports)
+                          : _buildStyle2SliverList(color, state.reports),
                     );
-                  }
+                  },
+                ),
 
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    sliver: _isStyle1
-                        ? _buildStyle1SliverList(color, state.reports)
-                        : _buildStyle2SliverList(color, state.reports),
-                  );
-                },
-              ),
-
-              const SliverToBoxAdapter(child: SizedBox(height: 80)),
-            ],
+                const SliverToBoxAdapter(child: SizedBox(height: 80)),
+              ],
+            ),
           ),
         ),
       ),
