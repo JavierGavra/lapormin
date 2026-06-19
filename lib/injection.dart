@@ -335,7 +335,7 @@ void _initFieldOfficerFeature() {
 
   // Repository
   sl.registerLazySingleton<FieldOfficerRepository>(
-    () => FieldOfficerRepositoryImpl(remoteDataSource: sl()),
+    () => FieldOfficerRepositoryImpl(remote: sl(), networkInfo: sl()),
   );
 
   // Data Sources

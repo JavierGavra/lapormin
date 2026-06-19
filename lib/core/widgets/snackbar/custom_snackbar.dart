@@ -151,8 +151,8 @@ class _SnackbarWidgetState extends State<_SnackbarWidget>
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
-                  vertical: 16,
-                ),
+                  vertical: 4,
+                ).copyWith(right: 8),
                 decoration: BoxDecoration(
                   color: backgroundColor,
                   borderRadius: BorderRadius.circular(14),
@@ -171,11 +171,11 @@ class _SnackbarWidgetState extends State<_SnackbarWidget>
                       ),
                     ),
                     // Tombol close
-                    GestureDetector(
-                      onTap: _dismiss,
-                      child: Icon(
+                    IconButton(
+                      onPressed: _dismiss,
+                      icon: Icon(
                         Icons.close_rounded,
-                        size: 18,
+                        // size: 18,
                         color: textColor.withValues(alpha: 0.7),
                       ),
                     ),
