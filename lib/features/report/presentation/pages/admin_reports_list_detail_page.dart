@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/core/constants/user_role_enum.dart';
-import 'package:lapormin/core/route/navigate.dart';
-import 'package:lapormin/core/utils/debouncer/debouncer.dart';
-import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
-import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
-import 'package:lapormin/features/report/presentation/widgets/report_list/report_filter_bottom_sheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:lapormin/core/widgets/card/report_card.dart';
-import 'package:lapormin/core/widgets/loading/report_card_shimmer.dart';
-import 'package:lapormin/core/widgets/loading/compact_report_card_shimmer.dart';
-import 'package:lapormin/core/constants/report_status_enum.dart';
-import 'package:lapormin/core/constants/report_category_enum.dart';
-import 'package:lapormin/features/report/presentation/widgets/admin_report/admin_sliver_app_bar.dart';
-import 'package:lapormin/features/report/presentation/widgets/report_list/compact_report_card.dart';
-import 'package:lapormin/features/report/presentation/widgets/report_list/report_search_bar.dart';
-import 'package:lapormin/features/report/presentation/widgets/report_list/report_layout_switch.dart';
-import 'package:lapormin/features/report/presentation/bloc/admin_reports/admin_reports_bloc.dart';
-import 'package:lapormin/features/report/domain/entities/report_summary.dart';
+
+import '../../../../core/constants/report_category_enum.dart';
+import '../../../../core/constants/report_status_enum.dart';
+import '../../../../core/constants/user_role_enum.dart';
+import '../../../../core/route/navigate.dart';
+import '../../../../core/utils/debouncer/debouncer.dart';
+import '../../../../core/widgets/card/report_card.dart';
+import '../../../../core/widgets/loading/compact_report_card_shimmer.dart';
+import '../../../../core/widgets/loading/report_card_shimmer.dart';
+import '../../../../core/widgets/snackbar/custom_snackbar.dart';
+import '../../domain/entities/report_summary.dart';
+import '../../domain/params/report_filter_params.dart';
+import '../bloc/admin_reports/admin_reports_bloc.dart';
+import '../widgets/admin_report/admin_sliver_app_bar.dart';
+import '../widgets/report_list/compact_report_card.dart';
+import '../widgets/report_list/report_filter_bottom_sheet.dart';
+import '../widgets/report_list/report_layout_switch.dart';
+import '../widgets/report_list/report_search_bar.dart';
+import 'internal_report_detail_page.dart';
 
 class AdminReportListDetailPage extends StatefulWidget {
   final String title;
@@ -146,10 +148,18 @@ class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
               ),
             ),
 
-            BlocBuilder<AdminReportsBloc, AdminReportsState>(
+            BlocConsumer<AdminReportsBloc, AdminReportsState>(
+              listener: (context, state) {
+                if (state.isFailure) {
+                  showSnackBar(
+                    context,
+                    state.errorMessage ?? "Terjadi kesalahan",
+                    type: SnackBarType.failure,
+                  );
+                }
+              },
               builder: (context, state) {
-                if (state.status == AdminReportsStatus.loading ||
-                    state.status == AdminReportsStatus.initial) {
+                if (!state.isSuccess) {
                   return SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
                     sliver: SliverList.separated(
@@ -161,20 +171,6 @@ class _AdminReportListDetailPageState extends State<AdminReportListDetailPage> {
                             ? const ReportCardShimmer()
                             : const CompactReportCardShimmer();
                       },
-                    ),
-                  );
-                }
-
-                if (state.status == AdminReportsStatus.failure) {
-                  return SliverToBoxAdapter(
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Text(
-                          state.errorMessage ?? "Gagal memuat laporan admin.",
-                          style: TextStyle(color: color.error),
-                        ),
-                      ),
                     ),
                   );
                 }

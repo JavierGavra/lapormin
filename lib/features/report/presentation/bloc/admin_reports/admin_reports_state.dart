@@ -15,6 +15,11 @@ final class AdminReportsState extends Equatable {
     this.filter = const ReportFilterParams(),
   });
 
+  bool get isInitial => status == AdminReportsStatus.initial;
+  bool get isLoading => status == AdminReportsStatus.loading;
+  bool get isSuccess => status == AdminReportsStatus.success;
+  bool get isFailure => status == AdminReportsStatus.failure;
+
   AdminReportsState copyWith({
     AdminReportsStatus? status,
     List<ReportSummary>? reports,

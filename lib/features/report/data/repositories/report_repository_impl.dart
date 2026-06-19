@@ -1,273 +1,167 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
-import 'package:lapormin/features/report/domain/entities/report_statistics.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
 import '../../../../core/constants/user_role_enum.dart';
 import '../../../../core/database/local_data_persistance.dart';
+import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/utils/network/network_info.dart';
+import '../../domain/entities/field_officer_statistics.dart';
 import '../../domain/entities/report.dart';
 import '../../domain/entities/report_aggregate.dart';
+import '../../domain/entities/report_statistics.dart';
 import '../../domain/entities/report_summary.dart';
 import '../../domain/params/report_filter_params.dart';
 import '../../domain/repositories/report_repository.dart';
 import '../../domain/use_cases/submit_field_check.dart';
 import '../../domain/use_cases/submit_final_report.dart';
 import '../../domain/use_cases/submit_report.dart';
-import '../data_sources/report_remote_data_source.dart';
-import '../../domain/entities/field_officer_statistics.dart';
+import '../data_sources/remote/report_evidence_remote_data_source.dart';
+import '../data_sources/remote/report_remote_data_source_facade.dart';
 
 class ReportRepositoryImpl implements ReportRepository {
-  final ReportRemoteDataSource remoteDataSource;
-  final LocalDataPersistance localDataPersistance;
+  final ReportRemoteDataSourceFacade remote;
+  final LocalDataPersistance localPersistance;
   final NetworkInfo networkInfo;
 
   ReportRepositoryImpl({
-    required this.localDataPersistance,
-    required this.remoteDataSource,
+    required this.localPersistance,
+    required this.remote,
     required this.networkInfo,
   });
-  @override
-  Future<Either<Failure, bool>> submitReport(SubmitReportParams params) async {
+
+  Future<Either<Failure, T>> _execute<T>(Future<T> Function() call) async {
     try {
-      final reportId = await remoteDataSource.insertReport(params);
-      await remoteDataSource.insertReportEvidences(
-        reportId,
-        params.evidences,
-        EvidenceType.report,
-      );
-      return Right(true);
+      if (!await networkInfo.isConnected) return Left(NetworkFailure());
+      final result = await call();
+      return Right(result);
+    } on NetworkException {
+      return Left(NetworkFailure());
     } on TimeoutException {
       return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
+    } catch (_) {
       return Left(ServerFailure());
     }
   }
+
+  @override
+  Future<Either<Failure, ReportAggregate>> getReportAggregate(String id) =>
+      _execute(() => remote.query.fetchReportAggregate(id));
 
   @override
   Future<Either<Failure, List<ReportSummary>>> getAdminReports(
     ReportFilterParams filter,
-  ) async {
-    try {
-      final data = await remoteDataSource.fetchAdminReports(filter);
-      return Right(data);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<ReportSummary>>> getFieldOfficerReports(
-    ReportFilterParams filter,
-  ) async {
-    try {
-      final data = await remoteDataSource.fetchFieldOfficerReports(filter);
-      return Right(data);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
+  ) => _execute(() => remote.query.fetchAdminReports(filter));
 
   @override
   Future<Either<Failure, List<ReportSummary>>> getPublicReports(
     ReportFilterParams filter,
-  ) async {
-    try {
-      final data = await remoteDataSource.fetchPublicReports(filter);
-      return Right(data);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
+  ) => _execute(() => remote.query.fetchPublicReports(filter));
 
   @override
-  Future<Either<Failure, List<ReportSummary>>> getUserReports() async {
-    try {
-      final data = await remoteDataSource.fetchUserReports();
-      return Right(data);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
+  Future<Either<Failure, List<ReportSummary>>> getFieldOfficerReports(
+    ReportFilterParams filter,
+  ) => _execute(() => remote.query.fetchFieldOfficerReports(filter));
 
   @override
-  Future<Either<Failure, bool>> deleteReport(String reportId) async {
-    // TODO: implement deleteReport
-    throw UnimplementedError();
-  }
+  Future<Either<Failure, List<ReportSummary>>> getUserReports() =>
+      _execute(() => remote.query.fetchUserReports());
 
   @override
-  Future<Either<Failure, Report>> getReport(String id) async {
-    try {
-      final data = await remoteDataSource.fetchReport(id);
-      return Right(data);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
+  Future<Either<Failure, Report>> getReport(String id) =>
+      _execute(() => remote.query.fetchReport(id));
 
   @override
-  Future<Either<Failure, ReportAggregate>> getReportAggregate(String id) async {
-    try {
-      final data = await remoteDataSource.fetchReportAggregate(id);
-      return Right(data);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
-
-  @override
-  Future<Either<Failure, bool>> assignFieldOfficer({
-    required String reportId,
-    required String fieldOfficerId,
-  }) async {
-    try {
-      await remoteDataSource.assignFieldOfficer(reportId, fieldOfficerId);
-      await remoteDataSource.updateReportStatus(
-        reportId,
-        ReportStatus.fieldCheck,
-      );
-      return Right(true);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
+  Future<Either<Failure, bool>> deleteReport(String reportId) =>
+      _execute(() => remote.command.deleteReport(reportId));
 
   @override
   Future<Either<Failure, Report>> updateReportStatus({
     required String id,
     required ReportStatus status,
-  }) async {
-    try {
-      final data = await remoteDataSource.updateReportStatus(id, status);
-      return Right(data);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
+  }) => _execute(() => remote.command.updateReportStatus(id, status));
+
+  @override
+  Future<Either<Failure, ReportStatistics>> getAdminReportStatistics() =>
+      _execute(() => remote.statistic.fetchAdminReportStatistics());
+
+  @override
+  Future<Either<Failure, FieldOfficerStatistics>>
+  getFieldOfficerReportStatistics() =>
+      _execute(() => remote.statistic.fetchFieldOfficerReportStatistics());
+
+  @override
+  Future<Either<Failure, bool>> submitReport(SubmitReportParams params) =>
+      _execute(() async {
+        final reportId = await remote.command.insertReport(params);
+        await remote.evidence.insertReportEvidences(
+          reportId,
+          params.evidences,
+          EvidenceType.report,
+        );
+        return true;
+      });
+
+  @override
+  Future<Either<Failure, bool>> assignFieldOfficer({
+    required String reportId,
+    required String fieldOfficerId,
+  }) => _execute(() async {
+    await remote.command.assignFieldOfficer(reportId, fieldOfficerId);
+    await remote.command.updateReportStatus(reportId, ReportStatus.fieldCheck);
+    return true;
+  });
 
   @override
   Future<Either<Failure, bool>> provideAction({
     required String reportId,
     required DateTime? dueAction,
-  }) async {
-    try {
-      if (dueAction != null) {
-        await remoteDataSource.provideAction(reportId, dueAction);
-      }
-
-      await remoteDataSource.updateReportStatus(reportId, ReportStatus.action);
-
-      return Right(true);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
+  }) => _execute(() async {
+    if (dueAction != null) {
+      await remote.command.provideAction(reportId, dueAction);
     }
-  }
+    await remote.command.updateReportStatus(reportId, ReportStatus.action);
+    return true;
+  });
 
   @override
   Future<Either<Failure, bool>> submitFieldCheck(
     SubmitFieldCheckParams params,
-  ) async {
-    try {
-      await remoteDataSource.updateFieldCheck(params);
-      await remoteDataSource.insertReportEvidences(
-        params.fieldCheckId,
-        params.evidences,
-        EvidenceType.fieldCheck,
-      );
-      return Right(true);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
+  ) => _execute(() async {
+    await remote.command.updateFieldCheck(params);
+    await remote.evidence.insertReportEvidences(
+      params.fieldCheckId,
+      params.evidences,
+      EvidenceType.fieldCheck,
+    );
+    return true;
+  });
 
   @override
   Future<Either<Failure, bool>> submitFinalReport(
     SubmitFinalReportParams params,
-  ) async {
-    try {
-      final id = await remoteDataSource.insertFinalReport(params);
-      await remoteDataSource.insertReportEvidences(
-        id,
-        params.evidences,
-        EvidenceType.finalReport,
-      );
-      return Right(true);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
+  ) => _execute(() async {
+    final id = await remote.command.insertFinalReport(params);
+    await remote.evidence.insertReportEvidences(
+      id,
+      params.evidences,
+      EvidenceType.finalReport,
+    );
+    return true;
+  });
 
   @override
-  Future<Either<Failure, ReportStatistics>> getAdminReportStatistics() async {
-    try {
-      final data = await remoteDataSource.fetchAdminReportStatistics();
-      return Right(data);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
+  Future<Either<Failure, int>> getUserReportAmount() => _execute(() async {
+    final role = UserRole.fromString(localPersistance.getRole ?? "");
+    final amount = await switch (role) {
+      UserRole.admin => remote.statistic.getAdminReportAmount(),
+      UserRole.fieldOfficer => remote.statistic.getFieldOfficerReportAmount(),
+      UserRole.informant => remote.statistic.getInformantReportAmount(),
+    };
+    await localPersistance.setReportAmount(amount);
 
-  @override
-  Future<Either<Failure, FieldOfficerStatistics>>
-  getFieldOfficerReportStatistics() async {
-    try {
-      final data = await remoteDataSource.fetchFieldOfficerReportStatistics();
-      return Right(data);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
-      
-  @override
-  Future<Either<Failure, int>> getUserReportAmount() async {
-    try {
-      final role = UserRole.fromString(localDataPersistance.getRole ?? "");
-
-      if (await networkInfo.isConnected) {
-        final amount = await switch (role) {
-          UserRole.admin => remoteDataSource.getAdminReportAmount(),
-          UserRole.fieldOfficer =>
-            remoteDataSource.getFieldOfficerReportAmount(),
-          UserRole.informant => remoteDataSource.getInformantReportAmount(),
-        };
-
-        await localDataPersistance.setReportAmount(amount);
-      }
-
-      return Right(localDataPersistance.getReportAmount ?? 0);
-    } on TimeoutException {
-      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
-    } catch (e) {
-      return Left(ServerFailure());
-    }
-  }
+    return localPersistance.getReportAmount ?? 0;
+  });
 }
