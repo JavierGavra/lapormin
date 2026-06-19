@@ -31,7 +31,7 @@ class InputValidator {
     final ext = path.extension(filePath).replaceFirst('.', '').toLowerCase();
 
     if (!Constant.evidenceExtensions.contains(ext)) {
-      return 'Format ($ext) tidak didukung. Gunakan PNG, JPG, JPEG, HEIC, MP4, atau MOV.';
+      return 'Format ($ext) tidak didukung. Gunakan PNG, JPG, JPEG, WEBP, HEIC, MP4, atau MOV.';
     }
 
     final fileSize = File(filePath).lengthSync();

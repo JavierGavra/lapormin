@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lapormin/core/constants/constant.dart';
+import 'package:lapormin/core/utils/image/image_compressor_utils.dart';
 import 'package:lapormin/core/utils/validator/input_validator.dart';
 import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:lapormin/features/report/presentation/widgets/picker/evidences_picker/evidences_media_bottom_sheet.dart';
@@ -60,7 +61,18 @@ class _EvidencesPickerState extends State<EvidencesPicker> {
 
       if (file == null || !mounted) return;
 
-      final String filePath = file.path;
+      String filePath = file.path;
+
+      if (!isVideo) {
+        final originalFile = File(filePath);
+        final compressedFile = await ImageCompressorUtils.compressImage(
+          originalFile,
+        );
+        if (compressedFile != null) {
+          filePath = compressedFile.path;
+        }
+      }
+
       final error = InputValidator.evidenceValidate(
         filePath: filePath,
         currentTotalBytes: _totalBytes,
