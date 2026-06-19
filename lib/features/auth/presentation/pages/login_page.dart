@@ -10,6 +10,7 @@ import '../../../../core/widgets/button/app_filled_button.dart';
 import '../../../../core/widgets/snackbar/custom_snackbar.dart';
 import '../../../../injection.dart';
 import '../../../../main.dart';
+import '../bloc/auth/auth_bloc.dart';
 import '../bloc/login/login_bloc.dart';
 import '../widgets/button/auth_switch_button.dart';
 import '../widgets/login/login_form.dart';
@@ -29,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
 
   void _listener(BuildContext context, LoginState state) {
     if (state.status == LoginStatus.success) {
+      context.read<AuthBloc>().add(AuthCheckRequested());
       final destination = switch (state.role) {
         UserRole.informant => const MainLayout(),
         UserRole.admin => const AdminMainLayout(),

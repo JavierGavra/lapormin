@@ -6,13 +6,13 @@ import 'package:lapormin/core/error/failures.dart';
 import 'package:lapormin/core/use_case/usecase.dart';
 import 'package:lapormin/features/profile/domain/repositories/profile_repository.dart';
 
-class UploadPhotoProfile implements UseCase<String, UploadPhotoProfileParams> {
+class UploadPhotoProfile implements UseCase<bool, UploadPhotoProfileParams> {
   final ProfileRepository repository;
 
   UploadPhotoProfile(this.repository);
 
   @override
-  Future<Either<Failure, String>> call(UploadPhotoProfileParams params) {
+  Future<Either<Failure, bool>> call(UploadPhotoProfileParams params) {
     return repository.uploadPhotoProfile(
       imageFile: params.imageFile,
       extension: params.extension,

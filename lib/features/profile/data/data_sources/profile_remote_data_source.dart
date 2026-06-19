@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../../../core/error/exceptions.dart';
 
 abstract class ProfileRemoteDataSource {
@@ -63,7 +64,8 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       throw ServerException('Gagal mengubah password: ${e.toString()}');
     }
   }
-  
+
+  @override
   Future<String> updateUsername(String newUsername) async {
     try {
       final userId = supabase.auth.currentUser!.id;

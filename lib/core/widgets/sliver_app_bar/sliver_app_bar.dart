@@ -48,7 +48,7 @@ class AppSliverAppBar extends StatelessWidget {
               onTap: () => Navigate.push(context, const ProfilePage()),
               child: ProfileAvatar.verySmall(
                 username: state.user?.username ?? "User",
-                photoProfile: state.user?.photoProfile,
+                photoProfile: state.user?.photoProfile?.path,
               ),
             );
           },

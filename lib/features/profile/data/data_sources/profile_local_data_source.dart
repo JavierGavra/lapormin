@@ -17,13 +17,13 @@ class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
   const ProfileLocalDataSourceImpl({required this.localDataPersistance});
 
   @override
-  Future<ProfileModel> getProfile() {
+  Future<ProfileModel> getProfile() async {
     try {
       final username = localDataPersistance.getUsername ?? "User";
       final phoneNumber = localDataPersistance.getPhoneNumber ?? "----";
-      final photoProfile = localDataPersistance.getPhotoProfile;
       final createdAt = localDataPersistance.getCreatedAt ?? "-";
       final reportAmount = localDataPersistance.getReportAmount ?? 0;
+      final photoProfile = await localDataPersistance.getPhotoProfile;
       return Future.value(
         ProfileModel(
           username: username,

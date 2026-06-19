@@ -1,8 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 
 import '../../utils/text_style/app_text_style.dart';
@@ -82,13 +81,12 @@ class _ImageViewerPageState extends State<ImageViewerPage>
     }
 
     try {
-      var response = await Dio().get(
-        widget.urlImage!,
-        options: Options(responseType: ResponseType.bytes),
-      );
+      final response = await http.get(Uri.parse(widget.urlImage!));
+
+      if (response.statusCode != 200) throw Exception('Gagal mengunduh gambar');
 
       final result = await ImageGallerySaverPlus.saveImage(
-        Uint8List.fromList(response.data),
+        response.bodyBytes,
         quality: 100,
         name: "LaporMin_${DateTime.now().millisecondsSinceEpoch}",
       );

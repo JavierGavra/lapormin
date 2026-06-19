@@ -12,7 +12,7 @@ abstract interface class ProfileRepository {
     String oldPassword,
     String newPassword,
   );
-  Future<Either<Failure, String>> uploadPhotoProfile({
+  Future<Either<Failure, bool>> uploadPhotoProfile({
     required File imageFile,
     required String extension,
   });
