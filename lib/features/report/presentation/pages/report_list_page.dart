@@ -100,11 +100,7 @@ class _ReportListPageState extends State<ReportListPage> {
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                AppSliverAppBar(
-                  onNotificationTap: () {
-                    debugPrint("Buka Notifikasi Laporan");
-                  },
-                ),
+                AppSliverAppBar(),
 
                 SliverToBoxAdapter(
                   child: Padding(

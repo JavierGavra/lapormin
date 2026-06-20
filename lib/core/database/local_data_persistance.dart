@@ -14,6 +14,7 @@ class LocalDataPersistance {
   static const String _createdAtKey = 'created_at';
   static const String _roleKey = 'role';
   static const String _reportAmountKey = 'report_amount';
+  static const String _hasUnreadNotificationKey = 'has_unread_notification';
 
   const LocalDataPersistance(this._prefs);
 
@@ -39,6 +40,8 @@ class LocalDataPersistance {
   String? get getCreatedAt => _prefs.getString(_createdAtKey);
   String? get getRole => _prefs.getString(_roleKey);
   int? get getReportAmount => _prefs.getInt(_reportAmountKey);
+  bool? get getHasUnreadNotification =>
+      _prefs.getBool(_hasUnreadNotificationKey);
 
   Future<File?> get getPhotoProfile async {
     final directory = await getApplicationDocumentsDirectory();
@@ -73,6 +76,10 @@ class LocalDataPersistance {
 
   Future<void> setReportAmount(int reportAmount) async {
     await _prefs.setInt(_reportAmountKey, reportAmount);
+  }
+
+  Future<void> setHasUnreadNotification(bool hasUnreadNotifications) async {
+    await _prefs.setBool(_hasUnreadNotificationKey, hasUnreadNotifications);
   }
 
   Future<void> setPhotoProfile(String photoSource) async {

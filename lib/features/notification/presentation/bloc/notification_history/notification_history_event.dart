@@ -8,3 +8,5 @@ sealed class NotificationHistoryEvent extends Equatable {
 }
 
 final class NotificationHistoryOpened extends NotificationHistoryEvent {}
+
+final class NotificationHistoryReadAll extends NotificationHistoryEvent {}

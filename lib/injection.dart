@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:lapormin/features/notification/domain/use_cases/mark_all_as_read.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -350,11 +351,15 @@ void _initNotificationFeature() {
     () => NotificationPermissionBloc(pushNotificationService: sl()),
   );
   sl.registerFactory(
-    () => NotificationHistoryBloc(getNotificationHistory: sl()),
+    () => NotificationHistoryBloc(
+      getNotificationHistory: sl(),
+      markAllAsRead: sl(),
+    ),
   );
 
   // Use Cases
   sl.registerLazySingleton(() => GetNotificationHistory(sl()));
+  sl.registerLazySingleton(() => MarkAllAsRead(sl()));
 
   // Repository
   sl.registerLazySingleton<NotificationRepository>(

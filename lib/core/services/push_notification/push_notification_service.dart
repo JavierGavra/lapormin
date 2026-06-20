@@ -2,7 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:lapormin/core/database/local_data_persistance.dart';
 import 'package:lapormin/firebase_options.dart';
+import 'package:lapormin/injection.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // Letakkan di luar class!
 @pragma('vm:entry-point')
@@ -10,13 +13,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // 1. Wajib init Firebase di isolate background
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setBool('has_unread_notification', true);
+
   debugPrint("Notifikasi Background Diterima: ${message.messageId}");
 
   // 2. Init local notifications di isolate background
   final localNotifPlugin = FlutterLocalNotificationsPlugin();
-  const initSettingsAndroid = AndroidInitializationSettings(
-    '@mipmap/ic_launcher',
-  );
+  const initSettingsAndroid = AndroidInitializationSettings('ic_notification');
   const initSettings = InitializationSettings(android: initSettingsAndroid);
   await localNotifPlugin.initialize(settings: initSettings);
 
@@ -40,7 +44,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         channelDescription: 'Notifikasi dari LaporMin!',
         importance: Importance.max,
         priority: Priority.high,
-        icon: '@mipmap/ic_launcher',
+        icon: '@mipmap/launcher_icon',
       ),
     ),
     payload: data.toString(),
@@ -65,13 +69,15 @@ String _resolveChannelName(String tipeNotif) {
   };
 }
 
+final ValueNotifier<bool> unreadBadgeNotifier = ValueNotifier<bool>(false);
+
 class PushNotificationService {
   final _localNotifPlugin = FlutterLocalNotificationsPlugin();
   final messaging = FirebaseMessaging.instance;
 
   Future setupMachine() async {
     const initSettingsAndroid = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
+      'ic_notification',
     );
 
     const initSettingsIos = DarwinInitializationSettings(
@@ -138,11 +144,13 @@ class PushNotificationService {
   void listenToMessages() {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       debugPrint('Notifikasi Foreground Diterima!');
 
       if (message.notification != null) {
         debugPrint('Judul: ${message.notification?.title}');
+        await sl<LocalDataPersistance>().setHasUnreadNotification(true);
+        unreadBadgeNotifier.value = true;
         _showNotification(message);
       }
     });
@@ -172,7 +180,7 @@ class PushNotificationService {
           channelDescription: 'Notifikasi dari LaporMin!',
           importance: Importance.max,
           priority: Priority.high,
-          icon: '@mipmap/ic_launcher',
+          icon: 'ic_notification',
         ),
       ),
       payload: message.data.toString(),

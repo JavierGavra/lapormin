@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/widgets/button/notification_button.dart';
 
 import '../../../features/auth/presentation/bloc/auth/auth_bloc.dart';
 import '../../../features/profile/presentation/pages/profile_page.dart';
@@ -8,14 +9,9 @@ import '../../utils/text_style/app_text_style.dart';
 import '../avatar/profile_avatar.dart';
 
 class AppSliverAppBar extends StatelessWidget {
-  final VoidCallback onNotificationTap;
   final String? title;
 
-  const AppSliverAppBar({
-    super.key,
-    required this.onNotificationTap,
-    this.title,
-  });
+  const AppSliverAppBar({super.key, this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +33,7 @@ class AppSliverAppBar extends StatelessWidget {
         ),
       ),
       actions: [
-        IconButton(
-          onPressed: onNotificationTap,
-          icon: Icon(Icons.notifications_none_rounded, color: color.onSurface),
-        ),
+        NotificationButton(),
         const SizedBox(width: 4),
         BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {

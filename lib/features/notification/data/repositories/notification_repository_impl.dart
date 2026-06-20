@@ -23,6 +23,22 @@ class NotificationRepositoryImpl implements NotificationRepository {
       if (!await networkInfo.isConnected) return const Left(NetworkFailure());
 
       final result = await remote.fetchNotificationHistory();
+
+      return Right(result);
+    } on NetworkException {
+      return Left(NetworkFailure());
+    } on TimeoutException {
+      return Left(NetworkFailure("Koneksi internet lambat. Coba lagi."));
+    } catch (e) {
+      return Left(ServerFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> markAllAsRead() async {
+    try {
+      final result = await remote.markNotificationsAsRead();
+
       return Right(result);
     } on NetworkException {
       return Left(NetworkFailure());

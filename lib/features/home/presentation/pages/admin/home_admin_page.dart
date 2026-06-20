@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/constants/user_role_enum.dart';
 import 'package:lapormin/core/route/navigate.dart';
 import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
-import 'package:lapormin/features/notification/presentation/pages/notification_history_page.dart';
 import 'package:lapormin/features/report/presentation/pages/internal_report_detail_page.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/theme/theme.dart';
@@ -60,11 +59,7 @@ class _HomeAdminPageState extends State<HomeAdminPage> {
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-                AppSliverAppBar(
-                  onNotificationTap: () {
-                    Navigate.push(context, const NotificationHistoryPage());
-                  },
-                ),
+                AppSliverAppBar(),
 
                 SliverToBoxAdapter(
                   child: Padding(
