@@ -17,38 +17,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await prefs.setBool('has_unread_notification', true);
 
   debugPrint("Notifikasi Background Diterima: ${message.messageId}");
-
-  // 2. Init local notifications di isolate background
-  final localNotifPlugin = FlutterLocalNotificationsPlugin();
-  const initSettingsAndroid = AndroidInitializationSettings('ic_notification');
-  const initSettings = InitializationSettings(android: initSettingsAndroid);
-  await localNotifPlugin.initialize(settings: initSettings);
-
-  // 3. Tampilkan notifikasi
-  final notification = message.notification;
-  if (notification == null) return;
-
-  final data = message.data;
-  final String tipeNotif = data['tipe_notif'] ?? 'general';
-  final channelId = _resolveChannelId(tipeNotif);
-  final channelName = _resolveChannelName(tipeNotif);
-
-  await localNotifPlugin.show(
-    id: notification.hashCode,
-    title: notification.title,
-    body: notification.body,
-    notificationDetails: NotificationDetails(
-      android: AndroidNotificationDetails(
-        channelId,
-        channelName,
-        channelDescription: 'Notifikasi dari LaporMin!',
-        importance: Importance.max,
-        priority: Priority.high,
-        icon: '@mipmap/launcher_icon',
-      ),
-    ),
-    payload: data.toString(),
-  );
 }
 
 String _resolveChannelId(String tipeNotif) {
