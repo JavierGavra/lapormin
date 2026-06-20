@@ -69,12 +69,7 @@ class _FieldOfficerListPageState extends State<FieldOfficerListPage> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              AppSliverAppBar(
-                title: "Petugas Lapangan",
-                onNotificationTap: () {
-                  debugPrint("Buka notifikasi");
-                },
-              ),
+              AppSliverAppBar(title: "Petugas Lapangan"),
 
               BlocConsumer<FieldOfficerBloc, FieldOfficerState>(
                 listener: (context, state) {

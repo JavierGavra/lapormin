@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/error/exceptions.dart';
-import '../../domain/entities/notification_history.dart';
 import '../models/notification_history_model.dart';
 
 abstract interface class NotificationRemoteDataSource {
-  Future<List<NotificationHistory>> fetchNotificationHistory();
+  Future<List<NotificationHistoryModel>> fetchNotificationHistory();
+  Future<bool> markNotificationsAsRead();
 }
 
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
@@ -17,7 +17,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   const NotificationRemoteDataSourceImpl({required this.supabase});
 
   @override
-  Future<List<NotificationHistory>> fetchNotificationHistory() async {
+  Future<List<NotificationHistoryModel>> fetchNotificationHistory() async {
     try {
       final userid = supabase.auth.currentUser!.id;
       final response = await supabase
@@ -31,6 +31,28 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
           );
 
       return response.map((e) => NotificationHistoryModel.fromMap(e)).toList();
+    } on SocketException {
+      throw const NetworkException();
+    } catch (e) {
+      debugPrint('$e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> markNotificationsAsRead() async {
+    try {
+      final userid = supabase.auth.currentUser!.id;
+      await supabase
+          .from('notification_history')
+          .update({'is_read': true})
+          .eq('user_id', userid)
+          .timeout(
+            const Duration(seconds: 5),
+            onTimeout: () => throw const TimeoutException(),
+          );
+
+      return true;
     } on SocketException {
       throw const NetworkException();
     } catch (e) {

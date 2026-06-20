@@ -106,11 +106,7 @@ class _FieldOfficerReportListPageState
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              AppSliverAppBar(
-                onNotificationTap: () {
-                  debugPrint("Buka notifikasi petugas");
-                },
-              ),
+              AppSliverAppBar(),
 
               SliverToBoxAdapter(
                 child: Padding(

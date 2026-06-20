@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
+import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
 
 import '../../../../core/utils/text_style/app_text_style.dart';
 import '../../../../core/widgets/button/app_back_button.dart';
@@ -20,11 +21,13 @@ class _NotificationHistoryPageState extends State<NotificationHistoryPage> {
   void initState() {
     super.initState();
     context.read<NotificationHistoryBloc>().add(NotificationHistoryOpened());
+    context.read<NotificationHistoryBloc>().add(NotificationHistoryReadAll());
   }
 
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme;
+    final userRole = context.read<AuthBloc>().state.user!.role;
 
     return Scaffold(
       appBar: AppBar(
@@ -82,6 +85,7 @@ class _NotificationHistoryPageState extends State<NotificationHistoryPage> {
                   notification: notification,
                   isFirst: isFirst,
                   isLast: isLast,
+                  role: userRole,
                 );
               },
             );

@@ -39,11 +39,7 @@ class _AdminReportListPageState extends State<AdminReportListPage> {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              AppSliverAppBar(
-                onNotificationTap: () {
-                  debugPrint("Buka Notifikasi Admin");
-                },
-              ),
+              AppSliverAppBar(),
 
               SliverToBoxAdapter(
                 child: Padding(
