@@ -21,7 +21,6 @@ class _NotificationHistoryPageState extends State<NotificationHistoryPage> {
   void initState() {
     super.initState();
     context.read<NotificationHistoryBloc>().add(NotificationHistoryOpened());
-    context.read<NotificationHistoryBloc>().add(NotificationHistoryReadAll());
   }
 
   @override

@@ -63,6 +63,9 @@ class _NotificationButtonState extends State<NotificationButton>
 
             if (context.mounted) {
               context.read<NotificationHistoryBloc>().add(
+                NotificationHistoryReadAll(),
+              );
+              context.read<NotificationHistoryBloc>().add(
                 NotificationHistoryOpened(),
               );
             }
