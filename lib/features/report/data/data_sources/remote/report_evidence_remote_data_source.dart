@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/rendering.dart';
+import 'package:lapormin/core/utils/video/video_compressor_utils.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../core/error/exceptions.dart';
@@ -47,6 +48,42 @@ class ReportEvidenceRemoteDataSourceImpl
 
   ReportEvidenceRemoteDataSourceImpl({required this.supabase});
 
+  Future<String?> _uploadThumbnail({
+    required String bucketName,
+    required String localVideoPath,
+    required String referenceId,
+    required String folder,
+  }) async {
+    try {
+      final thumbnailFile = await VideoCompressorUtils.generateThumbnail(
+        localVideoPath,
+      );
+
+      if (thumbnailFile == null) return null;
+
+      final thumbStoragePath =
+          '$folder/$referenceId/thumb_${localVideoPath.hashCode}.jpg';
+
+      await supabase.storage
+          .from(bucketName)
+          .upload(
+            thumbStoragePath,
+            thumbnailFile,
+            fileOptions: const FileOptions(
+              contentType: 'image/jpeg',
+              upsert: true,
+            ),
+          );
+
+      await thumbnailFile.delete();
+
+      return thumbStoragePath;
+    } catch (e) {
+      debugPrint('❌ Gagal upload thumbnail: $e');
+      return null;
+    }
+  }
+
   @override
   Future<bool> insertReportEvidences(
     String referenceId,
@@ -60,13 +97,48 @@ class ReportEvidenceRemoteDataSourceImpl
         evidences.map((localPath) async {
           final file = File(localPath);
 
-          final extension = localPath.split('.').last;
+          final extension = localPath.split('.').last.toLowerCase();
           final fileName = '${localPath.hashCode}.$extension';
           final storageFilePath = '${type.folder}/$referenceId/$fileName';
 
-          await supabase.storage.from(bucketName).upload(storageFilePath, file);
+          // Tentukan MIME type berdasarkan ekstensi
+          String contentType = 'application/octet-stream';
+          if (['jpg', 'jpeg', 'png', 'webp'].contains(extension)) {
+            contentType = 'image/$extension';
+          } else if (['mp4', 'mov', 'avi'].contains(extension)) {
+            contentType = 'video/$extension';
+          }
 
-          return {type.idField: referenceId, 'media': storageFilePath};
+          // Tambahkan fileOptions agar Supabase mengenali format video/gambar
+          await supabase.storage
+              .from(bucketName)
+              .upload(
+                storageFilePath,
+                file,
+                fileOptions: FileOptions(
+                  contentType: contentType,
+                  upsert: true,
+                ),
+              );
+
+          final isVideo = ['mp4', 'mov', 'avi'].contains(extension);
+
+          // ✅ Untuk video: generate dan upload thumbnail
+          String? thumbnailPath;
+          if (isVideo) {
+            thumbnailPath = await _uploadThumbnail(
+              bucketName: bucketName,
+              localVideoPath: localPath,
+              referenceId: referenceId,
+              folder: type.folder,
+            );
+          }
+
+          return {
+            type.idField: referenceId,
+            'media': storageFilePath,
+            'thumbnail': ?thumbnailPath,
+          };
         }),
       );
 

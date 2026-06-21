@@ -1,3 +1,5 @@
+import 'package:lapormin/features/report/data/models/evidence_model.dart';
+
 import '../../../../core/constants/report_category_enum.dart';
 import '../../../../core/constants/report_status_enum.dart';
 import '../../domain/entities/report.dart';
@@ -33,9 +35,9 @@ class ReportModel extends Report {
           : null,
       createdAt: DateTime.parse(map['created_at'] as String),
       status: ReportStatus.fromString(map['status'] as String),
-      evidences: map['evidences'] != null
-          ? List<String>.from(map['evidences'])
-          : [],
+      evidences: (map['evidences'] as List? ?? [])
+          .map((e) => (e as EvidenceModel))
+          .toList(),
     );
   }
 }

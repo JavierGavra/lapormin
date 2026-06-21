@@ -281,13 +281,13 @@ class _HomeFieldOfficerPageState extends State<HomeFieldOfficerPage> {
                           );
 
                           return ReportCard(
-                            imageUrl: report.evidence,
+                            imageUrl: report.evidence.previewUrl,
                             title: report.title,
                             location: report.shortAdddress,
                             timeAgo: timeAgoText,
                             status: report.status,
                             category: category,
-                            isVideo: report.evidence.endsWith('.mp4'),
+                            isVideo: report.evidence.isVideo,
                             deadlineDate: report.dueAction,
 
                             onTap: () {

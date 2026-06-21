@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:lapormin/features/report/domain/entities/evidence.dart';
 
 class FieldCheck extends Equatable {
   final String id;
@@ -7,7 +8,7 @@ class FieldCheck extends Equatable {
   final String? description;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final List<String> evidences;
+  final List<Evidence> evidences;
 
   const FieldCheck({
     required this.id,

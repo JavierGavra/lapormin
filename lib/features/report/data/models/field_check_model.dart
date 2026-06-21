@@ -1,3 +1,5 @@
+import 'package:lapormin/features/report/data/models/evidence_model.dart';
+
 import '../../domain/entities/field_check.dart';
 
 class FieldCheckModel extends FieldCheck {
@@ -19,7 +21,9 @@ class FieldCheckModel extends FieldCheck {
       description: data['description'] as String?,
       createdAt: DateTime.parse(data['created_at'] as String),
       updatedAt: DateTime.parse(data['updated_at'] as String),
-      evidences: List<String>.from(data['evidences'] ?? []),
+      evidences: (data['evidences'] as List? ?? [])
+          .map((e) => (e as EvidenceModel))
+          .toList(),
     );
   }
 }

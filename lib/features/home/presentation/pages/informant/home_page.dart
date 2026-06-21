@@ -227,14 +227,14 @@ class _HomePageState extends State<HomePage> {
                           );
 
                           return ReportCard(
-                            imageUrl: report.evidence,
+                            imageUrl: report.evidence.previewUrl,
                             title: report.title,
                             location: report.shortAdddress,
                             timeAgo: timeAgoText,
                             status: report.status,
                             category: category,
                             deadlineDate: report.dueAction,
-                            isVideo: report.evidence.endsWith('.mp4'),
+                            isVideo: report.evidence.isVideo,
                             onTap: () {
                               Navigate.push(
                                 context,

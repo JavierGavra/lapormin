@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:lapormin/features/report/domain/entities/evidence.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
 
@@ -7,7 +8,7 @@ class ReportSummary extends Equatable {
   final String title;
   final String shortAdddress;
   final String category;
-  final String evidence;
+  final Evidence evidence;
   final DateTime createdAt;
   final DateTime? dueAction;
   final ReportStatus status;
