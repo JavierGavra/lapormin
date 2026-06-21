@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/rendering.dart';
+import 'package:lapormin/features/report/data/models/evidence_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../../core/error/exceptions.dart';
@@ -53,19 +54,37 @@ class ReportQueryRemoteDataSourceImpl implements ReportQueryRemoteDataSource {
     return filteredQuery;
   }
 
-  String? _resolveEvidenceUrl(dynamic evidences) {
-    final media = (evidences as List?)?.firstOrNull?['media'] as String?;
+  EvidenceModel? _resolveEvidenceUrl(dynamic evidences) {
+    final first = (evidences as List?)?.firstOrNull;
+    if (first == null) return null;
+
+    final media = first['media'] as String?;
+    final thumbnail = first['thumbnail'] as String?;
+
     if (media == null) return null;
-    return supabase.storage.from('reports').getPublicUrl(media);
+
+    return EvidenceModel(
+      url: supabase.storage.from('reports').getPublicUrl(media),
+      thumbnailUrl: thumbnail != null
+          ? supabase.storage.from('reports').getPublicUrl(thumbnail)
+          : null,
+    );
   }
 
-  List<String> _resolveEvidenceUrls(dynamic evidences) {
+  List<EvidenceModel> _resolveEvidenceUrls(dynamic evidences) {
     final list = evidences as List?;
     if (list == null || list.isEmpty) return [];
 
     return list.map((evidence) {
       final mediaPath = evidence['media'] as String;
-      return supabase.storage.from('reports').getPublicUrl(mediaPath);
+      final thumbnailPath = evidence['thumbnail'] as String?;
+
+      final url = supabase.storage.from('reports').getPublicUrl(mediaPath);
+      final thumbnailUrl = thumbnailPath != null
+          ? supabase.storage.from('reports').getPublicUrl(thumbnailPath)
+          : null;
+
+      return EvidenceModel(url: url, thumbnailUrl: thumbnailUrl);
     }).toList();
   }
 
@@ -76,7 +95,9 @@ class ReportQueryRemoteDataSourceImpl implements ReportQueryRemoteDataSource {
     try {
       var query = supabase
           .from('report')
-          .select('$_reportSummaryColumn, evidence:report_evidence(media)');
+          .select(
+            '$_reportSummaryColumn, evidence:report_evidence(media, thumbnail)',
+          );
 
       final response = await _applyFilter(query, filter)
           .limit(1, referencedTable: 'report_evidence')
@@ -110,7 +131,7 @@ class ReportQueryRemoteDataSourceImpl implements ReportQueryRemoteDataSource {
           .from('report')
           .select('''
             $_reportSummaryColumn,
-            evidence:report_evidence(media),
+            evidence:report_evidence(media, thumbnail),
             field_check!inner(user_id)
           ''')
           .eq('field_check.user_id', userId);
@@ -143,7 +164,9 @@ class ReportQueryRemoteDataSourceImpl implements ReportQueryRemoteDataSource {
     try {
       var query = supabase
           .from('report')
-          .select('$_reportSummaryColumn, evidence:report_evidence(media)')
+          .select(
+            '$_reportSummaryColumn, evidence:report_evidence(media, thumbnail)',
+          )
           .neq('status', 'pending')
           .neq('status', 'rejected');
 
@@ -175,7 +198,9 @@ class ReportQueryRemoteDataSourceImpl implements ReportQueryRemoteDataSource {
       final userId = supabase.auth.currentUser!.id;
       var response = await supabase
           .from('report')
-          .select('$_reportSummaryColumn, evidence:report_evidence(media)')
+          .select(
+            '$_reportSummaryColumn, evidence:report_evidence(media, thumbnail)',
+          )
           .eq('user_id', userId)
           .limit(1, referencedTable: 'report_evidence')
           .order('created_at', ascending: false)
@@ -205,9 +230,7 @@ class ReportQueryRemoteDataSourceImpl implements ReportQueryRemoteDataSource {
           .from('report')
           .select('''
             *,
-            evidences: report_evidence (
-              media
-            )
+            evidences: report_evidence (media, thumbnail)
           ''')
           .eq('id', id)
           .single()
@@ -236,13 +259,13 @@ class ReportQueryRemoteDataSourceImpl implements ReportQueryRemoteDataSource {
           .from('report')
           .select('''
             *,
-            evidences: report_evidence (media),
+            evidences: report_evidence (media, thumbnail),
             report_status_logs: report_status_log (
               id, user_id, status, created_at
             ),
             field_check (
               *,
-              evidences: field_check_evidence (media),
+              evidences: field_check_evidence (media, thumbnail),
               ...users(
                 field_officer_name: username,
                 field_officer_phone: no_telp
@@ -250,7 +273,7 @@ class ReportQueryRemoteDataSourceImpl implements ReportQueryRemoteDataSource {
             ),
             final_report (
               *,
-              evidences: final_report_evidence (media)
+              evidences: final_report_evidence (media, thumbnail)
             )
           ''')
           .eq('id', id)

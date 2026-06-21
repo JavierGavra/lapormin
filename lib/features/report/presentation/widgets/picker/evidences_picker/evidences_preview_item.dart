@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:lapormin/core/route/navigate.dart';
+import 'package:lapormin/core/utils/video/video_compressor_utils.dart';
 import 'package:lapormin/core/widgets/image/image_viewer_page.dart';
 import 'package:lapormin/core/widgets/loading/shimmer_widget.dart';
+import 'package:lapormin/core/widgets/video/video_player_page.dart';
 import 'package:path/path.dart' as path;
 
 import '../../../../../../core/constants/constant.dart';
@@ -27,6 +29,7 @@ class EvidencesPreviewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('🔹 Building EvidencesPreviewItem for: $filePath');
     final color = Theme.of(context).colorScheme;
     return SizedBox(
       width: size,
@@ -39,30 +42,8 @@ class EvidencesPreviewItem extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: _isVideo
-                  ? _buildVideoThumbnail(color)
-                  : GestureDetector(
-                      onTap: () {
-                        Navigate.push(
-                          context,
-                          ImageViewerPage.file(
-                            tag: filePath,
-                            title: "Pratinjau Bukti",
-                            file: File(filePath),
-                          ),
-                        );
-                      },
-                      child: Image.file(
-                        File(filePath),
-                        fit: BoxFit.cover,
-                        frameBuilder:
-                            (context, child, frame, wasSynchronouslyLoaded) {
-                              if (wasSynchronouslyLoaded || frame != null) {
-                                return child;
-                              }
-                              return ShimmerWidget();
-                            },
-                      ),
-                    ),
+                  ? _buildVideoThumbnail(context)
+                  : _buildImageThumbnail(context),
             ),
           ),
 
@@ -71,16 +52,21 @@ class EvidencesPreviewItem extends StatelessWidget {
             Positioned(
               bottom: 6,
               left: 6,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: color.scrim.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Icon(
-                  Icons.play_arrow_rounded,
-                  size: 14,
-                  color: Colors.white,
+              child: IgnorePointer(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: color.scrim.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: const Icon(
+                    Icons.play_arrow_rounded,
+                    size: 14,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -111,10 +97,83 @@ class EvidencesPreviewItem extends StatelessWidget {
     );
   }
 
-  Widget _buildVideoThumbnail(ColorScheme color) {
-    return Container(
-      color: color.primaryContainer,
-      child: Icon(Icons.videocam_rounded, color: color.primary, size: 32),
+  Widget _buildImageThumbnail(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        Navigate.push(
+          context,
+          ImageViewerPage.file(
+            tag: filePath,
+            title: "Pratinjau Bukti",
+            file: File(filePath),
+          ),
+        );
+      },
+      child: Hero(
+        tag: filePath,
+        child: Image.file(
+          File(filePath),
+          fit: BoxFit.cover,
+          frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded || frame != null) {
+              return child;
+            }
+            return const ShimmerWidget();
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVideoThumbnail(BuildContext context) {
+    final color = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        Navigate.push(
+          context,
+          VideoPlayerPage.file(
+            tag: filePath,
+            title: "Pratinjau Bukti",
+            file: File(filePath),
+          ),
+        );
+      },
+      child: Hero(
+        tag: filePath,
+        child: FutureBuilder<File?>(
+          key: ValueKey(filePath),
+          future: VideoCompressorUtils.generateThumbnail(filePath),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.data != null) {
+              return Image.file(snapshot.data!, fit: BoxFit.cover);
+            }
+
+            return Container(
+              color: color.primaryContainer,
+              child: snapshot.connectionState == ConnectionState.waiting
+                  ? Center(
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: color.primary,
+                        ),
+                      ),
+                    )
+                  : Icon(
+                      Icons.videocam_rounded,
+                      color: color.primary,
+                      size: 32,
+                    ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

@@ -58,16 +58,16 @@ class EvidencesMediaBottomSheet extends StatelessWidget {
                 onPickPhoto();
               },
             ),
-            // const SizedBox(height: 8),
-            // _buildOption(
-            //   context,
-            //   icon: Icons.videocam_rounded,
-            //   label: "Rekam Video",
-            //   onTap: () {
-            //     Navigator.pop(context);
-            //     onPickVideo();
-            //   },
-            // ),
+            const SizedBox(height: 8),
+            _buildOption(
+              context,
+              icon: Icons.videocam_rounded,
+              label: "Rekam Video",
+              onTap: () {
+                Navigator.pop(context);
+                onPickVideo();
+              },
+            ),
           ],
         ),
       ),

@@ -1,3 +1,5 @@
+import 'package:lapormin/features/report/data/models/evidence_model.dart';
+
 import '../../../../core/constants/report_status_enum.dart';
 import '../../domain/entities/report_summary.dart';
 
@@ -19,7 +21,7 @@ class ReportSummaryModel extends ReportSummary {
       title: map['title'] as String,
       shortAdddress: (map['address'] as String).split(',').first,
       category: map['category'] as String,
-      evidence: map['evidence'] as String,
+      evidence: map['evidence'] as EvidenceModel,
       createdAt: DateTime.parse(map['created_at'] as String),
       status: ReportStatus.fromString(map['status'] as String),
       dueAction: map['due_action'] != null

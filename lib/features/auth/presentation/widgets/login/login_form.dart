@@ -45,13 +45,14 @@ class LoginForm extends StatelessWidget {
             isPassword: true,
           ),
         ),
-        Align(
-          alignment: Alignment.bottomRight,
-          child: TextButton(
-            onPressed: () {},
-            child: Text("Lupa kata sandi?", style: AppTextStyle.s12()),
-          ),
-        ),
+        const SizedBox(height: 20),
+        // Align(
+        //   alignment: Alignment.bottomRight,
+        //   child: TextButton(
+        //     onPressed: () {},
+        //     child: Text("Lupa kata sandi?", style: AppTextStyle.s12()),
+        //   ),
+        // ),
       ],
     );
   }

@@ -1,3 +1,5 @@
+import 'package:lapormin/features/report/data/models/evidence_model.dart';
+
 import '../../domain/entities/final_report.dart';
 
 class FinalReportModel extends FinalReport {
@@ -13,7 +15,9 @@ class FinalReportModel extends FinalReport {
       id: data['id'],
       description: data['description'] as String,
       createdAt: DateTime.parse(data['created_at'] as String),
-      evidences: List<String>.from(data['evidences'] ?? []),
+      evidences: (data['evidences'] as List? ?? [])
+          .map((e) => (e as EvidenceModel))
+          .toList(),
     );
   }
 }

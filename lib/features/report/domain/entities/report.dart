@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
+import 'package:lapormin/features/report/domain/entities/evidence.dart';
 
 import '../../../../core/constants/report_status_enum.dart';
 
@@ -15,7 +16,7 @@ class Report extends Equatable {
   final DateTime createdAt;
   final ReportStatus status;
   final ReportCategory category;
-  final List<String> evidences;
+  final List<Evidence> evidences;
 
   const Report({
     required this.id,
@@ -44,7 +45,7 @@ class Report extends Equatable {
     DateTime? createdAt,
     ReportStatus? status,
     ReportCategory? category,
-    List<String>? evidences,
+    List<Evidence>? evidences,
   }) {
     return Report(
       id: id ?? this.id,
