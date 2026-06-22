@@ -1,7 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:lapormin/core/theme/theme.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:lapormin/core/services/push_notification/push_notification_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+import 'features/auth/presentation/pages/splash_screen.dart';
+import 'core/api/api.dart';
+import 'core/bloc/provider.dart';
+import 'core/theme/theme.dart';
+import 'injection.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load .env
+  await dotenv.load();
+
+  // Init Supabase
+  await Supabase.initialize(url: Api.baseUrl, anonKey: Api.anonKey);
+
+  // Init Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Init Service Locator
+  await initializeServiceLocator();
+
+  // Init Push Notification
+  final pushNotificationService = sl<PushNotificationService>();
+  await pushNotificationService.setupMachine();
+  pushNotificationService.listenToMessages();
+
+  // Init Date Formatting
+  await initializeDateFormatting('id_ID', null);
+
   runApp(const MyApp());
 }
 
@@ -10,14 +45,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'LaporMin!',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: "DM Sans",
-        colorScheme: MaterialTheme.lightScheme(),
+    initializeDateFormatting('id_ID');
+    return MultiBlocProvider(
+      providers: Provider.providers(),
+      child: MaterialApp(
+        title: 'LaporMin!',
+        locale: const Locale('id', 'ID'),
+        debugShowCheckedModeBanner: false,
+        theme: MaterialTheme(const TextTheme()).light(),
+        home: const SplashScreen(),
       ),
-      home: TempPage(),
     );
   }
 }

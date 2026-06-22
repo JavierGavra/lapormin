@@ -1,0 +1,239 @@
+import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz.dart';
+import 'package:equatable/equatable.dart';
+import 'package:lapormin/core/use_case/usecase.dart';
+import 'package:lapormin/features/field_officer/domain/entities/field_officer.dart';
+import 'package:lapormin/features/field_officer/domain/use_cases/get_field_officers.dart';
+import 'package:lapormin/features/report/domain/use_cases/delete_report.dart';
+
+import '../../../../../core/constants/report_status_enum.dart';
+import '../../../../../core/error/failures.dart';
+import '../../../domain/entities/report.dart';
+import '../../../domain/entities/report_aggregate.dart';
+import '../../../domain/use_cases/assign_field_officer.dart';
+import '../../../domain/use_cases/completing_report.dart';
+import '../../../domain/use_cases/get_report_aggregate.dart';
+import '../../../domain/use_cases/provide_action.dart';
+import '../../../domain/use_cases/reject_report.dart';
+import '../../../domain/use_cases/verify_report.dart';
+
+part 'internal_report_detail_event.dart';
+part 'internal_report_detail_state.dart';
+
+class InternalReportDetailBloc
+    extends Bloc<InternalReportDetailEvent, InternalReportDetailState> {
+  final GetReportAggregate _getReportAggregate;
+  final AssignFieldOfficer _assignFieldOfficer;
+  final VerifyReport _verifyReport;
+  final RejectReport _rejectReport;
+  final ProvideAction _provideAction;
+  final CompletingReport _completingReport;
+  final GetFieldOfficers _getFieldOfficers;
+  final DeleteReport _deleteReport;
+
+  InternalReportDetailBloc({
+    required GetReportAggregate getReportAggregate,
+    required AssignFieldOfficer assignFieldOfficer,
+    required VerifyReport verifyReport,
+    required RejectReport rejectReport,
+    required ProvideAction provideAction,
+    required CompletingReport completingReport,
+    required GetFieldOfficers getFieldOfficers,
+    required DeleteReport deleteReport,
+  }) : _getReportAggregate = getReportAggregate,
+       _assignFieldOfficer = assignFieldOfficer,
+       _verifyReport = verifyReport,
+       _rejectReport = rejectReport,
+       _provideAction = provideAction,
+       _completingReport = completingReport,
+       _getFieldOfficers = getFieldOfficers,
+       _deleteReport = deleteReport,
+       super(InternalReportDetailState()) {
+    on<InternalReportDetailOpened>(_onInternalReportDetailOpened);
+    on<FieldCheckRequested>(_onFieldCheckRequested);
+    on<VerifiedRequested>(_onVerifiedRequested);
+    on<RejectedRequested>(_onRejectedRequested);
+    on<ActionRequested>(_onActionRequested);
+    on<DoneRequested>(_onDoneRequested);
+    on<ReportDeleteRequested>(_onReportDeleteRequested);
+  }
+
+  ReportAggregate? _updateReport(Report report) {
+    final currentAggregate = state.reportAggregate;
+    if (currentAggregate == null) return null;
+
+    return ReportAggregate(
+      report: currentAggregate.report.copyWith(status: report.status),
+      fieldCheck: currentAggregate.fieldCheck,
+      finalReport: currentAggregate.finalReport,
+      statusLogs: currentAggregate.statusLogs,
+    );
+  }
+
+  Future<void> _callUseCase({
+    required Emitter<InternalReportDetailState> emit,
+    required Future<Either<Failure, dynamic>> Function() useCase,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    final result = await useCase();
+
+    result.fold(
+      (failure) => _emitFailure(emit, failure.message!),
+      (data) => (data is Report)
+          ? emit(
+              state.copyWith(
+                status: InternalReportDetailStatus.success,
+                reportAggregate: _updateReport(data),
+              ),
+            )
+          : add(InternalReportDetailOpened(state.reportAggregate!.report.id)),
+    );
+  }
+
+  String _getReportId(Emitter<InternalReportDetailState> emit) {
+    final id = state.reportAggregate?.report.id;
+    if (id == null) {
+      emit(state.copyWith(status: InternalReportDetailStatus.failure));
+    }
+    return id!;
+  }
+
+  void _emitFailure(Emitter<InternalReportDetailState> emit, String message) {
+    emit(
+      state.copyWith(
+        status: InternalReportDetailStatus.failure,
+        errorMessage: message,
+      ),
+    );
+  }
+
+  Future<void> _onInternalReportDetailOpened(
+    InternalReportDetailOpened event,
+    Emitter<InternalReportDetailState> emit,
+  ) async {
+    emit(state.copyWith(status: InternalReportDetailStatus.loading));
+
+    final reportAggregateResult = await _getReportAggregate(
+      GetReportAggregateParams(id: event.id),
+    );
+
+    if (reportAggregateResult.isLeft()) {
+      _emitFailure(
+        emit,
+        reportAggregateResult.fold((failure) => failure.message!, (id) => ''),
+      );
+      return;
+    }
+
+    final reportAggregate = reportAggregateResult.getOrElse(
+      () => throw StateError(''),
+    );
+
+    // Fetch fieldOfficers hanya jika pending
+    List<FieldOfficer>? fieldOfficers;
+    if (reportAggregate.report.status == ReportStatus.pending) {
+      final officersResult = await _getFieldOfficers(NoParams());
+
+      if (officersResult.isLeft()) {
+        return _emitFailure(
+          emit,
+          officersResult.fold((f) => f.message!, (_) => ''),
+        );
+      }
+
+      fieldOfficers = officersResult.getOrElse(() => []);
+    }
+
+    return emit(
+      state.copyWith(
+        status: InternalReportDetailStatus.success,
+        reportStatus: reportAggregate.report.status,
+        reportAggregate: reportAggregate,
+        fieldOfficers: fieldOfficers,
+      ),
+    );
+  }
+
+  Future<void> _onFieldCheckRequested(
+    FieldCheckRequested event,
+    Emitter<InternalReportDetailState> emit,
+  ) async {
+    emit(state.copyWith(status: InternalReportDetailStatus.overlayLoading));
+    await _callUseCase(
+      emit: emit,
+      useCase: () => _assignFieldOfficer(
+        AssignFieldOfficerParams(
+          reportId: _getReportId(emit),
+          fieldOfficerId: event.fieldOfficerId,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onVerifiedRequested(
+    VerifiedRequested event,
+    Emitter<InternalReportDetailState> emit,
+  ) async {
+    emit(state.copyWith(status: InternalReportDetailStatus.overlayLoading));
+    await _callUseCase(
+      emit: emit,
+      useCase: () => _verifyReport(VerifyReportParams(id: _getReportId(emit))),
+    );
+  }
+
+  Future<void> _onRejectedRequested(
+    RejectedRequested event,
+    Emitter<InternalReportDetailState> emit,
+  ) async {
+    emit(state.copyWith(status: InternalReportDetailStatus.overlayLoading));
+    await _callUseCase(
+      emit: emit,
+      useCase: () => _rejectReport(RejectReportParams(id: _getReportId(emit))),
+    );
+  }
+
+  Future<void> _onActionRequested(
+    ActionRequested event,
+    Emitter<InternalReportDetailState> emit,
+  ) async {
+    emit(state.copyWith(status: InternalReportDetailStatus.overlayLoading));
+    await _callUseCase(
+      emit: emit,
+      useCase: () => _provideAction(
+        ProvideActionParams(
+          reportId: _getReportId(emit),
+          dueAction: event.dueAction,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onDoneRequested(
+    DoneRequested event,
+    Emitter<InternalReportDetailState> emit,
+  ) async {
+    emit(state.copyWith(status: InternalReportDetailStatus.overlayLoading));
+    await _callUseCase(
+      emit: emit,
+      useCase: () =>
+          _completingReport(CompletingReportParams(id: _getReportId(emit))),
+    );
+  }
+
+  Future<void> _onReportDeleteRequested(
+    ReportDeleteRequested event,
+    Emitter<InternalReportDetailState> emit,
+  ) async {
+    emit(state.copyWith(status: InternalReportDetailStatus.overlayLoading));
+
+    final result = await _deleteReport(
+      DeleteReportParams(reportId: _getReportId(emit)),
+    );
+
+    result.fold(
+      (failure) => _emitFailure(emit, failure.message!),
+      (_) => emit(state.copyWith(status: InternalReportDetailStatus.deleted)),
+    );
+  }
+}

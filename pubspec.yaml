@@ -1,5 +1,5 @@
 name: lapormin
-description: "Aplikasi pelaporan masyarakat"
+description: 'Aplikasi pelaporan masyarakat'
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 version: 1.0.0+1
@@ -13,32 +13,62 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   connectivity_plus: ^7.1.1
-  bloc: ^9.2.1 
+  bloc: ^9.2.1
   dartz: ^0.10.1
+  dio: ^5.9.2
+  dotted_border: ^3.1.0
   equatable: ^2.0.8
+  firebase_core: ^4.10.0
+  firebase_messaging: ^16.3.0
   flutter_bloc: ^9.1.1
+  flutter_dotenv: ^6.0.1
+  flutter_image_compress: ^2.4.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_local_notifications: ^22.0.0
+  flutter_map: ^8.3.0
+  flutter_otp_text_field: ^1.5.1+1
   flutter_svg: ^2.3.0
+  geocoding: ^4.0.0
+  geolocator: ^14.0.2
   get_it: ^9.2.1
+  http: ^1.6.0
+  image_cropper: ^12.2.1
+  image_gallery_saver_plus: ^5.0.0
+  image_picker: ^1.2.2
+  internet_connection_checker: ^1.0.0+1
   intl: ^0.20.2
+  latlong2: ^0.9.1
   lottie: ^3.3.3
   page_transition: ^2.2.1
   path: ^1.9.1
+  path_provider: ^2.1.6
+  permission_handler: ^12.0.3
   shared_preferences: ^2.5.5
+  shimmer: ^3.0.0
   supabase_flutter: ^2.12.4
+  timeago: ^3.7.1
+  url_launcher: ^6.3.2
+  video_compress: ^3.1.4
+  video_player: ^2.11.1
+  chewie: ^1.14.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^6.0.0 
+  flutter_lints: ^6.0.0
 
 flutter:
-
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
   assets:
+    - .env
     - assets/images/
+    - assets/images/backgrounds/
+    - assets/images/profiles/
+    - assets/images/cards/
+    - assets/animations/
 
   # example:
   fonts:

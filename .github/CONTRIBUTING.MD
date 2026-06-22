@@ -14,6 +14,12 @@ Setelah Branch siap untuk di adapatasi ke sistem utama, lakukan pull request (PR
 
 Branch yang dibuat akan dihapus ketika code yang di merge sudah cukup baik.
 
+Before Coding
+```sh
+git fetch
+git pull <remote> <branch>
+```
+
 ## Commit
 Setiap ingin melakukan commit ada aturan format commit yang harus dipatuhi (Commit Convention), yaitu `type: [Initial Name] Commit message`. contoh :
 
@@ -36,26 +42,26 @@ Project menggunakan "Clean Architecture Featured-based" dengan state management 
 ```text
 lib/
 ├── core/                       # Utilitas yang dipakai di seluruh aplikasi
+│   ├── bloc/                   # Konfigurasi BLoC
 │   ├── constants/              # URL API, Asset Paths
 │   ├── database/               # Konfigrusi utama database
-│   ├── errors/                 # Definisi Failure dan Exception (misal: ServerException)
-│   ├── network/                # Konfigurasi HTTP/Dio interceptors
+│   ├── error/                  # Definisi Failure dan Exception (misal: ServerException)
 │   ├── theme/                  # Konfigurasi Design, Warna, Tipografi
-│   ├── usecase/                # Konfigruasi UseCase
+│   ├── use_case/               # Konfigruasi UseCase
 │   ├── utils/                  # Format tanggal (untuk notifikasi), dll.
 │   └── widgets/                # Widget yang reusable
 │
 ├── features/                   # Modul utama aplikasi (Feature-Based)
 │   ├── features_1/
 │   │   ├── data/               # Layer DATA (Dari luar ke dalam)
-│   │   │   ├── datasources/    # Pemanggilan data (Remote/Local)
+│   │   │   ├── data_sources/   # Pemanggilan data (Remote/Local)
 │   │   │   ├── models/         # Representasi JSON (extends Entity)
 │   │   │   └── repositories/   # Implementasi dari kontrak di layer Domain
 │   │   │
 │   │   ├── domain/             # Layer DOMAIN (Jantung aplikasi - Murni logika bisnis)
 │   │   │   ├── entities/       # Objek inti (misal: UserEntity)
 │   │   │   ├── repositories/   # Kontrak/Interface (Abstract class)
-│   │   │   └── usecases/       # Logika Use Case (misal: LoginAdminUseCase)
+│   │   │   └── use_cases/      # Logika Use Case (misal: LoginAdminUseCase)
 │   │   │
 │   │   └── presentation/       # Layer PRESENTATION (Antarmuka & State)
 │   │       ├── bloc/           # State Management
