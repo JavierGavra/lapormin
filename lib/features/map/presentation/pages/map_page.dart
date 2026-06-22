@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:lapormin/core/utils/text_style/app_text_style.dart';
 import 'package:latlong2/latlong.dart';
 import '../../../../core/constants/report_category_enum.dart'
     show ReportCategory;
@@ -137,7 +138,7 @@ class _MapPageState extends State<MapPage> {
                   Positioned(
                     left: 24,
                     bottom: 30,
-                    right: 24,
+                    // right: 24,
                     child: _buildLegendCard(context),
                   ),
                   if (mapState.status == MapStatus.loading)
@@ -202,12 +203,14 @@ class _MapPageState extends State<MapPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: color.surface,
+        color: color.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color.outlineVariant),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        spacing: 12,
         children: [
           _LegendItem(
             color: ReportCategory.infrastructure.getColor(context).mainColor,
@@ -223,7 +226,7 @@ class _MapPageState extends State<MapPage> {
           ),
           _LegendItem(
             color: ReportCategory.publicService.getColor(context).mainColor,
-            label: 'Layanan',
+            label: 'Layanan Publik',
           ),
         ],
       ),
@@ -239,8 +242,6 @@ class _LegendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeColors = Theme.of(context).colorScheme;
-
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -250,14 +251,7 @@ class _LegendItem extends StatelessWidget {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(
-            color: themeColors.onSurface,
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Text(label, style: AppTextStyle.s12(fontWeight: FontWeight.w500)),
       ],
     );
   }
