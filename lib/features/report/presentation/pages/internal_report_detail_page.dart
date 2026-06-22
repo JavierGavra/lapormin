@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/widgets/loading/fullscreen_loading_overlay.dart';
+import 'package:lapormin/features/report/presentation/widgets/button/app_popup_menu_button.dart';
+import 'package:lapormin/features/report/presentation/widgets/dialog/delete_report_dialog.dart';
 
 import '../../../../injection.dart';
 import '../../../../core/constants/user_role_enum.dart';
 import '../../../../core/utils/text_style/app_text_style.dart';
 import '../../../../core/widgets/button/app_back_button.dart';
-import '../../../../core/widgets/button/app_icon_button.dart';
 import '../../../../core/widgets/snackbar/custom_snackbar.dart';
 import '../bloc/internal_report_detail/internal_report_detail_bloc.dart';
 import '../widgets/report_detail/information/report_info_tab.dart';
@@ -43,6 +45,10 @@ class _InternalReportDetailPageState extends State<InternalReportDetailPage>
     if (!state.isOverlayLoading && _isOverlayLoadingOpen) {
       FullscreenLoadingOverlay.hide(context);
       _isOverlayLoadingOpen = false;
+    }
+
+    if (state.status == InternalReportDetailStatus.deleted) {
+      Navigator.pop(context);
     }
 
     if (state.status == InternalReportDetailStatus.failure) {
@@ -89,51 +95,83 @@ class _InternalReportDetailPageState extends State<InternalReportDetailPage>
 
   Widget _buildAppBar(BuildContext context, bool innerBoxIsScrolled) {
     final color = Theme.of(context).colorScheme;
-    return SliverAppBar(
-      pinned: true,
-      floating: true,
-      centerTitle: true,
-      titleSpacing: 16,
-      leadingWidth: 24 + 40, // (Padding kiri) + (Lebar tombol)
-      scrolledUnderElevation: 0,
-      forceElevated: innerBoxIsScrolled,
-      backgroundColor: color.surfaceContainerLowest,
-      actionsPadding: const EdgeInsets.only(right: 24),
-      title: Text(
-        "Detail Laporan",
-        style: AppTextStyle.s16(fontWeight: FontWeight.w600),
-      ),
-      leading: Padding(
-        padding: const EdgeInsets.only(left: 24),
-        child: Center(
-          child: SizedBox(width: 40, height: 40, child: AppBackButton()),
-        ),
-      ),
-      actions: (widget.role == UserRole.informant)
-          ? [
-              AppIconButton(
-                icon: Icons.more_vert_rounded,
-                onPressed: () => showSnackBar(
-                  context,
-                  "Fitur belum tersedia",
-                  type: SnackBarType.failure,
-                ),
-              ),
-            ]
-          : null,
-      bottom: TabBar(
-        controller: _tabController,
-        labelStyle: AppTextStyle.s14(fontWeight: FontWeight.w600),
-        unselectedLabelStyle: AppTextStyle.s14(fontWeight: FontWeight.w500),
-        labelColor: color.primary,
-        unselectedLabelColor: color.onSurfaceVariant,
-        indicatorColor: color.primary,
-        indicatorSize: TabBarIndicatorSize.tab,
-        tabs: const [
-          Tab(text: "Informasi"),
-          Tab(text: "Status"),
-        ],
-      ),
+    return BlocBuilder<InternalReportDetailBloc, InternalReportDetailState>(
+      builder: (context, state) {
+        final reportStatus = state.reportStatus;
+        return SliverAppBar(
+          pinned: true,
+          floating: true,
+          centerTitle: true,
+          titleSpacing: 16,
+          leadingWidth: 24 + 40, // (Padding kiri) + (Lebar tombol)
+          scrolledUnderElevation: 0,
+          forceElevated: innerBoxIsScrolled,
+          backgroundColor: color.surfaceContainerLowest,
+          actionsPadding: const EdgeInsets.only(right: 24),
+          title: Text(
+            "Detail Laporan",
+            style: AppTextStyle.s16(fontWeight: FontWeight.w600),
+          ),
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 24),
+            child: Center(
+              child: SizedBox(width: 40, height: 40, child: AppBackButton()),
+            ),
+          ),
+          actions: (state.reportAggregate == null)
+              ? null
+              : (widget.role == UserRole.informant)
+              ? [
+                  AppPopupMenuButton(
+                    items: [
+                      AppMenuItem(
+                        icon: Icons.share_outlined,
+                        label: "Bagikan",
+                        onTap: () => showSnackBar(
+                          context,
+                          "Fitur belum tersedia",
+                          type: SnackBarType.failure,
+                        ),
+                      ),
+                      AppMenuItem(
+                        icon: Icons.delete_outline,
+                        label: "Hapus Laporan",
+                        color: color.error,
+                        onTap:
+                            (reportStatus == ReportStatus.pending ||
+                                reportStatus == ReportStatus.rejected ||
+                                reportStatus == ReportStatus.done)
+                            ? () async {
+                                final isDeleted = await DeleteReportDialog.show(
+                                  context,
+                                );
+                                if (isDeleted == true && context.mounted) {
+                                  context.read<InternalReportDetailBloc>().add(
+                                    ReportDeleteRequested(),
+                                  );
+                                }
+                              }
+                            : null,
+                      ),
+                    ],
+                  ),
+                ]
+              : null,
+          bottom: TabBar(
+            controller: _tabController,
+            labelStyle: AppTextStyle.s14(fontWeight: FontWeight.w600),
+            unselectedLabelStyle: AppTextStyle.s14(fontWeight: FontWeight.w500),
+            labelColor: color.primary,
+            unselectedLabelColor: color.onSurfaceVariant,
+            indicatorColor: color.primary,
+            indicatorSize: TabBarIndicatorSize.tab,
+            tabs: const [
+              Tab(text: "Informasi"),
+              Tab(text: "Status"),
+            ],
+          ),
+        );
+      },
     );
   }
 

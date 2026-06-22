@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
+import 'package:lapormin/core/widgets/app_bar/sliver_app_bar.dart';
 import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:lapormin/features/field_officer/presentation/widgets/bottom_sheet/field_officer_bottom_sheet.dart';
 import 'package:lapormin/features/field_officer/presentation/widgets/custom_add_fab.dart';

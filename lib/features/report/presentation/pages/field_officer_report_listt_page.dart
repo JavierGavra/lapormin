@@ -11,7 +11,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
-import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
+import 'package:lapormin/core/widgets/app_bar/sliver_app_bar.dart';
 import 'package:lapormin/core/widgets/card/report_card.dart';
 import 'package:lapormin/core/widgets/loading/report_card_shimmer.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_list/compact_report_card.dart';

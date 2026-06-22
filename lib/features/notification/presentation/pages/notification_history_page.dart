@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
-import 'package:lapormin/features/auth/presentation/bloc/auth/auth_bloc.dart';
 
-import '../../../../core/utils/text_style/app_text_style.dart';
-import '../../../../core/widgets/button/app_back_button.dart';
+import '../../../../core/widgets/app_bar/custom_app_bar.dart';
+import '../../../../core/widgets/snackbar/custom_snackbar.dart';
+import '../../../auth/presentation/bloc/auth/auth_bloc.dart';
 import '../bloc/notification_history/notification_history_bloc.dart';
 import '../widgets/card/notification_card.dart';
 
@@ -25,31 +24,10 @@ class _NotificationHistoryPageState extends State<NotificationHistoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme;
     final userRole = context.read<AuthBloc>().state.user!.role;
 
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 16,
-        leadingWidth: 24 + 40,
-        shadowColor: Colors.black.withValues(alpha: 0.25),
-        surfaceTintColor: Colors.transparent,
-        backgroundColor: color.surfaceContainerLowest,
-        actionsPadding: const EdgeInsets.only(right: 24),
-        title: Text(
-          "Notifikasi",
-          style: AppTextStyle.s16(
-            fontWeight: FontWeight.w600,
-            color: color.primary,
-          ),
-        ),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 24),
-          child: Center(
-            child: SizedBox(width: 40, height: 40, child: AppBackButton()),
-          ),
-        ),
-      ),
+      appBar: CustomAppBar(title: "Notifikasi"),
       body: RefreshIndicator(
         onRefresh: () async {
           context.read<NotificationHistoryBloc>().add(
