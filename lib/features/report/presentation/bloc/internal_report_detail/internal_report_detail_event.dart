@@ -16,6 +16,8 @@ final class InternalReportDetailOpened extends InternalReportDetailEvent {
   List<Object?> get props => [id];
 }
 
+final class ReportDeleteRequested extends InternalReportDetailEvent {}
+
 final class FieldCheckRequested extends InternalReportDetailEvent {
   final String fieldOfficerId;
 

@@ -8,7 +8,7 @@ import 'package:lapormin/features/report/presentation/pages/internal_report_deta
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
-import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
+import 'package:lapormin/core/widgets/app_bar/sliver_app_bar.dart';
 import 'package:lapormin/core/widgets/card/report_card.dart';
 import 'package:lapormin/core/widgets/loading/report_card_shimmer.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';

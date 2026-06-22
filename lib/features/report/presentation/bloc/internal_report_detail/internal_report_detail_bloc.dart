@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:lapormin/core/use_case/usecase.dart';
 import 'package:lapormin/features/field_officer/domain/entities/field_officer.dart';
 import 'package:lapormin/features/field_officer/domain/use_cases/get_field_officers.dart';
+import 'package:lapormin/features/report/domain/use_cases/delete_report.dart';
 
 import '../../../../../core/constants/report_status_enum.dart';
 import '../../../../../core/error/failures.dart';
@@ -28,6 +29,7 @@ class InternalReportDetailBloc
   final ProvideAction _provideAction;
   final CompletingReport _completingReport;
   final GetFieldOfficers _getFieldOfficers;
+  final DeleteReport _deleteReport;
 
   InternalReportDetailBloc({
     required GetReportAggregate getReportAggregate,
@@ -37,6 +39,7 @@ class InternalReportDetailBloc
     required ProvideAction provideAction,
     required CompletingReport completingReport,
     required GetFieldOfficers getFieldOfficers,
+    required DeleteReport deleteReport,
   }) : _getReportAggregate = getReportAggregate,
        _assignFieldOfficer = assignFieldOfficer,
        _verifyReport = verifyReport,
@@ -44,6 +47,7 @@ class InternalReportDetailBloc
        _provideAction = provideAction,
        _completingReport = completingReport,
        _getFieldOfficers = getFieldOfficers,
+       _deleteReport = deleteReport,
        super(InternalReportDetailState()) {
     on<InternalReportDetailOpened>(_onInternalReportDetailOpened);
     on<FieldCheckRequested>(_onFieldCheckRequested);
@@ -51,6 +55,7 @@ class InternalReportDetailBloc
     on<RejectedRequested>(_onRejectedRequested);
     on<ActionRequested>(_onActionRequested);
     on<DoneRequested>(_onDoneRequested);
+    on<ReportDeleteRequested>(_onReportDeleteRequested);
   }
 
   ReportAggregate? _updateReport(Report report) {
@@ -213,6 +218,22 @@ class InternalReportDetailBloc
       emit: emit,
       useCase: () =>
           _completingReport(CompletingReportParams(id: _getReportId(emit))),
+    );
+  }
+
+  Future<void> _onReportDeleteRequested(
+    ReportDeleteRequested event,
+    Emitter<InternalReportDetailState> emit,
+  ) async {
+    emit(state.copyWith(status: InternalReportDetailStatus.overlayLoading));
+
+    final result = await _deleteReport(
+      DeleteReportParams(reportId: _getReportId(emit)),
+    );
+
+    result.fold(
+      (failure) => _emitFailure(emit, failure.message!),
+      (_) => emit(state.copyWith(status: InternalReportDetailStatus.deleted)),
     );
   }
 }

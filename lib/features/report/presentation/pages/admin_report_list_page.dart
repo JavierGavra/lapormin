@@ -4,7 +4,7 @@ import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/core/constants/report_status_enum.dart';
 import 'package:lapormin/core/theme/theme.dart';
 import 'package:lapormin/core/utils/text_style/app_text_style.dart';
-import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
+import 'package:lapormin/core/widgets/app_bar/sliver_app_bar.dart';
 import 'package:lapormin/features/home/presentation/bloc/home_admin/home_admin_bloc.dart';
 import 'package:lapormin/features/report/presentation/pages/admin_reports_list_detail_page.dart';
 import 'package:lapormin/features/report/presentation/widgets/admin_report/admin_info_banner.dart';

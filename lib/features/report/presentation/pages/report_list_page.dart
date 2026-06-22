@@ -7,7 +7,7 @@ import 'package:lapormin/core/widgets/snackbar/custom_snackbar.dart';
 import 'package:lapormin/features/report/domain/params/report_filter_params.dart';
 import 'package:lapormin/features/report/presentation/widgets/report_list/report_filter_bottom_sheet.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:lapormin/core/widgets/sliver_app_bar/sliver_app_bar.dart';
+import 'package:lapormin/core/widgets/app_bar/sliver_app_bar.dart';
 import 'package:lapormin/core/widgets/card/report_card.dart';
 import 'package:lapormin/core/constants/report_category_enum.dart';
 import 'package:lapormin/features/report/presentation/pages/my_report_list_page.dart';

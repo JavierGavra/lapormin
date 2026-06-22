@@ -5,6 +5,7 @@ enum InternalReportDetailStatus {
   loading,
   overlayLoading,
   success,
+  deleted,
   failure,
 }
 

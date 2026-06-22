@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:lapormin/features/notification/domain/use_cases/mark_all_as_read.dart';
+import 'package:lapormin/features/report/domain/use_cases/delete_report.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -208,6 +209,7 @@ void _initReportFeature() {
       provideAction: sl(),
       completingReport: sl(),
       getFieldOfficers: sl(),
+      deleteReport: sl(),
     ),
   );
 
@@ -229,6 +231,7 @@ void _initReportFeature() {
   sl.registerLazySingleton(() => GetAdminReportStatistics(sl()));
   sl.registerLazySingleton(() => GetFieldOfficerReportStatistics(sl()));
   sl.registerLazySingleton(() => GetUserReportAmount(sl()));
+  sl.registerLazySingleton(() => DeleteReport(sl()));
 
   // Repository
   sl.registerLazySingleton<ReportRepository>(
