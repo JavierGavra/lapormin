@@ -15,6 +15,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:lapormin/features/report/presentation/bloc/public_reports/public_reports_bloc.dart';
 import 'package:lapormin/core/widgets/loading/report_card_shimmer.dart';
+import 'package:lapormin/injection.dart';
+
+import '../../../../report/presentation/pages/public_category_report_list_page.dart'
+    show PublicCategoryReportListPage;
 
 class HomePage extends StatefulWidget {
   final VoidCallback? onSeeAllTapped;
@@ -109,21 +113,64 @@ class _HomePageState extends State<HomePage> {
                               title: "Infrastruktur",
                               backgroundColor: color.primaryContainer,
                               iconColor: color.onPrimaryContainer,
-                              onTap: () => debugPrint("Menu Infrastruktur"),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => BlocProvider(
+                                      create: (context) =>
+                                          sl<PublicReportsBloc>(),
+                                      child: const PublicCategoryReportListPage(
+                                        title: "Infrastruktur",
+                                        filterCategory:
+                                            ReportCategory.infrastructure,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                             CategoryCard(
                               icon: Icons.flood_outlined,
                               title: "Bencana",
                               backgroundColor: color.warningContainer,
                               iconColor: color.onTertiaryContainer,
-                              onTap: () => debugPrint("Menu Bencana"),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => BlocProvider(
+                                      create: (context) =>
+                                          sl<PublicReportsBloc>(),
+                                      child: const PublicCategoryReportListPage(
+                                        title: "Bencana Alam",
+                                        filterCategory: ReportCategory.disaster,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                             CategoryCard(
                               icon: Icons.warning_amber_rounded,
                               title: "Kriminal",
                               backgroundColor: color.errorContainer,
                               iconColor: color.onErrorContainer,
-                              onTap: () => debugPrint("Menu Kriminal"),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => BlocProvider(
+                                      create: (context) =>
+                                          sl<PublicReportsBloc>(),
+                                      child: const PublicCategoryReportListPage(
+                                        title: "Kriminal",
+                                        filterCategory: ReportCategory.crime,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                             CategoryCard(
                               icon: Icons.account_balance_outlined,
@@ -134,39 +181,22 @@ class _HomePageState extends State<HomePage> {
                               iconColor: Theme.of(
                                 context,
                               ).colorScheme.onSuccessContainer,
-                              onTap: () => debugPrint("Menu Layanan Publik"),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Laporan Terbaru",
-                              style: AppTextStyle.s16(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: widget.onSeeAllTapped,
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "Lihat Semua",
-                                    style: AppTextStyle.s14(
-                                      color: color.primary,
-                                      fontWeight: FontWeight.w500,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => BlocProvider(
+                                      create: (context) =>
+                                          sl<PublicReportsBloc>(),
+                                      child: const PublicCategoryReportListPage(
+                                        title: "Layanan Publik",
+                                        filterCategory:
+                                            ReportCategory.publicService,
+                                      ),
                                     ),
                                   ),
-                                  Icon(
-                                    Icons.chevron_right,
-                                    size: 20,
-                                    color: color.primary,
-                                  ),
-                                ],
-                              ),
+                                );
+                              },
                             ),
                           ],
                         ),
