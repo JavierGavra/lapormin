@@ -75,37 +75,44 @@ class _SuccessScreenState extends State<SuccessPage> {
                     'assets/images/backgrounds/success_background.png',
                     width: double.infinity,
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      RepaintBoundary(
-                        child: LottieBuilder.asset(
-                          'assets/animations/success_check.json',
-                          width: 156,
-                          height: 156,
-                          animate: true,
-                          repeat: false,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        RepaintBoundary(
+                          child: LottieBuilder.asset(
+                            'assets/animations/success_check.json',
+                            width: 156,
+                            height: 156,
+                            animate: true,
+                            repeat: false,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        widget.title,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: "Plus Jakarta Sans",
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20,
-                          height: 1.4,
+                        const SizedBox(height: 2),
+                        Text(
+                          widget.title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: "Plus Jakarta Sans",
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20,
+                            height: 1.4,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(widget.description, style: AppTextStyle.s14()),
-                      if (widget.extraWidget != null) ...[
-                        const SizedBox(height: 24),
-                        widget.extraWidget!,
+                        const SizedBox(height: 8),
+                        Text(
+                          widget.description,
+                          textAlign: TextAlign.center,
+                          style: AppTextStyle.s14(),
+                        ),
+                        if (widget.extraWidget != null) ...[
+                          const SizedBox(height: 24),
+                          widget.extraWidget!,
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ],
               ),
