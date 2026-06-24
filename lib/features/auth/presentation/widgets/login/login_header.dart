@@ -52,7 +52,7 @@ class LoginHeader extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          "Laportkan hal di sekitar anda pada mimin!",
+          "Laporkan hal di sekitar anda pada mimin!",
           style: AppTextStyle.s14(),
         ),
         const SizedBox(height: 40),
